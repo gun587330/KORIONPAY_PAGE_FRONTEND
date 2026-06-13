@@ -53,24 +53,22 @@ export default function SettlementHistory() {
           <span className={styles.sValue}>{lastSettleDate}</span>
         </div>
         <div className={`${styles.sCard} ${styles.sCardCurrent}`}>
-          {/* 우측 상단 상태 배지 — 드롭다운 선택값과 동기화 */}
+          {/* 우측 상단에 상태 선택 토글(드롭다운)을 카드 안에 직접 배치 */}
           <div className={styles.sCardHead}>
             <span className={`${styles.sChip} ${styles.sChipTeal}`}>{t('settle.hist.thisRequest')}</span>
-            <span className={styles.reviewBadge}>{status}</span>
+            <select
+              className={styles.statusSelect}
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              aria-label="정산 상태 선택"
+            >
+              {tabs.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
           </div>
           <span className={`${styles.sValue} ${styles.sValueTeal}`}>{thisRequestAmount}</span>
         </div>
-        {/* 상태 드롭다운 — 본사 검토중/지급완료/보류/반려조정, 선택값이 위 배지와 동기화 */}
-        <select
-          className={styles.statusSelect}
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          aria-label="정산 상태 선택"
-        >
-          {tabs.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
       </div>
 
       {/* 정산 내역 테이블 */}
