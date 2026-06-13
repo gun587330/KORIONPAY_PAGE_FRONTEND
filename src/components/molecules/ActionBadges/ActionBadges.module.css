@@ -2,5 +2,7 @@
 .actions {
   display: flex;
   gap: var(--space-1);
-  flex-wrap: nowrap;   /* 배지들이 한 줄을 유지하도록 (줄바꿈 방지) */
+  /* 배지가 컬럼 폭을 넘치면 다음 줄로 흘려보낸다(가로 넘침으로 표가 깨지는 것 방지).
+     컬럼이 충분히 넓으면 자연히 한 줄을 유지한다. */
+  flex-wrap: wrap;
 }

@@ -87,6 +87,9 @@
 .cell {
   font-size: var(--font-size-10);
   color: var(--color-text);
+  /* min-width:0 → 그리드 트랙이 내용 폭(min-content)에 끌려 벌어지지 않고
+     지정한 fr(상대폭)을 지키게 한다 → 표 전체가 컨테이너 가로에 맞춰짐. */
+  min-width: 0;
   /* 셀 내용이 길면 말줄임 */
   overflow: hidden;
   text-overflow: ellipsis;
