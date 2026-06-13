@@ -1,0 +1,260 @@
+/* 내 권한/설정 · 프로필 정보 — 상태 요약 + 코드 히어로 + A/B/D 섹션 폼 */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 1;
+}
+
+/* 전체를 감싸는 큰 패널 (Figma "파트너 가입 통합 폼") */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background-color: color-mix(in srgb, #151127 83%, transparent);
+  border: 1px solid color-mix(in srgb, #7b5cff 34%, transparent);
+  border-radius: 26px;
+}
+
+/* ===== 상단 상태 요약 바 ===== */
+.statusBar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: color-mix(in srgb, #181129 45%, transparent);
+  border: 1px solid color-mix(in srgb, #1ad1ff 35%, transparent);
+  border-radius: 14px;
+}
+.statusItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.statusLabel {
+  font-size: var(--font-size-10);
+  font-weight: var(--font-weight-bold);
+  color: #736e94;
+}
+/* 값 칩(알약) — 색은 --chip(항목별)으로 주입. 반투명 채움 + 색 테두리 + 같은 색 글씨 */
+.statusChip {
+  align-self: flex-start;
+  padding: 3px var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-10);
+  font-weight: var(--font-weight-bold);
+  color: #f2f0ff;
+  background-color: color-mix(in srgb, var(--chip) 17%, transparent);
+  border: 1px solid color-mix(in srgb, var(--chip) 76%, transparent);
+}
+
+/* ===== 내 코드 히어로 ===== */
+.codeHero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  background-color: color-mix(in srgb, #0f0b1d 88%, transparent);
+  border: 1px solid color-mix(in srgb, #6b3de5 72%, transparent);
+  border-radius: 18px;
+}
+.codeLabel {
+  font-size: var(--font-size-15);
+  font-weight: var(--font-weight-bold);
+  color: #f2f0ff;
+}
+.codeValue {
+  font-size: 30px;
+  font-weight: var(--font-weight-bold);
+  color: #1ad1ff;
+}
+.codeDesc {
+  font-size: var(--font-size-11);
+  font-weight: var(--font-weight-regular);
+  color: #ada3d1;
+}
+
+/* ===== 섹션 (A/B/D) ===== */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.sectionTitle {
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+}
+
+/* 6열 필드 그리드 (계정/소속 정보) */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-4);
+}
+/* 넓은 필드(Wallet 주소 등)는 2칸 차지 */
+.wide {
+  grid-column: span 2;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.fieldLabel {
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  color: #ffffff;
+}
+/* 입력 박스 공통 — 48px, 어두운 채움 + 보라 테두리 */
+.input {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--space-4);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #7b5cff 34%, transparent);
+  background-color: color-mix(in srgb, #0c0a1e 88%, transparent);
+  color: #8e89b7;
+  font: inherit;
+  font-size: 13px;
+}
+.textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: var(--space-4);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #7b5cff 34%, transparent);
+  background-color: color-mix(in srgb, #0c0a1e 88%, transparent);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+  resize: vertical;
+}
+.input::placeholder,
+.textarea::placeholder {
+  color: #8c86b5;
+}
+
+/* 변경 요청 메모 + 본사 답변 (2열 textarea) */
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+/* 증빙자료 첨부 — 입력 + 업로드 버튼 한 줄 */
+.uploadRow {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+.uploadRow .input {
+  max-width: 471px;
+}
+/* 업로드 버튼 — 청록 솔리드 + 어두운 글씨 */
+.uploadBtn {
+  flex-shrink: 0;
+  height: 48px;
+  padding: 0 var(--space-5);
+  border-radius: 13px;
+  border: 1px solid color-mix(in srgb, #26e6b2 34%, transparent);
+  background-color: color-mix(in srgb, #26e6b2 92%, transparent);
+  color: #061815;
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+/* 하단 버튼 줄 — 우측 정렬 */
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* ===== 확인 모달 (오버레이) ===== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background-color: rgba(4, 3, 10, 0.6);
+  z-index: 100;
+}
+.modal {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  background-color: color-mix(in srgb, #141027 96%, transparent);
+  border: 1px solid color-mix(in srgb, #22d9ff 32%, transparent);
+  border-radius: 22px;
+  box-shadow: 0 12px 40px rgba(117, 51, 255, 0.28), 0 0 28px rgba(0, 204, 255, 0.14);
+}
+.modalTitle {
+  font-size: 22px;
+  font-weight: var(--font-weight-bold);
+}
+.modalDesc {
+  font-size: var(--font-size-12);
+  line-height: 1.6;
+  color: #bdb7e7;
+}
+.modalButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* ===== 성공 토스트 ===== */
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  max-width: 440px;
+  padding: var(--space-4) var(--space-5);
+  font-size: var(--font-size-12);
+  color: var(--color-text);
+  background-color: color-mix(in srgb, #1b1534 94%, transparent);
+  border: 1px solid color-mix(in srgb, #24e6b8 80%, transparent);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(117, 51, 255, 0.28), 0 0 28px rgba(0, 204, 255, 0.14);
+  z-index: 110;
+}
+
+/* 반응형: 좁은 화면에서 상태바/필드 그리드 단 축소 */
+@media (max-width: 1100px) {
+  .statusBar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .wide {
+    grid-column: span 3;
+  }
+}
+@media (max-width: 680px) {
+  .statusBar,
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .wide {
+    grid-column: span 2;
+  }
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+  .uploadRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

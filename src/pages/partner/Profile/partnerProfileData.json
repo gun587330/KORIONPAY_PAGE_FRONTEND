@@ -1,0 +1,101 @@
+{
+  "statusItems": [
+    {
+      "labelKey": "profile.status.leaderCode",
+      "value": "본사-0001",
+      "chip": "#8f47ff"
+    },
+    {
+      "labelKey": "profile.status.country",
+      "value": "Nigeria",
+      "chip": "#1ad1ff"
+    },
+    {
+      "labelKey": "profile.status.city",
+      "value": "Lagos",
+      "chip": "#1ad1ff"
+    },
+    {
+      "labelKey": "profile.status.approval",
+      "value": "검토중",
+      "chip": "#5c5970"
+    },
+    {
+      "labelKey": "profile.status.operation",
+      "value": "대기",
+      "chip": "#5c5970"
+    },
+    {
+      "labelKey": "profile.status.appliedDate",
+      "value": "2023-11-15",
+      "chip": "#29e085"
+    },
+    {
+      "labelKey": "profile.status.approvedDate",
+      "value": "2023-11-15",
+      "chip": "#29e085"
+    }
+  ],
+  "code": "NG-SP-0004",
+  "accountFields": [
+    {
+      "labelKey": "profile.acc.id",
+      "value": "Richard"
+    },
+    {
+      "labelKey": "profile.acc.name",
+      "value": "장영길"
+    },
+    {
+      "labelKey": "profile.acc.email",
+      "value": "example@email.com"
+    },
+    {
+      "labelKey": "profile.acc.telegram",
+      "value": "@Richard_jang"
+    },
+    {
+      "labelKey": "profile.acc.phone",
+      "value": "+82 010 8227 0742"
+    },
+    {
+      "labelKey": "profile.acc.twitter",
+      "value": "@Richard_jang"
+    },
+    {
+      "labelKey": "profile.acc.wallet",
+      "value": "dawfwafwaedw231321d2132132d21ed21ed2d2321d2",
+      "wide": true
+    },
+    {
+      "labelKey": "profile.acc.lastActive",
+      "value": "2026.06.05"
+    }
+  ],
+  "basicFields": [
+    {
+      "labelKey": "profile.basic.leaderCode",
+      "value": "NG-LEAD-0001"
+    },
+    {
+      "labelKey": "profile.basic.country",
+      "value": "Nigeria"
+    },
+    {
+      "labelKey": "profile.basic.region",
+      "value": "Lagos"
+    },
+    {
+      "labelKey": "profile.basic.language",
+      "value": "English, Local Language"
+    },
+    {
+      "labelKey": "profile.basic.merchantCount",
+      "value": "115"
+    },
+    {
+      "labelKey": "profile.basic.unpaidFee",
+      "value": "115,510.000000 KORI"
+    }
+  ]
+}

@@ -21,6 +21,7 @@ import PartnerDashboard from './pages/partner/Dashboard'
 import PartnerRequestsMerchant from './pages/partner/RequestsMerchant'
 import PartnerSettlementRequest from './pages/partner/SettlementRequest'
 import PartnerNoticeSend from './pages/partner/NoticeSend'
+import PartnerProfile from './pages/partner/Profile'
 import PartnerSettlementHistory from './pages/partner/SettlementHistory'
 import PartnerSettlementDetail from './pages/partner/SettlementDetail'
 import { ROLES } from './roles'
@@ -66,6 +67,7 @@ const PARTNER_PAGES: Record<string, JSX.Element> = {
   'notices/send': <PartnerNoticeSend />,
   // 발송 내역·활동 로그는 Figma상 리더 화면과 동일 → 리더 컴포넌트 재사용.
   'notices/history': <NoticeHistory />,
+  'settings/profile': <PartnerProfile />,
   'settings/activity-log': <ActivityLog />,
 }
 
