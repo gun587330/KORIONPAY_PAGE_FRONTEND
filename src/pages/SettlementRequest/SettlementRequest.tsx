@@ -1,6 +1,5 @@
 import { Fragment, useState } from 'react'
 import PageHeader from '../../components/organisms/PageHeader'
-import Badge from '../../components/atoms/Badge'
 import Button from '../../components/atoms/Button'
 import InfoGrid from '../../components/molecules/InfoGrid'
 import ActionBadges from '../../components/molecules/ActionBadges'
@@ -79,10 +78,10 @@ export default function SettlementRequest() {
       <PageHeader title={t('settle.req.title')} />
 
       {/* 요약 배너 */}
-      <div className={styles.sectionBox}>
+      <div className={styles.bannerBox}>
         <div className={styles.bannerHead}>
           <p className={styles.notice}>{banner.notice}</p>
-          <Badge accent="green">{t('settle.req.statusOk')}</Badge>
+          <span className={styles.statusBadge}>{t('settle.req.statusOk')}</span>
         </div>
         <InfoGrid
           items={[
