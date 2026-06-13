@@ -58,15 +58,15 @@
   font-size: var(--font-size-16);
   font-weight: var(--font-weight-bold);
 }
-/* 언어 토글 — 어드민 TopControls 버튼과 동일 톤 */
+/* 언어 토글 — 어드민 TopControls 버튼과 동일 크기/스타일로 동기화 */
 .langButton {
-  padding: var(--space-2) var(--space-3);
-  border-radius: 12px;
-  border: 1px solid color-mix(in srgb, var(--color-accent-cyan) 70%, transparent);
-  background-color: color-mix(in srgb, #1a122a 90%, transparent);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-accent-cyan);
+  background-color: var(--color-surface);
   color: var(--color-text);
   font-size: var(--font-size-12);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
 }
 .subtitle {

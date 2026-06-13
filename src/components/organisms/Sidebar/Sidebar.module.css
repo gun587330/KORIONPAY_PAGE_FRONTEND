@@ -7,14 +7,14 @@
      사이드바는 페이지와 함께 스크롤되지 않고 항상 같은 자리에 머문다. */
   height: 100vh;
   height: 100dvh;
-  padding: var(--space-6) var(--space-4);
+  padding: var(--space-4) var(--space-4);
   background-color: var(--color-bg-sidebar);
   border-right: 1px solid color-mix(in srgb, var(--color-border-accent) 45%, transparent);
-  /* 메뉴가 화면보다 길 때만 사이드바 내부에서 스크롤(평소엔 스크롤바 없음) */
-  overflow-y: auto;
+  /* 스크롤 없이 화면 높이 안에 들어가도록 클립. 메뉴 영역(.nav)이 남는 높이를 채운다. */
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);          /* Figma: 최상위 요소 간격 8 */
+  gap: var(--space-2);
 }
 
 /* ===== 상단 브랜드/프로필 영역 ===== */
@@ -74,7 +74,11 @@
 .nav {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);          /* Figma: 그룹 사이 간격 8 */
+  /* 남는 세로 공간을 채워 그룹들이 사이드바 높이에 고르게 분배되도록(스크롤 없이 딱 맞게). */
+  flex: 1;
+  min-height: 0;
+  justify-content: space-between;
+  gap: var(--space-1);
 }
 
 /*

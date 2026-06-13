@@ -101,7 +101,19 @@ export default function SettlementRequest() {
             </div>
             <div className={styles.formButtons}>
               <Button variant="secondary" onClick={() => setStep('default')}>{t('settle.req.cancel')}</Button>
-              <Button variant="primary" onClick={() => setSubmitted(true)}>{t('settle.req.submit')}</Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  // 완료 토스트 표시 후 1초 뒤 처음 정산 신청(기본) 화면으로 복귀
+                  setSubmitted(true)
+                  window.setTimeout(() => {
+                    setSubmitted(false)
+                    setStep('default')
+                  }, 1000)
+                }}
+              >
+                {t('settle.req.submit')}
+              </Button>
             </div>
           </section>
           {submitted && <div className={styles.toast}>{t('settle.req.toast')}</div>}
