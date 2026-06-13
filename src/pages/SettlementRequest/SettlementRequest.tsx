@@ -185,17 +185,19 @@ export default function SettlementRequest() {
         ))}
       </div>
 
-      {/* 자동 정산 안내 박스 — 제목 + 설명 + 골드 강조(2줄) */}
+      {/* 자동 정산 안내 박스 — 제목 + 설명만 */}
       <div className={styles.autoBox}>
         <h3 className={styles.autoTitle}>{t('settle.req.auto.title')}</h3>
         <p className={styles.autoDesc}>{autoDesc}</p>
-        <div className={styles.autoHighlight}>
-          <span className={styles.autoHlTitle}>{autoHighlightTitle}</span>
-          <span className={styles.autoHlDesc}>{autoHighlightDesc}</span>
-        </div>
       </div>
 
-      {/* 자동 정산 요약 카드 4개 (안내 박스와 분리, 각 카드가 박스) */}
+      {/* 골드 강조 박스 — 안내 박스와 분리된 별도 박스, 한 줄 */}
+      <div className={styles.autoHighlight}>
+        <span className={styles.autoHlTitle}>{autoHighlightTitle}</span>
+        <span className={styles.autoHlDesc}>{autoHighlightDesc}</span>
+      </div>
+
+      {/* 자동 정산 요약 카드 4개 (각 카드가 박스) */}
       <div className={styles.summaryGrid}>
         {autoStats.map((s) => (
           <div key={s.id} className={styles.summaryCard}>

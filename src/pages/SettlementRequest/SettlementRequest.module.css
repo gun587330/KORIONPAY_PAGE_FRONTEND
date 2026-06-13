@@ -359,15 +359,18 @@
   color: #bdb7e7;
   line-height: 1.6;
 }
-/* 골드 강조 박스 (2줄: 골드 제목 + 흐린 설명) */
+/* 골드 강조 박스 (안내 박스와 분리된 별도 박스, 한 줄: 골드 제목 + 흐린 설명 나란히) */
 .autoHighlight {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-3) var(--space-4);
+  flex-direction: row;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
   border-radius: 16px;
   background-color: color-mix(in srgb, #201733 90%, transparent);
   border: 1px solid color-mix(in srgb, #f6c85a 36%, transparent);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.35);
 }
 .autoHlTitle {
   font-size: 18px;
