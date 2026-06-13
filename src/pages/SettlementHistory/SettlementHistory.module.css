@@ -33,6 +33,25 @@
   border-color: color-mix(in srgb, #22d9ff 50%, transparent);
 }
 
+/* 카드 상단 줄: 칩(좌) + 상태 배지(우) */
+.sCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+/* "본사 검토중" 토글 배지 — 보라 솔리드 + 흰 글씨 (이번 요청 카드 우측 상단) */
+.reviewBadge {
+  flex-shrink: 0;
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  color: #ffffff;
+  background-color: color-mix(in srgb, #7c5cff 90%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 40%, transparent);
+}
+
 /* 카드 칩(라벨) */
 .sChip {
   align-self: flex-start;

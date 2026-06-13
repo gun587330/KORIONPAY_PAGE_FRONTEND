@@ -16,8 +16,10 @@ import styles from './SettlementHistory.module.css'
 export default function SettlementHistory() {
   const { t } = useTranslation()
   const { lastSettleDate, thisRequestAmount, tabs, columns, rows: rawRows } = useSettlementHistory()
-  // 상태 선택 — 기본 "본사 검토중"(tabs[0]). 한 번에 하나만 표시되는 드롭다운.
-  const [status, setStatus] = useState(tabs[0])
+  // tabs[0]="본사 검토중"은 이번 요청 카드의 배지로, 나머지(지급완료/보류/반려조정)는 드롭다운으로.
+  const reviewLabel = tabs[0]
+  const statusOptions = tabs.slice(1)
+  const [status, setStatus] = useState(statusOptions[0])
 
   const rows: TableRow[] = rawRows.map((r) => ({
     id: r.period, // 정산번호가 모두 동일해 기간을 식별자로 사용
@@ -51,17 +53,21 @@ export default function SettlementHistory() {
           <span className={styles.sValue}>{lastSettleDate}</span>
         </div>
         <div className={`${styles.sCard} ${styles.sCardCurrent}`}>
-          <span className={`${styles.sChip} ${styles.sChipTeal}`}>{t('settle.hist.thisRequest')}</span>
+          {/* 우측 상단에 본사 검토중 토글 배지 */}
+          <div className={styles.sCardHead}>
+            <span className={`${styles.sChip} ${styles.sChipTeal}`}>{t('settle.hist.thisRequest')}</span>
+            <span className={styles.reviewBadge}>{reviewLabel}</span>
+          </div>
           <span className={`${styles.sValue} ${styles.sValueTeal}`}>{thisRequestAmount}</span>
         </div>
-        {/* 상태 드롭다운 — 기본 본사 검토중, 한 번에 하나만 표시 */}
+        {/* 상태 드롭다운 — 지급완료/보류/반려조정, 한 번에 하나만 표시 */}
         <select
           className={styles.statusSelect}
           value={status}
           onChange={(e) => setStatus(e.target.value)}
           aria-label="정산 상태 선택"
         >
-          {tabs.map((s) => (
+          {statusOptions.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
