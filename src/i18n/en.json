@@ -592,5 +592,18 @@
   "psreq.pt.desc": "Check per sub-merchant tx amount, total fee, leader fee, partner fee, and held amount.",
   "psreq.final.desc": "Request settlement to HQ based on the final available amount. After HQ approval, fees are settled automatically.",
   "psreq.field.partnerName": "Partner Name",
-  "psreq.field.partnerCode": "Partner Code"
+  "psreq.field.partnerCode": "Partner Code",
+
+  "mdash.title": "Merchant Admin - Store Operations Dashboard",
+  "mdash.desc": "Merchants view only their own store info, transactions, and settlement records.",
+  "mdash.kpi.products": "Registered Products",
+  "mdash.kpi.todaySales": "Today's Sales",
+  "mdash.kpi.monthSales": "Monthly Sales",
+  "mdash.kpi.monthCount": "Monthly Tx Count",
+  "mdash.kpi.syncFail": "Sync Failures",
+  "mdash.kpi.unreadNotice": "Unread Notices",
+  "mdash.panel.salesTable": "Sales Table",
+  "mdash.panel.recentActivity": "Recent Activity",
+  "mdash.panel.notice": "Notice",
+  "mdash.panel.activityDesc": "Tx events · submissions · approvals · notice reads · permission change logs"
 }

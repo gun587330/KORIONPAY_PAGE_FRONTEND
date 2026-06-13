@@ -592,5 +592,18 @@
   "psreq.pt.desc": "하부 가맹점별 거래금액, 전체 수수료, 리더 수수료, 파트너 수수료, 보류 금액을 확인합니다.",
   "psreq.final.desc": "최종 정산 가능 금액을 기준으로 본사에 정산을 요청합니다. 본사 승인 후 수수료가 자동 정산 처리됩니다.",
   "psreq.field.partnerName": "파트너 명",
-  "psreq.field.partnerCode": "파트너 코드"
+  "psreq.field.partnerCode": "파트너 코드",
+
+  "mdash.title": "가맹점 관리자 - 매장 운영 대시보드",
+  "mdash.desc": "가맹점은 본인 매장의 정보, 거래, 정산 기록만 조회합니다.",
+  "mdash.kpi.products": "상품 등록 수",
+  "mdash.kpi.todaySales": "오늘 매출",
+  "mdash.kpi.monthSales": "월 매출",
+  "mdash.kpi.monthCount": "월 거래 건수",
+  "mdash.kpi.syncFail": "Sync 실패",
+  "mdash.kpi.unreadNotice": "공지 미확인",
+  "mdash.panel.salesTable": "매출 표",
+  "mdash.panel.recentActivity": "최근 활동",
+  "mdash.panel.notice": "공지",
+  "mdash.panel.activityDesc": "거래 발생 · 신청 제출 · 승인 결과 · 공지 읽음 · 권한 변경 로그"
 }

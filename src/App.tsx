@@ -23,6 +23,7 @@ import PartnerSettlementRequest from './pages/partner/SettlementRequest'
 import PartnerNoticeSend from './pages/partner/NoticeSend'
 import PartnerProfile from './pages/partner/Profile'
 import MerchantProfile from './pages/merchant/Profile'
+import MerchantDashboard from './pages/merchant/Dashboard'
 import PartnerSettlementHistory from './pages/partner/SettlementHistory'
 import PartnerSettlementDetail from './pages/partner/SettlementDetail'
 import { ROLES } from './roles'
@@ -54,6 +55,7 @@ const LEADER_PAGES: Record<string, JSX.Element> = {
 
 // 가맹점 화면 — 골격 검증 후 하나씩 채운다(나머지는 Placeholder).
 const MERCHANT_PAGES: Record<string, JSX.Element> = {
+  dashboard: <MerchantDashboard />,
   // 전체 공지(파트너 소식지)는 리더 본사 소식지와 동일 → 재사용.
   'hq-notices': <HqNotices />,
   'settings/profile': <MerchantProfile />,

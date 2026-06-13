@@ -1,0 +1,10 @@
+{
+  "kpis": [
+    { "id": "products", "labelKey": "mdash.kpi.products", "value": "4건", "accent": "orange" },
+    { "id": "today-sales", "labelKey": "mdash.kpi.todaySales", "value": "18,420 KORI", "tag": "매장", "accent": "cyan" },
+    { "id": "month-sales", "labelKey": "mdash.kpi.monthSales", "value": "18,420 KORI", "delta": "+18%", "tag": "관리", "accent": "green" },
+    { "id": "month-count", "labelKey": "mdash.kpi.monthCount", "value": "1.28M", "delta": "+30 k", "accent": "green" },
+    { "id": "sync-fail", "labelKey": "mdash.kpi.syncFail", "value": "2건", "tag": "확인", "accent": "orange" },
+    { "id": "unread-notice", "labelKey": "mdash.kpi.unreadNotice", "value": "4건", "accent": "orange" }
+  ]
+}
