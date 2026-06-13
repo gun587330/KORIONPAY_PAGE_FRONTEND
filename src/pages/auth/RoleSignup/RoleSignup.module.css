@@ -1,0 +1,181 @@
+/* 역할별 회원가입 폼 (파트너/가맹점) */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background-color: color-mix(in srgb, #151127 82%, transparent);
+  border: 1px solid color-mix(in srgb, #7b5cff 34%, transparent);
+  border-radius: 26px;
+}
+
+/* 가입 방식 탭 */
+.modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.mode {
+  padding: 6px var(--space-4);
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, #7b5cff 34%, transparent);
+  background-color: color-mix(in srgb, #7b5cff 14%, transparent);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+.modeActive {
+  color: #ffffff;
+  background-color: color-mix(in srgb, #7b5cff 30%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, #7b5cff 60%, transparent);
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+  margin-top: var(--space-2);
+}
+
+/* 필드 그리드 (3열) */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.wide {
+  grid-column: span 3;
+}
+.fieldLabel {
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  color: #ffffff;
+}
+/* 입력 + (선택) 우측 버튼 한 줄 */
+.inputRow {
+  display: flex;
+  gap: var(--space-2);
+}
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  padding: 0 var(--space-4);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #7b5cff 34%, transparent);
+  background-color: color-mix(in srgb, #0c0a1e 88%, transparent);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+}
+.input::placeholder {
+  color: #8c86b5;
+}
+/* 중복 확인/인증/지갑 연결 등 보조 버튼 — 청록 솔리드 */
+.smallBtn {
+  flex-shrink: 0;
+  height: 46px;
+  padding: 0 var(--space-4);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #26e6b2 34%, transparent);
+  background-color: color-mix(in srgb, #26e6b2 92%, transparent);
+  color: #061815;
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* 동의 체크 */
+.agree {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--font-size-12);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+.agreeAll {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+/* 하단 버튼 */
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* 확인 모달 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background-color: rgba(4, 3, 10, 0.6);
+  z-index: 100;
+}
+.modal {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  background-color: color-mix(in srgb, #141027 96%, transparent);
+  border: 1px solid color-mix(in srgb, #22d9ff 32%, transparent);
+  border-radius: 22px;
+  box-shadow: 0 12px 40px rgba(117, 51, 255, 0.28), 0 0 28px rgba(0, 204, 255, 0.14);
+}
+.modalTitle {
+  font-size: var(--font-size-16);
+  font-weight: var(--font-weight-bold);
+}
+.modalDesc {
+  font-size: var(--font-size-12);
+  line-height: 1.6;
+  color: #bdb7e7;
+}
+.modalButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* 완료 토스트 (클릭 시 로그인 화면으로) */
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  max-width: 440px;
+  padding: var(--space-4) var(--space-5);
+  font-size: var(--font-size-12);
+  color: var(--color-text);
+  background-color: color-mix(in srgb, #1b1534 94%, transparent);
+  border: 1px solid color-mix(in srgb, #24e6b8 80%, transparent);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(117, 51, 255, 0.28), 0 0 28px rgba(0, 204, 255, 0.14);
+  cursor: pointer;
+  z-index: 110;
+}
+
+/* 반응형: 좁은 화면에서 1열 */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .wide {
+    grid-column: span 1;
+  }
+}

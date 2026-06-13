@@ -1,0 +1,21 @@
+{
+  "partner": {
+    "titleKey": "auth.card.partnerSignup",
+    "subtitleKey": "auth.signup.subtitle.partner",
+    "modes": [
+      { "key": "leader", "labelKey": "auth.signup.mode.leaderCode" },
+      { "key": "hq", "labelKey": "auth.signup.mode.hq" }
+    ],
+    "store": false
+  },
+  "merchant": {
+    "titleKey": "auth.card.merchantSignup",
+    "subtitleKey": "auth.signup.subtitle.merchant",
+    "modes": [
+      { "key": "leader", "labelKey": "auth.signup.mode.leaderCode" },
+      { "key": "partner", "labelKey": "auth.signup.mode.partnerCode" },
+      { "key": "hq", "labelKey": "auth.signup.mode.hq" }
+    ],
+    "store": true
+  }
+}

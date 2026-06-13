@@ -27,6 +27,7 @@ import MerchantDashboard from './pages/merchant/Dashboard'
 import MerchantTransactions from './pages/merchant/Transactions'
 import AuthMain from './pages/auth/AuthMain'
 import RoleLogin from './pages/auth/RoleLogin'
+import RoleSignup from './pages/auth/RoleSignup'
 import PartnerSettlementHistory from './pages/partner/SettlementHistory'
 import PartnerSettlementDetail from './pages/partner/SettlementDetail'
 import { ROLES } from './roles'
@@ -114,8 +115,7 @@ export default function App() {
       {/* 공개(사이드바 없는) 인증 화면 */}
       <Route path="/login" element={<AuthMain />} />
       <Route path="/login/:role" element={<RoleLogin />} />
-      {/* 회원가입(파트너/가맹점)은 단계적으로 구현 — 우선 라우트만 */}
-      <Route path="/signup/:role" element={<Placeholder titleKey="auth.tab.signup" />} />
+      <Route path="/signup/:role" element={<RoleSignup />} />
 
       {/* 리더 어드민 */}
       <Route path={ROLES.leader.basePath} element={<AdminLayout role="leader" />}>
