@@ -16,6 +16,7 @@ import HqNotices from './pages/HqNotices'
 import NoticeHistory from './pages/NoticeHistory'
 import NoticeSend from './pages/NoticeSend'
 import ActivityLog from './pages/ActivityLog'
+import Profile from './pages/Profile'
 import { LEADER_NAV } from './components/organisms/Sidebar/navConfig'
 
 /*
@@ -39,6 +40,7 @@ const IMPLEMENTED_PAGES: Record<string, JSX.Element> = {
   '/hq-notices': <HqNotices />,
   '/notices/send': <NoticeSend />,
   '/notices/history': <NoticeHistory />,
+  '/settings/profile': <Profile />,
   '/settings/activity-log': <ActivityLog />,
 }
 
