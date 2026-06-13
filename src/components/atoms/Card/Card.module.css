@@ -1,0 +1,11 @@
+/*
+ * Card — 공통 박스 외형(칩/패널/카드의 배경·보라 테두리·그림자)
+ * Figma 전역에서 반복되는 카드 외형을 한 곳에 모은다.
+ * 내부 레이아웃(패딩/정렬)은 사용하는 쪽에서 className으로 덧붙인다.
+ */
+.card {
+  background-color: color-mix(in srgb, var(--color-bg-elevated) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border-accent) 62%, transparent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}

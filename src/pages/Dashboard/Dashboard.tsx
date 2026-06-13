@@ -1,4 +1,5 @@
-import DashboardHeader from '../../components/organisms/DashboardHeader'
+import PageHeader from '../../components/organisms/PageHeader'
+import DateRangeSelect from '../../components/molecules/DateRangeSelect'
 import KpiGrid from '../../components/organisms/KpiGrid'
 import Panel from '../../components/molecules/Panel'
 import { DASHBOARD_KPIS } from './dashboardData'
@@ -17,7 +18,10 @@ import styles from './Dashboard.module.css'
 export default function Dashboard() {
   return (
     <div className={styles.page}>
-      <DashboardHeader />
+      {/* 공통 헤더 + 대시보드 전용 기간 선택 드롭다운(우측 정렬, children 슬롯) */}
+      <PageHeader title="리더 관리자 - 국가 운영 대시보드">
+        <DateRangeSelect />
+      </PageHeader>
 
       {/* KPI 카드 그리드 (데이터: dashboardData.ts) */}
       <KpiGrid items={DASHBOARD_KPIS} />

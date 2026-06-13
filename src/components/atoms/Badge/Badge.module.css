@@ -17,3 +17,9 @@
   background: color-mix(in srgb, var(--accent, var(--color-text-subtle)) 17%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent, var(--color-text-subtle)) 72%, transparent);
 }
+
+/* 초소형 변형 — 테이블 액션 배지 등 (7px) */
+.small {
+  padding: 1px var(--space-2);
+  font-size: var(--font-size-7);
+}

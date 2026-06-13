@@ -2,7 +2,7 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: 18px;                /* Figma 콘텐츠 세로 간격 18 (헤더↔KPI↔패널 모두 동일) */
 }
 
 /*

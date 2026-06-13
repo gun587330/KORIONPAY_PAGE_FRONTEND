@@ -1,0 +1,6 @@
+/* ActionBadges — 테이블 액션 컬럼의 작은 배지 묶음 */
+.actions {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}

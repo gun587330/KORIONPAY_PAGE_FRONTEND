@@ -1,0 +1,69 @@
+/*
+ * DataTable — 목록 화면 공통 데이터 테이블
+ * 바깥 카드(배경/보라 테두리/그림자) 안에 [툴바 + 헤더 행 + 데이터 행들]을 둔다.
+ * 각 행은 연속 테두리 테이블이 아니라 "둥근 반투명 바 + 행 간격" 구조(Figma 기준).
+ */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;                  /* Figma 테이블 내부 간격 */
+  flex: 1;                   /* flex 컬럼 부모 안에서 남은 세로 높이를 채움 (행이 적어도 박스는 꽉 참) */
+  padding: var(--space-4);
+  background-color: color-mix(in srgb, var(--color-bg-elevated) 84%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border-accent) 62%, transparent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow-x: auto;          /* 컬럼이 많아 좁은 화면에서 가로 스크롤 허용 */
+}
+
+/* 툴바(검색/필터/Excel 등) */
+.toolbar {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.toolbarButton {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);   /* 10 */
+  border: 1px solid var(--color-border-accent);
+  background-color: color-mix(in srgb, var(--color-surface) 82%, transparent);
+  font-size: var(--font-size-11);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+/* 헤더 행과 데이터 행은 동일한 그리드 컬럼 구성을 공유한다 (--cols로 주입) */
+.headerRow,
+.row {
+  display: grid;
+  grid-template-columns: var(--cols);
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 880px;          /* 컬럼이 많아 너무 좁아지면 가로 스크롤 */
+}
+
+.headerRow {
+  padding: 0 var(--space-3);
+}
+
+.headerCell {
+  font-size: var(--font-size-10);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+/* 데이터 행 — 둥근 반투명 바 */
+.row {
+  padding: var(--space-3);
+  border-radius: var(--radius-sm); /* Figma 행 radius 8 ≈ 10 */
+  background-color: color-mix(in srgb, var(--color-surface) 42%, transparent);
+}
+
+.cell {
+  font-size: var(--font-size-10);
+  color: var(--color-text);
+  /* 셀 내용이 길면 말줄임 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

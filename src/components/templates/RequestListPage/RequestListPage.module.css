@@ -1,0 +1,45 @@
+/* RequestListPage — "요청 관리" 계열 목록 화면 공통 레이아웃 */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;               /* Figma 콘텐츠 세로 간격 18 */
+  flex: 1;                 /* 콘텐츠 영역 높이를 채워, 아래 테이블 박스가 남은 높이를 차지하게 함 */
+}
+
+/* 섹션 박스(Card) 내부 레이아웃 — 제목 + 설명 + 지표 카드 */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-15);
+  font-weight: var(--font-weight-bold);
+}
+
+.sectionDesc {
+  font-size: var(--font-size-12);
+  color: var(--color-text-muted);
+}
+
+/* 지표 카드 4열 (Figma: 가로 1줄, 카드 높이 76, 간격 20) */
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 76px;
+  gap: 20px;
+}
+
+/* 반응형: 좁은 화면에서 지표 카드 열 수 축소 */
+@media (max-width: 1024px) {
+  .statGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .statGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,20 @@
+/* TopControls — 우측 상단 공통 컨트롤(언어 선택 + 로그아웃) */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/*
+ * 둘 다 동일 스타일 버튼 — 다크 배경 + 시안 테두리(1px) + 굵은 흰 글씨 + radius 12.
+ * (Figma 추출값) 동작은 UI만 — 언어 토글/세션 처리는 작업 범위 밖.
+ */
+.button {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-accent-cyan);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+}
