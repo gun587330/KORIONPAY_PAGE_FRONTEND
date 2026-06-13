@@ -20,6 +20,18 @@ export default function Sidebar() {
   const { pathname } = useLocation()
   const { t } = useTranslation()
 
+  /*
+   * 활성 항목 판정 — "가장 긴 접두 경로" 한 개만 활성으로 선택한다.
+   * - 정확히 일치하거나(`/settlement/history`), 하위 경로일 때(`/settlement/history/detail`)
+   *   모두 부모 메뉴(`/settlement/history`)가 활성으로 유지된다.
+   * - 동시에 `/partners`와 `/partners/sales`처럼 한쪽이 다른 쪽의 접두인 경우엔
+   *   더 긴(=더 구체적인) 경로만 선택되어 중복 강조가 생기지 않는다.
+   */
+  const allPaths = LEADER_NAV.flatMap((g) => g.items.map((i) => i.path))
+  const activePath = allPaths
+    .filter((p) => pathname === p || pathname.startsWith(p + '/'))
+    .sort((a, b) => b.length - a.length)[0]
+
   return (
     <aside className={styles.sidebar}>
       {/* 상단 브랜드 + 리더 프로필 카드
@@ -39,8 +51,8 @@ export default function Sidebar() {
       {/* 메뉴 그룹 목록 */}
       <nav className={styles.nav}>
         {LEADER_NAV.map((group) => {
-          // 그룹에 속한 항목 중 하나라도 현재 경로면 그룹 전체를 활성 처리
-          const isGroupActive = group.items.some((item) => item.path === pathname)
+          // 그룹에 속한 항목 중 하나라도 활성 경로면 그룹 전체를 활성 처리
+          const isGroupActive = group.items.some((item) => item.path === activePath)
 
           return (
             <div
@@ -59,11 +71,10 @@ export default function Sidebar() {
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  // end: 정확히 일치할 때만 활성. (없으면 /partners 가 /partners/sales 까지
-                  //      활성으로 잡혀 같은 그룹의 두 메뉴가 중복 강조되는 문제 발생)
-                  end
-                  className={({ isActive }) =>
-                    isActive ? `${styles.item} ${styles.itemActive}` : styles.item
+                  // 활성 판정은 NavLink 내장 isActive 대신 위에서 계산한 activePath로 한다.
+                  // (상세 등 하위 경로에서도 부모 메뉴를 활성 유지 + 접두 중복 강조 방지)
+                  className={
+                    item.path === activePath ? `${styles.item} ${styles.itemActive}` : styles.item
                   }
                 >
                   {t(item.labelKey)}

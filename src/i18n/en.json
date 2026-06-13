@@ -345,7 +345,7 @@
 
   "settle.detail.title": "Fees / Settlement - History - Detail",
   "settle.detail.detailWord": "Detail",
-  "settle.detail.confirm": "Confirm",
+  "settle.detail.confirm": "Send Settlement Request to HQ",
   "settle.detail.a.title": "A. Settlement Basic Info",
   "settle.detail.a.no": "Settlement No.",
   "settle.detail.a.leaderName": "Leader",

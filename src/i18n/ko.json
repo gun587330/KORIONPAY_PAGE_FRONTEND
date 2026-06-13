@@ -345,7 +345,7 @@
 
   "settle.detail.title": "수수료 / 정산 - 정산내역 - 상세 패널",
   "settle.detail.detailWord": "상세",
-  "settle.detail.confirm": "확인",
+  "settle.detail.confirm": "본사 정산 요청 보내기",
   "settle.detail.a.title": "A. 정산 기본 정보",
   "settle.detail.a.no": "정산번호",
   "settle.detail.a.leaderName": "리더명",
