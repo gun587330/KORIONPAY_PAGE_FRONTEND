@@ -70,7 +70,11 @@ export default function SettlementRequest() {
     cells: { ...r, auto: <span className={styles.autoTag}>{r.auto}</span>, detail: detailCell },
   }))
   const dtRows: TableRow[] = directTable.rows.map((r) => ({ id: r.code, cells: { ...r, detail: detailCell } }))
-  const htRows: TableRow[] = heldTable.rows.map((r) => ({ id: r.txNo, cells: { ...r, detail: detailCell } }))
+  const htRows: TableRow[] = heldTable.rows.map((r) => ({
+    id: r.txNo,
+    // 'status'(정산 보류) 값은 주황색으로 강조 — 데이터는 그대로 두고 화면에서만 색 입힘
+    cells: { ...r, status: <span className={styles.heldTag}>{r.status}</span>, detail: detailCell },
+  }))
 
   // ===== 플로우 2·3: 확인 폼 + 완료 토스트 (가운데) =====
   if (step === 'form') {
@@ -246,9 +250,9 @@ export default function SettlementRequest() {
           <FieldCard label={t('settle.req.final.requestAmount')} value={summary.requestAmount} />
           <FieldCard label={t('settle.req.final.wallet')} value={summary.wallet} />
           <FieldCard label={t('settle.req.final.currency')} value={summary.currency} />
-          <div className={styles.fieldCard}>
+          <div className={styles.fieldCell}>
             <span className={styles.fieldLabel}>{t('settle.req.final.memo')}</span>
-            <textarea className={styles.memo} placeholder={summary.memoPlaceholder} />
+            <input className={styles.memo} type="text" placeholder={summary.memoPlaceholder} />
           </div>
         </div>
 
@@ -268,12 +272,14 @@ export default function SettlementRequest() {
   )
 }
 
-/** 최종 요청 폼의 작은 필드 카드 (라벨 + 값) */
+/** 최종 요청 폼의 필드 — 라벨(박스 위) + 값 박스(46px) */
 function FieldCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className={styles.fieldCard}>
+    <div className={styles.fieldCell}>
       <span className={styles.fieldLabel}>{label}</span>
-      <span className={styles.fieldValue}>{value}</span>
+      <div className={styles.fieldBox}>
+        <span className={styles.fieldValue}>{value}</span>
+      </div>
     </div>
   )
 }
