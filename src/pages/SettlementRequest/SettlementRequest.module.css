@@ -1,26 +1,35 @@
-/* 정산 신청 화면 — 긴 기본 화면(플로우 1) + 확인 폼(플로우 2) + 완료 토스트(플로우 3) */
+/*
+ * 정산 신청 화면 스타일
+ * ------------------------------------------------------------------
+ * 이 화면의 박스들은 다른 화면의 공통 Card와 외형이 다르다(Figma 확인):
+ *   섹션 박스: 배경 #141027 82% + 보라 테두리 #7c5cff 32% + radius 20 + 검은 그림자
+ * 그래서 공통 Card 대신 화면 전용 박스 클래스를 둔다.
+ */
 .page {
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
-/* 공통 섹션 카드 */
-.sectionCard {
+/* 공통 섹션 박스 */
+.sectionBox {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   padding: var(--space-5);
+  background-color: color-mix(in srgb, #141027 82%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  border-radius: 20px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
 }
 
 .sectionTitle {
   font-size: var(--font-size-15);
   font-weight: var(--font-weight-bold);
 }
-
 .sectionDesc {
   font-size: var(--font-size-11);
-  color: var(--color-text-muted);
+  color: #bdb7e7;
   line-height: 1.6;
 }
 
@@ -33,50 +42,112 @@
 }
 .notice {
   font-size: var(--font-size-12);
-  color: var(--color-text-muted);
+  color: #bdb7e7;
 }
 
-/* ===== 정산 가능 금액 계산 (수식) ===== */
-.formula {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+/* ===== KPI 카드 (감싸는 박스 없이 4열 그리드의 독립 카드들) ===== */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-4);
-  padding: var(--space-4) 0;
 }
-.formulaTerm {
+.kpiCard {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
+  min-height: 134px;
+  padding: var(--space-4);
+  background-color: color-mix(in srgb, #141027 82%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  border-radius: 18px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
 }
-.formulaLabel {
+/* 제목 텍스트를 감싸는 박스(칩) */
+.kpiLabel {
+  align-self: flex-start;
+  padding: 3px var(--space-3);
+  border-radius: var(--radius-pill);
   font-size: var(--font-size-11);
-  color: var(--color-text-muted);
+  color: var(--color-text);
+  background-color: color-mix(in srgb, #7c5cff 16%, transparent);
 }
-.formulaValue {
+.kpiValue {
   font-size: var(--font-size-23);
   font-weight: var(--font-weight-bold);
 }
-.formulaUnit {
+.kpiNote {
+  font-size: var(--font-size-9);
+  color: var(--color-text-subtle);
+}
+
+/* ===== 정산 가능 금액 계산 (시안 히어로 박스) ===== */
+.calcHero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background-color: color-mix(in srgb, #0f0b24 98%, transparent);
+  border: 1px solid color-mix(in srgb, #22d9ff 36%, transparent);
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(117, 51, 255, 0.22), 0 0 28px rgba(0, 204, 255, 0.14);
+}
+.formula {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+/* 수식 항(금액 카드) */
+.amountCard {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  background-color: color-mix(in srgb, #111327 94%, transparent);
+  border: 1px solid color-mix(in srgb, #22d9ff 36%, transparent);
+  border-radius: 18px;
+}
+/* 보류(차감) 항은 빨강 테두리 */
+.amountCardMinus {
+  background-color: color-mix(in srgb, #22101d 94%, transparent);
+  border-color: color-mix(in srgb, #ff4d70 36%, transparent);
+}
+.amountLabel {
+  font-size: var(--font-size-11);
+  color: var(--color-text-muted);
+}
+.amountValue {
+  font-size: var(--font-size-23);
+  font-weight: var(--font-weight-bold);
+}
+.amountUnit {
   font-size: var(--font-size-11);
   color: var(--color-text-muted);
   margin-left: var(--space-1);
 }
+.amountCardFinal .amountValue {
+  color: var(--color-accent-cyan);
+}
 .formulaOp {
-  font-size: var(--font-size-23);
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size-27);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-muted);
 }
-/* 최종 값 강조 */
-.formulaFinal .formulaValue {
-  color: var(--color-accent-cyan);
-}
 
-/* ===== 수수료 구조 ===== */
-.feeStruct {
+/* ===== 수수료 구조 박스 (별도) ===== */
+.feeBox {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background-color: color-mix(in srgb, #1c1637 78%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  border-radius: 20px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
 }
 .feeRow {
   display: flex;
@@ -100,23 +171,54 @@
   color: var(--color-text-subtle);
 }
 
-/* ===== 자동정산 4지표 ===== */
-.statGrid4 {
+/* ===== 자동 정산 안내 박스 (별도, 골드 강조 내부) ===== */
+.autoBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background-color: color-mix(in srgb, #1c1637 78%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  border-radius: 20px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+}
+.autoHighlight {
+  padding: var(--space-3) var(--space-4);
+  border-radius: 16px;
+  background-color: color-mix(in srgb, #201733 90%, transparent);
+  border: 1px solid color-mix(in srgb, #f6c85a 36%, transparent);
+  font-size: var(--font-size-12);
+}
+.summaryGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-4);
 }
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 130px;
+  padding: var(--space-4);
+  background-color: color-mix(in srgb, #141027 82%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  border-radius: 18px;
+}
 
-/* ===== 최종 요청 폼(기본 화면 내) ===== */
-.walletRow {
+/* ===== 본사 정산 요청 폼 (필드 카드) ===== */
+.fieldGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-4);
 }
-.field {
+.fieldCard {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  background-color: color-mix(in srgb, #0d0b1d 85%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  border-radius: 12px;
 }
 .fieldLabel {
   font-size: var(--font-size-11);
@@ -128,11 +230,11 @@
 }
 .memo {
   width: 100%;
-  min-height: 64px;
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  border: 1px solid color-mix(in srgb, var(--color-border-accent) 50%, transparent);
-  background-color: color-mix(in srgb, var(--color-surface) 60%, transparent);
+  min-height: 56px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  background-color: color-mix(in srgb, #0d0b1d 85%, transparent);
   color: var(--color-text);
   font: inherit;
   font-size: var(--font-size-12);
@@ -156,14 +258,13 @@
   margin-top: var(--space-2);
 }
 
-/* ===== 플로우 2: 확인 폼 (가운데 정렬) ===== */
+/* ===== 플로우 2: 확인 폼 (가운데 정렬, 글로우) ===== */
 .formWrap {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 18px;
 }
-/* 확인 카드 — Figma "확인 모달" 글로우 스타일 */
 .formCard {
   width: 100%;
   max-width: 520px;
@@ -197,7 +298,6 @@
   gap: var(--space-3);
   margin-top: var(--space-2);
 }
-/* 완료 토스트 (가운데, 청록 글로우) */
 .toast {
   width: 100%;
   max-width: 520px;
@@ -212,6 +312,11 @@
 
 /* 반응형 */
 @media (max-width: 1024px) {
-  .statGrid4 { grid-template-columns: repeat(2, 1fr); }
-  .walletRow { grid-template-columns: 1fr; }
+  .kpiGrid,
+  .summaryGrid { grid-template-columns: repeat(2, 1fr); }
+  .fieldGrid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .kpiGrid,
+  .summaryGrid { grid-template-columns: 1fr; }
 }

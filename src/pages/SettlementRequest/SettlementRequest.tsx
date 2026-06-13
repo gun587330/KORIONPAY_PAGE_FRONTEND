@@ -1,10 +1,7 @@
 import { Fragment, useState } from 'react'
 import PageHeader from '../../components/organisms/PageHeader'
-import Card from '../../components/atoms/Card'
 import Badge from '../../components/atoms/Badge'
 import Button from '../../components/atoms/Button'
-import StatSection from '../../components/organisms/StatSection'
-import StatCard from '../../components/molecules/StatCard'
 import InfoGrid from '../../components/molecules/InfoGrid'
 import ActionBadges from '../../components/molecules/ActionBadges'
 import DataTable, { type TableRow } from '../../components/organisms/DataTable'
@@ -12,14 +9,17 @@ import { useTranslation } from '../../i18n'
 import { useSettlementRequest } from './useSettlementRequest'
 import styles from './SettlementRequest.module.css'
 
-/** 정산 계산 수식의 항(라벨 + 값 + 단위) */
-function FormulaTerm({ label, value, unit, final }: { label: string; value: string; unit: string; final?: boolean }) {
+/** 정산 계산 수식의 금액 카드 */
+function AmountCard({ label, value, unit, variant }: { label: string; value: string; unit: string; variant?: 'minus' | 'final' }) {
+  const cls = [styles.amountCard, variant === 'minus' && styles.amountCardMinus, variant === 'final' && styles.amountCardFinal]
+    .filter(Boolean)
+    .join(' ')
   return (
-    <div className={final ? `${styles.formulaTerm} ${styles.formulaFinal}` : styles.formulaTerm}>
-      <span className={styles.formulaLabel}>{label}</span>
-      <span className={styles.formulaValue}>
+    <div className={cls}>
+      <span className={styles.amountLabel}>{label}</span>
+      <span className={styles.amountValue}>
         {value}
-        <span className={styles.formulaUnit}>{unit}</span>
+        <span className={styles.amountUnit}>{unit}</span>
       </span>
     </div>
   )
@@ -27,14 +27,8 @@ function FormulaTerm({ label, value, unit, final }: { label: string; value: stri
 
 /*
  * SettlementRequest (page) — 수수료/정산 · 정산 신청
- * ------------------------------------------------------------------
- * 플로우:
- *   1) 기본(긴) 화면: 요약 배너 + 지표 + 정산 계산 + 자동정산 안내 + 테이블 3 + 요청 폼
- *      → 하단 "본사 정산 요청" 버튼
- *   2) 확인 폼(가운데 정렬): "본사에 정산 요청 보내시겠습니까?" + 취소/보내기
- *      → "본사 정산 요청 보내기" 클릭 시
- *   3) 완료 토스트 표시
- * (데이터는 훅에서, UI 라벨은 t(). 동작은 화면 내 상태 전환만 — 서버 통신 없음)
+ * 플로우: 기본(긴) 화면 → [본사 정산 요청] → 확인 폼(가운데) → [보내기] → 완료 토스트
+ * 박스 외형은 Figma 정산 화면 전용(보라 테두리/검은 그림자/시안 히어로 등) — 모듈 CSS 참고.
  */
 export default function SettlementRequest() {
   const { t } = useTranslation()
@@ -42,17 +36,16 @@ export default function SettlementRequest() {
   const [submitted, setSubmitted] = useState(false)
 
   const {
-    banner, stats, calc, feeStructure, autoDesc, autoStats,
+    banner, stats, calc, feeStructure, autoDesc, autoHighlight, autoStats,
     partnerTable, directTable, heldTable, summary, checks, formFields,
   } = useSettlementRequest()
 
-  // 테이블 행 — "보기" 상세 액션 포함
   const detailCell = <ActionBadges labels={['보기']} />
   const ptRows: TableRow[] = partnerTable.rows.map((r) => ({ id: r.code, cells: { ...r, detail: detailCell } }))
   const dtRows: TableRow[] = directTable.rows.map((r) => ({ id: r.code, cells: { ...r, detail: detailCell } }))
   const htRows: TableRow[] = heldTable.rows.map((r) => ({ id: r.txNo, cells: { ...r, detail: detailCell } }))
 
-  // ===== 플로우 2·3: 확인 폼 + 완료 토스트 (가운데 정렬) =====
+  // ===== 플로우 2·3: 확인 폼 + 완료 토스트 (가운데) =====
   if (step === 'form') {
     return (
       <div className={styles.page}>
@@ -70,16 +63,10 @@ export default function SettlementRequest() {
               ))}
             </div>
             <div className={styles.formButtons}>
-              <Button variant="secondary" onClick={() => setStep('default')}>
-                {t('settle.req.cancel')}
-              </Button>
-              <Button variant="primary" onClick={() => setSubmitted(true)}>
-                {t('settle.req.submit')}
-              </Button>
+              <Button variant="secondary" onClick={() => setStep('default')}>{t('settle.req.cancel')}</Button>
+              <Button variant="primary" onClick={() => setSubmitted(true)}>{t('settle.req.submit')}</Button>
             </div>
           </section>
-
-          {/* 완료 토스트 — "본사 정산 요청 보내기" 클릭 후 표시 */}
           {submitted && <div className={styles.toast}>{t('settle.req.toast')}</div>}
         </div>
       </div>
@@ -92,7 +79,7 @@ export default function SettlementRequest() {
       <PageHeader title={t('settle.req.title')} />
 
       {/* 요약 배너 */}
-      <Card className={styles.sectionCard}>
+      <div className={styles.sectionBox}>
         <div className={styles.bannerHead}>
           <p className={styles.notice}>{banner.notice}</p>
           <Badge accent="green">{t('settle.req.statusOk')}</Badge>
@@ -105,103 +92,106 @@ export default function SettlementRequest() {
             { label: t('settle.req.banner.method'), value: banner.method },
           ]}
         />
-      </Card>
+      </div>
 
-      {/* 지표 8개 */}
-      <StatSection stats={stats} />
+      {/* 지표 8개 — 감싸는 박스 없이 독립 카드 4×2 */}
+      <div className={styles.kpiGrid}>
+        {stats.map((s) => (
+          <div key={s.id} className={styles.kpiCard}>
+            <span className={styles.kpiLabel}>{s.label}</span>
+            <span className={styles.kpiValue}>{s.value}</span>
+            {s.note && <span className={styles.kpiNote}>{s.note}</span>}
+          </div>
+        ))}
+      </div>
 
-      {/* 정산 가능 금액 계산 + 수수료 구조 */}
-      <Card className={styles.sectionCard}>
+      {/* 정산 가능 금액 계산 (시안 히어로 박스) */}
+      <div className={styles.calcHero}>
         <h3 className={styles.sectionTitle}>{t('settle.req.calc.title')}</h3>
         <p className={styles.sectionDesc}>{t('settle.req.calc.desc')}</p>
         <div className={styles.formula}>
-          <FormulaTerm label={t('settle.req.calc.partnerProfit')} value={calc.partnerProfit} unit={calc.unit} />
+          <AmountCard label={t('settle.req.calc.partnerProfit')} value={calc.partnerProfit} unit={calc.unit} />
           <span className={styles.formulaOp}>+</span>
-          <FormulaTerm label={t('settle.req.calc.directProfit')} value={calc.directProfit} unit={calc.unit} />
+          <AmountCard label={t('settle.req.calc.directProfit')} value={calc.directProfit} unit={calc.unit} />
           <span className={styles.formulaOp}>−</span>
-          <FormulaTerm label={t('settle.req.calc.held')} value={calc.held} unit={calc.unit} />
+          <AmountCard label={t('settle.req.calc.held')} value={calc.held} unit={calc.unit} variant="minus" />
           <span className={styles.formulaOp}>=</span>
-          <FormulaTerm label={t('settle.req.calc.final')} value={calc.final} unit={calc.unit} final />
+          <AmountCard label={t('settle.req.calc.final')} value={calc.final} unit={calc.unit} variant="final" />
         </div>
+      </div>
 
+      {/* 수수료 구조 (별도 박스) */}
+      <div className={styles.feeBox}>
         <h3 className={styles.sectionTitle}>{t('settle.req.fee.title')}</h3>
-        <div className={styles.feeStruct}>
-          {feeStructure.map((row, i) => (
-            <div key={i} className={styles.feeRow}>
-              <span className={styles.feeCat}>{row[0]}</span>
-              {row.slice(1).map((stepLabel, j) => (
-                <Fragment key={j}>
-                  {j > 0 && <span className={styles.feeArrow}>→</span>}
-                  <span className={styles.feeStep}>{stepLabel}</span>
-                </Fragment>
-              ))}
+        {feeStructure.map((row, i) => (
+          <div key={i} className={styles.feeRow}>
+            <span className={styles.feeCat}>{row[0]}</span>
+            {row.slice(1).map((stepLabel, j) => (
+              <Fragment key={j}>
+                {j > 0 && <span className={styles.feeArrow}>→</span>}
+                <span className={styles.feeStep}>{stepLabel}</span>
+              </Fragment>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* 자동 정산 안내 (별도 박스) */}
+      <div className={styles.autoBox}>
+        <h3 className={styles.sectionTitle}>{t('settle.req.auto.title')}</h3>
+        <p className={styles.sectionDesc}>{autoDesc}</p>
+        <div className={styles.autoHighlight}>{autoHighlight}</div>
+        <div className={styles.summaryGrid}>
+          {autoStats.map((s) => (
+            <div key={s.id} className={styles.summaryCard}>
+              <span className={styles.kpiLabel}>{s.label}</span>
+              <span className={styles.kpiValue}>{s.value}</span>
+              {s.note && <span className={styles.kpiNote}>{s.note}</span>}
             </div>
           ))}
         </div>
-      </Card>
-
-      {/* 본사 정산 요청 후 자동 정산 처리 */}
-      <Card className={styles.sectionCard}>
-        <h3 className={styles.sectionTitle}>{t('settle.req.auto.title')}</h3>
-        <p className={styles.sectionDesc}>{autoDesc}</p>
-        <div className={styles.statGrid4}>
-          {autoStats.map((s) => (
-            <StatCard key={s.id} {...s} />
-          ))}
-        </div>
-      </Card>
+      </div>
 
       {/* 파트너별 수수료 수익 */}
-      <Card className={styles.sectionCard}>
+      <div className={styles.sectionBox}>
         <h3 className={styles.sectionTitle}>{t('settle.req.pt.title')}</h3>
         <p className={styles.sectionDesc}>{partnerTable.desc}</p>
         <DataTable columns={partnerTable.columns} rows={ptRows} bare />
-      </Card>
+      </div>
 
       {/* 직계약 가맹점 수수료 수익 */}
-      <Card className={styles.sectionCard}>
+      <div className={styles.sectionBox}>
         <h3 className={styles.sectionTitle}>{t('settle.req.dt.title')}</h3>
         <p className={styles.sectionDesc}>{directTable.desc}</p>
         <DataTable columns={directTable.columns} rows={dtRows} bare />
-      </Card>
+      </div>
 
       {/* 보류 / 제외 거래 */}
-      <Card className={styles.sectionCard}>
+      <div className={styles.sectionBox}>
         <h3 className={styles.sectionTitle}>{t('settle.req.ht.title')}</h3>
         <p className={styles.sectionDesc}>{heldTable.desc}</p>
         <DataTable columns={heldTable.columns} rows={htRows} bare />
-      </Card>
+      </div>
 
       {/* 본사 정산 요청 (최종 요청 폼) */}
-      <Card className={styles.sectionCard}>
+      <div className={styles.sectionBox}>
         <h3 className={styles.sectionTitle}>{t('settle.req.final.title')}</h3>
         <p className={styles.sectionDesc}>{t('settle.req.final.desc')}</p>
-        <InfoGrid
-          items={[
-            { label: t('settle.req.final.period'), value: summary.period },
-            { label: t('settle.req.final.lastDate'), value: summary.lastDate },
-            { label: t('settle.req.final.finalAmount'), value: summary.finalAmount },
-            { label: t('settle.req.final.autoSettle'), value: summary.autoSettle },
-            { label: t('settle.req.final.held'), value: summary.held },
-            { label: t('settle.req.final.requestAmount'), value: summary.requestAmount },
-          ]}
-        />
-        <div className={styles.walletRow}>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>{t('settle.req.final.wallet')}</span>
-            <span className={styles.fieldValue}>{summary.wallet}</span>
-          </div>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>{t('settle.req.final.currency')}</span>
-            <span className={styles.fieldValue}>{summary.currency}</span>
-          </div>
-          <div className={styles.field}>
+        <div className={styles.fieldGrid}>
+          <FieldCard label={t('settle.req.final.period')} value={summary.period} />
+          <FieldCard label={t('settle.req.final.lastDate')} value={summary.lastDate} />
+          <FieldCard label={t('settle.req.final.finalAmount')} value={summary.finalAmount} />
+          <FieldCard label={t('settle.req.final.autoSettle')} value={summary.autoSettle} />
+          <FieldCard label={t('settle.req.final.held')} value={summary.held} />
+          <FieldCard label={t('settle.req.final.requestAmount')} value={summary.requestAmount} />
+          <FieldCard label={t('settle.req.final.wallet')} value={summary.wallet} />
+          <FieldCard label={t('settle.req.final.currency')} value={summary.currency} />
+          <div className={styles.fieldCard}>
             <span className={styles.fieldLabel}>{t('settle.req.final.memo')}</span>
             <textarea className={styles.memo} placeholder={summary.memoPlaceholder} />
           </div>
         </div>
 
-        {/* 확인 체크박스 (UI만) */}
         <div className={styles.checks}>
           {checks.map((c, i) => (
             <label key={i} className={styles.check}>
@@ -211,11 +201,19 @@ export default function SettlementRequest() {
         </div>
 
         <div className={styles.requestBtnRow}>
-          <Button variant="primary" onClick={() => setStep('form')}>
-            {t('settle.req.requestBtn')}
-          </Button>
+          <Button variant="primary" onClick={() => setStep('form')}>{t('settle.req.requestBtn')}</Button>
         </div>
-      </Card>
+      </div>
+    </div>
+  )
+}
+
+/** 최종 요청 폼의 작은 필드 카드 (라벨 + 값) */
+function FieldCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className={styles.fieldCard}>
+      <span className={styles.fieldLabel}>{label}</span>
+      <span className={styles.fieldValue}>{value}</span>
     </div>
   )
 }

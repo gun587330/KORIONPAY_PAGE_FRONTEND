@@ -70,6 +70,7 @@ export function useSettlementRequest() {
     calc: data.calc,
     feeStructure: data.feeStructure as string[][],
     autoDesc: data.autoDesc,
+    autoHighlight: data.autoHighlight,
     autoStats: toStats(data.autoStats as StatRaw[]),
     partnerTable: {
       desc: t(data.partnerTable.descKey),
