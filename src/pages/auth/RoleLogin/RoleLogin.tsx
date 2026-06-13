@@ -1,6 +1,5 @@
 import { type CSSProperties } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
-import Button from '../../../components/atoms/Button'
 import AuthShell from '../AuthShell'
 import { useTranslation } from '../../../i18n'
 import data from './roleLoginData.json'
@@ -65,10 +64,11 @@ export default function RoleLogin() {
             <span className={styles.findPw}>{t('auth.login.findPw')}</span>
           </div>
 
-          {/* 백엔드 없음 → 검증 없이 역할 대시보드로 이동 */}
-          <Button variant="primary" onClick={() => navigate(`/${role}/dashboard`)}>
+          {/* 백엔드 없음 → 검증 없이 역할 대시보드로 이동.
+              버튼 색(그라데이션)은 hover 시에만 적용(.loginBtn:hover). */}
+          <button type="button" className={styles.loginBtn} onClick={() => navigate(`/${role}/dashboard`)}>
             {t(cfg.buttonKey)}
-          </Button>
+          </button>
         </section>
 
         {/* 우: 권한 기반 접근 안내 */}
