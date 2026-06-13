@@ -536,5 +536,12 @@
   "pdash.panel.merchantApproval": "Merchant Approval",
   "pdash.panel.recentActivity": "Recent Activity",
   "pdash.panel.notice": "Notice",
-  "pdash.panel.activityDesc": "Tx events · submissions · approvals · notice reads · permission change logs"
+  "pdash.panel.activityDesc": "Tx events · submissions · approvals · notice reads · permission change logs",
+
+  "preq.sectionTitle": "Merchant Join Requests",
+  "preq.sectionDesc": "The partner reviews the join info and requests final approval from the leader, who then decides approve / hold / reject / request info.",
+  "preq.kpi.active": "Active Merchants",
+  "preq.kpi.applying": "Merchants Applying",
+  "preq.kpi.pending": "Merchants Pending",
+  "preq.kpi.black": "Blacklisted Merchants"
 }

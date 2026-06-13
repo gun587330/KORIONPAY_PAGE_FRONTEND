@@ -536,5 +536,12 @@
   "pdash.panel.merchantApproval": "가맹점 승인",
   "pdash.panel.recentActivity": "최근 활동",
   "pdash.panel.notice": "공지",
-  "pdash.panel.activityDesc": "거래 발생 · 신청 제출 · 승인 결과 · 공지 읽음 · 권한 변경 로그"
+  "pdash.panel.activityDesc": "거래 발생 · 신청 제출 · 승인 결과 · 공지 읽음 · 권한 변경 로그",
+
+  "preq.sectionTitle": "가맹점 가입 요청",
+  "preq.sectionDesc": "파트너가 가입정보를 확인하고 리더에게 최종 승인요청하면 리더는 승인 / 보류 / 거절 / 자료요청을 결정합니다.",
+  "preq.kpi.active": "활성화 된 가맹점",
+  "preq.kpi.applying": "승인 신청중 가맹점",
+  "preq.kpi.pending": "승인 대기 가맹점",
+  "preq.kpi.black": "블랙 가맹점"
 }
