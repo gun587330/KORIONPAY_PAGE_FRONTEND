@@ -16,7 +16,25 @@
     { "labelKey": "settle.req.stat.finalAmount", "value": "3,960 KORI", "note": "본사 요청 가능 금액", "chip": "#24e6b8", "chipSolid": true },
     { "labelKey": "settle.req.stat.problemCount", "value": "7건", "note": "보류/검토 대상", "chip": "#ff4d70", "chipSolid": false }
   ],
-  "calc": { "partnerProfit": "3,120", "directProfit": "1,480", "held": "640", "final": "3,960", "unit": "KORI" },
+  "calc": {
+    "partnerProfit": "3,120",
+    "directProfit": "1,480",
+    "held": "640",
+    "final": "3,960",
+    "unit": "KORI",
+    "gauges": [
+      [
+        { "label": "본사 50%", "pct": 50, "role": "hq" },
+        { "label": "리더 25%", "pct": 25, "role": "leader" },
+        { "label": "파트너 25%", "pct": 25, "role": "partner" }
+      ],
+      [
+        { "label": "본사 60%", "pct": 60, "role": "hq" },
+        { "label": "리더 40%", "pct": 40, "role": "leader" },
+        { "label": "파트너 0%", "pct": 0, "role": "partner" }
+      ]
+    ]
+  },
   "feeStructure": [
     ["파트너 경유", "본사 50%", "리더 25%", "파트너 25%", "가맹점"],
     ["직계약", "본사 60%", "리더 40%", "가맹점"],

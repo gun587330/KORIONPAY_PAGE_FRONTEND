@@ -8,17 +8,30 @@ import { useTranslation } from '../../i18n'
 import { useSettlementRequest } from './useSettlementRequest'
 import styles from './SettlementRequest.module.css'
 
-/** 정산 계산 수식의 금액 카드 */
-function AmountCard({ label, value, unit, variant }: { label: string; value: string; unit: string; variant?: 'minus' | 'final' }) {
-  const cls = [styles.amountCard, variant === 'minus' && styles.amountCardMinus, variant === 'final' && styles.amountCardFinal]
-    .filter(Boolean)
-    .join(' ')
+/** 분배 게이지 세그먼트 색 (본사/리더/파트너) */
+const ROLE_COLOR: Record<string, string> = { hq: '#7c5cff', leader: '#24e6b8', partner: '#f6c85a' }
+
+/** 정산 계산 수식의 금액 카드 (add: 시안 / minus: 빨강 / final: 그라데이션) */
+function AmountCard({ variant, label, value, unit }: { variant: 'add' | 'minus' | 'final'; label: string; value: string; unit: string }) {
+  if (variant === 'final') {
+    return (
+      <div className={`${styles.amountCard} ${styles.amountFinal}`}>
+        <span className={styles.amountTitle}>{label}</span>
+        <span className={styles.amountValueRow}>
+          <span className={styles.amountValue}>{value}</span>
+          <span className={styles.amountUnit}>{unit}</span>
+        </span>
+      </div>
+    )
+  }
+  const isMinus = variant === 'minus'
+  const valCls = isMinus ? styles.valRed : styles.valTeal
   return (
-    <div className={cls}>
-      <span className={styles.amountLabel}>{label}</span>
-      <span className={styles.amountValue}>
-        {value}
-        <span className={styles.amountUnit}>{unit}</span>
+    <div className={`${styles.amountCard} ${isMinus ? styles.amountMinus : styles.amountAdd}`}>
+      <span className={`${styles.amountChip} ${isMinus ? styles.amountChipRed : styles.amountChipTeal}`}>{label}</span>
+      <span className={styles.amountValueRow}>
+        <span className={`${styles.amountValue} ${valCls}`}>{value}</span>
+        <span className={`${styles.amountUnit} ${valCls}`}>{unit}</span>
       </span>
     </div>
   )
@@ -114,13 +127,31 @@ export default function SettlementRequest() {
         <h3 className={styles.sectionTitle}>{t('settle.req.calc.title')}</h3>
         <p className={styles.sectionDesc}>{t('settle.req.calc.desc')}</p>
         <div className={styles.formula}>
-          <AmountCard label={t('settle.req.calc.partnerProfit')} value={calc.partnerProfit} unit={calc.unit} />
+          <AmountCard variant="add" label={t('settle.req.calc.partnerProfit')} value={calc.partnerProfit} unit={calc.unit} />
           <span className={styles.formulaOp}>+</span>
-          <AmountCard label={t('settle.req.calc.directProfit')} value={calc.directProfit} unit={calc.unit} />
+          <AmountCard variant="add" label={t('settle.req.calc.directProfit')} value={calc.directProfit} unit={calc.unit} />
           <span className={styles.formulaOp}>−</span>
-          <AmountCard label={t('settle.req.calc.held')} value={calc.held} unit={calc.unit} variant="minus" />
+          <AmountCard variant="minus" label={t('settle.req.calc.held')} value={calc.held} unit={calc.unit} />
           <span className={styles.formulaOp}>=</span>
-          <AmountCard label={t('settle.req.calc.final')} value={calc.final} unit={calc.unit} variant="final" />
+          <AmountCard variant="final" label={t('settle.req.calc.final')} value={calc.final} unit={calc.unit} />
+        </div>
+
+        {/* 분배 게이지 바 (본사/리더/파트너) */}
+        <div className={styles.gauges}>
+          {calc.gauges.map((segs, gi) => (
+            <div key={gi} className={styles.gaugeGroup}>
+              <div className={styles.gaugeBar}>
+                {segs.filter((s) => s.pct > 0).map((s, si) => (
+                  <span key={si} className={styles.gaugeSeg} style={{ flexGrow: s.pct, backgroundColor: ROLE_COLOR[s.role] }} />
+                ))}
+              </div>
+              <div className={styles.gaugeLabels}>
+                {segs.map((s, si) => (
+                  <span key={si} style={{ flexGrow: s.pct || 0.001 }}>{s.label}</span>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
