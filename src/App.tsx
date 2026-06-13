@@ -51,6 +51,9 @@ const LEADER_PAGES: Record<string, JSX.Element> = {
   'settings/activity-log': <ActivityLog />,
 }
 
+// 가맹점 화면 — 골격 검증 후 하나씩 채운다(나머지는 Placeholder).
+const MERCHANT_PAGES: Record<string, JSX.Element> = {}
+
 // 파트너 화면은 골격 검증 후 하나씩 채운다(나머지는 Placeholder).
 const PARTNER_PAGES: Record<string, JSX.Element> = {
   dashboard: <PartnerDashboard />,
@@ -117,6 +120,12 @@ export default function App() {
             )
           }
         />
+      </Route>
+
+      {/* 가맹점 어드민 (화면은 단계적으로 구현) */}
+      <Route path={ROLES.merchant.basePath} element={<AdminLayout role="merchant" />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        {navRoutes(ROLES.merchant.nav, MERCHANT_PAGES)}
       </Route>
 
       {/*
