@@ -1,0 +1,15 @@
+{
+  "stats": [
+    { "id": "total", "labelKey": "merchantList.kpi.total", "value": "46" },
+    { "id": "active", "labelKey": "merchantList.kpi.active", "value": "36" },
+    { "id": "suspended", "labelKey": "merchantList.kpi.suspended", "value": "2" },
+    { "id": "black", "labelKey": "merchantList.kpi.black", "value": "2" }
+  ],
+  "rows": [
+    { "no": "5", "city": "Ragos", "partner": "NG-SP-0005", "merchantCode": "NG-MER-0005", "name": "신발매장", "volume": "120 KORI", "txCount": "300", "avgPay": "1.2 KORI", "qrUsage": "45% · 30% · 25%", "lastTx": "2026.06.05 15:02", "actions": ["상세", "정지요청"] },
+    { "no": "4", "city": "Ragos", "partner": "NG-SP-0004", "merchantCode": "NG-MER-0004", "name": "편의점", "volume": "120 KORI", "txCount": "300", "avgPay": "1.2 KORI", "qrUsage": "45% · 30% · 25%", "lastTx": "2026.06.05 15:02", "actions": ["상세", "정지요청"] },
+    { "no": "3", "city": "Ragos", "partner": "NG-SP-0003", "merchantCode": "NG-MER-0003", "name": "편의점", "volume": "120 KORI", "txCount": "300", "avgPay": "1.2 KORI", "qrUsage": "45% · 30% · 25%", "lastTx": "2026.06.05 15:02", "actions": ["상세", "정지요청"] },
+    { "no": "2", "city": "Ragos", "partner": "NG-SP-0002", "merchantCode": "NG-MER-0002", "name": "중국집", "volume": "120 KORI", "txCount": "300", "avgPay": "1.2 KORI", "qrUsage": "45% · 30% · 25%", "lastTx": "2026.06.05 15:02", "actions": ["상세", "해지요청"] },
+    { "no": "1", "city": "Ragos", "partner": "NG-SP-0001", "merchantCode": "NG-MER-0001", "name": "백화점", "volume": "120 KORI", "txCount": "300", "avgPay": "1.2 KORI", "qrUsage": "45% · 30% · 25%", "lastTx": "2026.06.05 15:02", "actions": ["상세", "해지요청"] }
+  ]
+}

@@ -6,6 +6,8 @@ import RequestsPartner from './pages/RequestsPartner'
 import RequestsMerchant from './pages/RequestsMerchant'
 import Partners from './pages/Partners'
 import PartnerSales from './pages/PartnerSales'
+import Merchants from './pages/Merchants'
+import MerchantSales from './pages/MerchantSales'
 import { LEADER_NAV } from './components/organisms/Sidebar/navConfig'
 
 /*
@@ -19,6 +21,8 @@ const IMPLEMENTED_PAGES: Record<string, JSX.Element> = {
   '/requests/merchant': <RequestsMerchant />,
   '/partners': <Partners />,
   '/partners/sales': <PartnerSales />,
+  '/merchants': <Merchants />,
+  '/merchants/sales': <MerchantSales />,
 }
 
 /*

@@ -17,6 +17,8 @@ interface RequestListPageProps {
   columns: Column[]
   /** 테이블 행 (액션 셀 포함, 호출 측에서 구성) */
   rows: TableRow[]
+  /** 테이블 제목 (있는 화면만 — 예: "가맹점별 거래") */
+  tableTitle?: string
   /** 테이블 툴바 버튼 라벨 */
   toolbar?: string[]
 }
@@ -35,13 +37,14 @@ export default function RequestListPage({
   stats,
   columns,
   rows,
+  tableTitle,
   toolbar,
 }: RequestListPageProps) {
   return (
     <div className={styles.page}>
       <PageHeader title={title} />
       <StatSection title={sectionTitle} desc={sectionDesc} stats={stats} />
-      <DataTable columns={columns} rows={rows} toolbar={toolbar} fill />
+      <DataTable title={tableTitle} columns={columns} rows={rows} toolbar={toolbar} fill />
     </div>
   )
 }

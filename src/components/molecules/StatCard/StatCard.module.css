@@ -26,6 +26,7 @@
 .note {
   font-size: var(--font-size-9);
   color: var(--color-text-subtle);
+  white-space: nowrap; /* 집계 기간 문구가 좁은 카드에서 줄바꿈되지 않도록 한 줄 고정 */
 }
 
 /* 값 + (선택) 태그 한 줄 */

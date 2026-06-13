@@ -1,0 +1,27 @@
+{
+  "//": "지표 8개는 파트너별 매출과 동일하여 partnerSales.stat.* 키를 공유한다.",
+  "stats": [
+    { "id": "todayVolume", "labelKey": "partnerSales.stat.todayVolume", "value": "46,000 KORI" },
+    { "id": "todayCount", "labelKey": "partnerSales.stat.todayCount", "value": "36" },
+    { "id": "monthRevenue", "labelKey": "partnerSales.stat.monthRevenue", "value": "18,420 KORI", "noteKey": "partnerSales.note.monthRange" },
+    { "id": "monthCount", "labelKey": "partnerSales.stat.monthCount", "value": "1,420", "noteKey": "partnerSales.note.monthRange" },
+    { "id": "monthFee", "labelKey": "partnerSales.stat.monthFee", "value": "1,842 KORI", "noteKey": "partnerSales.note.monthRange" },
+    { "id": "unsettledFee", "labelKey": "partnerSales.stat.unsettledFee", "value": "18,420 KORI" },
+    { "id": "offlineRatio", "labelKey": "partnerSales.stat.offlineRatio", "value": "30/30/40" },
+    { "id": "failCancel", "labelKey": "partnerSales.stat.failCancel", "value": "36" }
+  ],
+  "t1Rows": [
+    { "no": "5", "code": "NG-SP-0005", "name": "Lagos Mart5", "telegram": "@samuel5", "region": "Lagos", "monthRevenue": "1,000 KORI", "monthCount": "100", "recentActivity": "2026.06.03" },
+    { "no": "4", "code": "NG-SP-0004", "name": "Lagos Mart4", "telegram": "@samuel4", "region": "Lagos", "monthRevenue": "1,000 KORI", "monthCount": "100", "recentActivity": "2026.06.03" },
+    { "no": "3", "code": "NG-SP-0003", "name": "Lagos Mart3", "telegram": "@samuel3", "region": "Lagos", "monthRevenue": "1,000 KORI", "monthCount": "100", "recentActivity": "2026.06.03" },
+    { "no": "2", "code": "NG-SP-0002", "name": "Lagos Mart2", "telegram": "@samuel2", "region": "Lagos", "monthRevenue": "1,000 KORI", "monthCount": "100", "recentActivity": "2026.06.03" },
+    { "no": "1", "code": "NG-SP-0001", "name": "Lagos Mart1", "telegram": "@samuel1", "region": "Lagos", "monthRevenue": "1,000 KORI", "monthCount": "100", "recentActivity": "2026.06.03" }
+  ],
+  "t2Rows": [
+    { "no": "5", "partner": "NG-SP-0005", "merchantCode": "NG-MER-0005", "merchantName": "@samuel5", "amount": "2,000", "monthCount": "248", "recentPay": "1,000 KORI", "fee": "100", "unsettledFee": "100 KORI", "recentPay2": "2026.06.03", "qrUsage": "45% · 30% · 25%" },
+    { "no": "4", "partner": "NG-SP-0004", "merchantCode": "NG-MER-0004", "merchantName": "@samuel4", "amount": "2,000", "monthCount": "248", "recentPay": "1,000 KORI", "fee": "100", "unsettledFee": "100 KORI", "recentPay2": "2026.06.03", "qrUsage": "45% · 30% · 25%" },
+    { "no": "3", "partner": "NG-SP-0003", "merchantCode": "NG-MER-0003", "merchantName": "@samuel3", "amount": "2,000", "monthCount": "48", "recentPay": "1,000 KORI", "fee": "100", "unsettledFee": "100 KORI", "recentPay2": "2026.06.03", "qrUsage": "45% · 30% · 25%" },
+    { "no": "2", "partner": "NG-SP-0002", "merchantCode": "NG-MER-0002", "merchantName": "@samuel2", "amount": "2,000", "monthCount": "8", "recentPay": "1,000 KORI", "fee": "100", "unsettledFee": "100 KORI", "recentPay2": "2026.06.03", "qrUsage": "45% · 30% · 25%" },
+    { "no": "1", "partner": "NG-SP-0001", "merchantCode": "NG-MER-0001", "merchantName": "@samuel1", "amount": "2,000", "monthCount": "24", "recentPay": "1,000 KORI", "fee": "100", "unsettledFee": "100 KORI", "recentPay2": "2026.06.03", "qrUsage": "45% · 30% · 25%" }
+  ]
+}

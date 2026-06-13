@@ -2,20 +2,19 @@ import SalesPage, { type SalesTable } from '../../components/templates/SalesPage
 import ActionBadges from '../../components/molecules/ActionBadges'
 import type { TableRow } from '../../components/organisms/DataTable'
 import { useTranslation } from '../../i18n'
-import { usePartnerSales } from './usePartnerSales'
+import { useMerchantSales } from './useMerchantSales'
 
 /*
- * PartnerSales (page) — 파트너 관리 · 파트너별 매출
+ * MerchantSales (page) — 가맹점 관리 · 가맹점별 매출
  * ------------------------------------------------------------------
- * 공통 SalesPage 템플릿(헤더 + 지표 섹션 + 테이블 N개)에 데이터를 주입한다.
- * 테이블 3개: 파트너별 매출(상세 액션) / 하위 가맹점 매출 / 가맹점 매출.
+ * 공통 SalesPage 템플릿에 데이터 주입. 테이블 2개(가맹점별 매출 상세 액션 / 가맹점 매출).
  */
-export default function PartnerSales() {
+export default function MerchantSales() {
   const { t } = useTranslation()
-  const { stats, t1, t2Title, t3Title, merchantColumns, merchantRows } = usePartnerSales()
+  const { stats, t1, t2 } = useMerchantSales()
   const toolbar = [t('common.search'), t('common.filter'), t('common.excel')]
 
-  // 테이블 1: 파트너별 매출 (행마다 "상세" 액션)
+  // 테이블 1: 가맹점별 매출 (행마다 "상세" 액션)
   const t1Rows: TableRow[] = t1.rows.map((r) => ({
     id: r.code,
     cells: {
@@ -24,24 +23,22 @@ export default function PartnerSales() {
       name: r.name,
       telegram: r.telegram,
       region: r.region,
-      subCount: r.subCount,
       monthRevenue: r.monthRevenue,
       monthCount: r.monthCount,
-      unsettledFee: r.unsettledFee,
       recentActivity: r.recentActivity,
       action: <ActionBadges labels={['상세']} />,
     },
   }))
 
-  // 테이블 2·3 공용 행 (하위 가맹점 매출 / 가맹점 매출 — 동일 데이터, 액션 없음)
-  const merchantTableRows: TableRow[] = merchantRows.map((r) => ({
+  // 테이블 2: 가맹점 매출 (액션 없음)
+  const t2Rows: TableRow[] = t2.rows.map((r) => ({
     id: r.merchantCode,
     cells: {
       no: r.no,
       partner: r.partner,
       merchantCode: r.merchantCode,
       merchantName: r.merchantName,
-      monthRevenue: r.monthRevenue,
+      amount: r.amount,
       monthCount: r.monthCount,
       recentPay: r.recentPay,
       fee: r.fee,
@@ -53,9 +50,8 @@ export default function PartnerSales() {
 
   const tables: SalesTable[] = [
     { id: 't1', title: t1.title, columns: t1.columns, rows: t1Rows, toolbar },
-    { id: 't2', title: t2Title, columns: merchantColumns, rows: merchantTableRows, toolbar },
-    { id: 't3', title: t3Title, columns: merchantColumns, rows: merchantTableRows, toolbar },
+    { id: 't2', title: t2.title, columns: t2.columns, rows: t2Rows, toolbar },
   ]
 
-  return <SalesPage title={t('partnerList.title')} sectionTitle={t('partnerSales.section')} stats={stats} tables={tables} />
+  return <SalesPage title={t('merchantList.title')} sectionTitle={t('merchantSales.section')} stats={stats} tables={tables} />
 }
