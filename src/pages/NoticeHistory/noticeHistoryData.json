@@ -1,0 +1,16 @@
+{
+  "metrics": [
+    { "id": "total", "labelKey": "notice.hist.kpi.total", "value": "128건", "noteKey": "notice.hist.kpi.total.note", "chip": "#2a8bff" },
+    { "id": "month", "labelKey": "notice.hist.kpi.month", "value": "18건", "note": "2026.06", "chip": "#7c5cff" },
+    { "id": "scheduled", "labelKey": "notice.hist.kpi.scheduled", "value": "2건", "noteKey": "notice.hist.kpi.scheduled.note", "chip": "#f6c85a", "chipSolid": true },
+    { "id": "done", "labelKey": "notice.hist.kpi.done", "value": "112건", "noteKey": "notice.hist.kpi.done.note", "chip": "#24e6b8", "chipSolid": true },
+    { "id": "failed", "labelKey": "notice.hist.kpi.failed", "value": "3건", "noteKey": "notice.hist.kpi.failed.note", "chip": "#ff4d70" }
+  ],
+  "rows": [
+    { "no": "5", "sender": "리더", "target": "파트너", "type": "정산안내", "title": "시스템 점검 안내", "method": "예약", "status": "예약 대기", "sentDate": "2026.06.07" },
+    { "no": "4", "sender": "리더", "target": "전체", "type": "시스템 점검", "title": "보안 정책 변경", "method": "예약", "status": "실패", "sentDate": "2026.05.07" },
+    { "no": "3", "sender": "리더", "target": "파트너", "type": "보안 안내", "title": "보안 정책 변경", "method": "즉시", "status": "발송 완료", "sentDate": "2026.04.07" },
+    { "no": "2", "sender": "리더", "target": "가맹점", "type": "운영 안내", "title": "보안 정책 변경", "method": "즉시", "status": "발송 완료", "sentDate": "2026.03.07" },
+    { "no": "1", "sender": "리더", "target": "가맹점", "type": "운영 안내", "title": "시스템 점검 안내", "method": "즉시", "status": "발송 완료", "sentDate": "2026.02.07" }
+  ]
+}

@@ -13,6 +13,8 @@ import SettlementRequest from './pages/SettlementRequest'
 import SettlementHistory from './pages/SettlementHistory'
 import SettlementDetail from './pages/SettlementDetail'
 import HqNotices from './pages/HqNotices'
+import NoticeHistory from './pages/NoticeHistory'
+import NoticeSend from './pages/NoticeSend'
 import { LEADER_NAV } from './components/organisms/Sidebar/navConfig'
 
 /*
@@ -34,6 +36,8 @@ const IMPLEMENTED_PAGES: Record<string, JSX.Element> = {
   '/settlement/request': <SettlementRequest />,
   '/settlement/history': <SettlementHistory />,
   '/hq-notices': <HqNotices />,
+  '/notices/send': <NoticeSend />,
+  '/notices/history': <NoticeHistory />,
 }
 
 /*
