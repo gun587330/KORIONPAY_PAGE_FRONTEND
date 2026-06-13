@@ -88,8 +88,14 @@ export default function SettlementRequest() {
             <div className={styles.formFields}>
               {formFields.map((f) => (
                 <Fragment key={f.label}>
-                  <span className={styles.fieldLabel}>{f.label}</span>
-                  <span className={styles.fieldValue}>{f.value}</span>
+                  <span className={styles.formFieldLabel}>{f.label}</span>
+                  <span
+                    className={`${styles.formFieldValue} ${
+                      f.color === 'teal' ? styles.formValTeal : f.color === 'gold' ? styles.formValGold : ''
+                    }`}
+                  >
+                    {f.value}
+                  </span>
                 </Fragment>
               ))}
             </div>

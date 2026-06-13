@@ -506,18 +506,19 @@
   gap: var(--space-4);
   padding: var(--space-6);
   background-color: color-mix(in srgb, #141027 96%, transparent);
-  border: 1px solid #22d9ff;
+  border: 1px solid color-mix(in srgb, #22d9ff 32%, transparent);
   border-radius: 28px;
   box-shadow: 0 12px 40px rgba(117, 51, 255, 0.28), 0 0 28px rgba(0, 204, 255, 0.14);
 }
 .formTitle {
-  font-size: var(--font-size-15);
+  font-size: 28px;
   font-weight: var(--font-weight-bold);
 }
 .formDesc {
-  font-size: var(--font-size-11);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-regular);
   line-height: 1.6;
-  color: var(--color-text-muted);
+  color: #bdb7e7;
 }
 .formFields {
   display: grid;
@@ -525,6 +526,19 @@
   row-gap: var(--space-3);
   column-gap: var(--space-5);
 }
+/* 확인 모달 필드: 라벨 12/600 #8c86b5, 값 15/700 (기본 흰색, 특정 항목 청록/골드) */
+.formFieldLabel {
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  color: #8c86b5;
+}
+.formFieldValue {
+  font-size: var(--font-size-15);
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+}
+.formValTeal { color: #24e6b8; }
+.formValGold { color: #f6c85a; }
 .formButtons {
   display: flex;
   justify-content: flex-end;

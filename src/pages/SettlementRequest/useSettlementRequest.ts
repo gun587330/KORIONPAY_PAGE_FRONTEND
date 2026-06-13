@@ -23,6 +23,7 @@ export interface KpiItem {
 interface FieldRaw {
   labelKey: string
   value: string
+  color?: string
 }
 
 /*
@@ -111,6 +112,6 @@ export function useSettlementRequest() {
     },
     summary: data.summary,
     checks: data.checks as string[],
-    formFields: (data.form.fields as FieldRaw[]).map((f) => ({ label: t(f.labelKey), value: f.value })),
+    formFields: (data.form.fields as FieldRaw[]).map((f) => ({ label: t(f.labelKey), value: f.value, color: f.color })),
   }
 }
