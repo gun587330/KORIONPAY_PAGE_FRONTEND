@@ -2,5 +2,5 @@
 .actions {
   display: flex;
   gap: var(--space-1);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;   /* 배지들이 한 줄을 유지하도록 (줄바꿈 방지) */
 }

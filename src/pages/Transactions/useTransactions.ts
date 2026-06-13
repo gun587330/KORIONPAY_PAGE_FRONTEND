@@ -49,7 +49,8 @@ export function useTransactions(variant: TxVariant) {
       { key: 'netAmount', label: t('tx.all.col.netAmount'), width: '1fr' },
       { key: 'txStatus', label: t('tx.all.col.txStatus'), width: '0.9fr' },
       { key: 'syncStatus', label: t('tx.all.col.syncStatus'), width: '0.9fr' },
-      { key: 'action', label: t('tx.all.col.action'), width: '1.6fr' },
+      // 배지 3개(상세/환불요청/리스크요청)가 한 줄에 들어가도록 최소폭 보장
+      { key: 'action', label: t('tx.all.col.action'), width: 'minmax(150px, 1.6fr)' },
     ],
     offline: [
       { key: 'txNo', label: t('tx.offline.col.txNo'), width: '0.7fr', align: 'center' },
@@ -62,7 +63,8 @@ export function useTransactions(variant: TxVariant) {
       { key: 'errorCode', label: t('tx.offline.col.errorCode'), width: '1fr' },
       { key: 'amount', label: t('tx.offline.col.amount'), width: '1fr' },
       { key: 'manualReview', label: t('tx.offline.col.manualReview'), width: '0.9fr' },
-      { key: 'action', label: t('tx.offline.col.action'), width: '1.6fr' },
+      // 배지 3개(상세/환불요청/취소요청)가 한 줄에 들어가도록 최소폭 보장
+      { key: 'action', label: t('tx.offline.col.action'), width: 'minmax(150px, 1.6fr)' },
     ],
     failed: [
       { key: 'txNo', label: t('tx.failed.col.txNo'), width: '0.7fr', align: 'center' },
