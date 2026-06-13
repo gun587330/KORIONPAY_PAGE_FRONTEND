@@ -19,6 +19,7 @@ import ActivityLog from './pages/ActivityLog'
 import Profile from './pages/Profile'
 import PartnerDashboard from './pages/partner/Dashboard'
 import PartnerRequestsMerchant from './pages/partner/RequestsMerchant'
+import PartnerSettlementRequest from './pages/partner/SettlementRequest'
 import PartnerSettlementHistory from './pages/partner/SettlementHistory'
 import PartnerSettlementDetail from './pages/partner/SettlementDetail'
 import { ROLES } from './roles'
@@ -56,6 +57,7 @@ const PARTNER_PAGES: Record<string, JSX.Element> = {
   // 리더 컴포넌트를 그대로 재사용. (추후 데이터가 달라지면 src/pages/partner/* 로 분리)
   merchants: <Merchants />,
   'merchants/sales': <MerchantSales />,
+  'settlement/request': <PartnerSettlementRequest />,
   'settlement/history': <PartnerSettlementHistory />,
   'settlement/history/detail': <PartnerSettlementDetail />,
 }

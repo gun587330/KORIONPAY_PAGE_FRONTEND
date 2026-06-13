@@ -580,5 +580,13 @@
   "pdetail.d.reason": "Hold Reason",
   "pdetail.d.amount": "Tx Amount",
   "pdetail.d.heldFee": "Held Fee",
-  "pdetail.d.status": "Status"
+  "pdetail.d.status": "Status",
+
+  "psreq.stat.subMerchantFee": "Sub Merchant Fee",
+  "psreq.calc.merchantProfit": "Per-Merchant Fee Profit",
+  "psreq.pt.title": "Per-Merchant Fee Profit",
+  "psreq.pt.desc": "Check per sub-merchant tx amount, total fee, leader fee, partner fee, and held amount.",
+  "psreq.final.desc": "Request settlement to HQ based on the final available amount. After HQ approval, fees are settled automatically.",
+  "psreq.field.partnerName": "Partner Name",
+  "psreq.field.partnerCode": "Partner Code"
 }

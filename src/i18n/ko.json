@@ -580,5 +580,13 @@
   "pdetail.d.reason": "보류 사유",
   "pdetail.d.amount": "거래금액",
   "pdetail.d.heldFee": "보류 수수료",
-  "pdetail.d.status": "상태"
+  "pdetail.d.status": "상태",
+
+  "psreq.stat.subMerchantFee": "하부 가맹점 수수료",
+  "psreq.calc.merchantProfit": "가맹점 별 수수료 수익",
+  "psreq.pt.title": "가맹점별 수수료 수익",
+  "psreq.pt.desc": "하부 가맹점별 거래금액, 전체 수수료, 리더 수수료, 파트너 수수료, 보류 금액을 확인합니다.",
+  "psreq.final.desc": "최종 정산 가능 금액을 기준으로 본사에 정산을 요청합니다. 본사 승인 후 수수료가 자동 정산 처리됩니다.",
+  "psreq.field.partnerName": "파트너 명",
+  "psreq.field.partnerCode": "파트너 코드"
 }
