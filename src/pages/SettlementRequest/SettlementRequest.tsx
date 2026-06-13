@@ -171,21 +171,28 @@ export default function SettlementRequest() {
         <h3 className={styles.feeTitle}>{t('settle.req.fee.title')}</h3>
         {feeStructure.map((row, i) => (
           <div key={i} className={styles.feeRow}>
-            <span className={`${styles.feeChip} ${feeCatClass(row[0])}`}>{row[0]}</span>
+            {/* 각 칩을 셀에 담아 행마다 같은 열에 정렬 */}
+            <div className={styles.feeCell}>
+              <span className={`${styles.feeChip} ${feeCatClass(row[0])}`}>{row[0]}</span>
+            </div>
             {row.slice(1).map((stepLabel, j) => (
-              <Fragment key={j}>
+              <div key={j} className={styles.feeCell}>
                 {j > 0 && <span className={styles.feeArrow}>→</span>}
                 <span className={`${styles.feeChip} ${feeStepClass(stepLabel)}`}>{stepLabel}</span>
-              </Fragment>
+              </div>
             ))}
           </div>
         ))}
       </div>
 
-      {/* 자동 정산 안내 (별도 박스) */}
+      {/* 자동 정산 안내 — 제목 + 설명 박스 */}
       <div className={styles.autoBox}>
-        <h3 className={styles.sectionTitle}>{t('settle.req.auto.title')}</h3>
+        <h3 className={styles.autoTitle}>{t('settle.req.auto.title')}</h3>
         <p className={styles.sectionDesc}>{autoDesc}</p>
+      </div>
+
+      {/* 자동 정산 요약 — 하이라이트 + 요약 카드 (위 안내 박스와 분리된 별도 박스) */}
+      <div className={styles.autoBox}>
         <div className={styles.autoHighlight}>{autoHighlight}</div>
         <div className={styles.summaryGrid}>
           {autoStats.map((s) => (

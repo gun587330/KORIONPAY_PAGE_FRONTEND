@@ -271,20 +271,29 @@
   border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
   border-radius: 20px;
   box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+  overflow-x: auto; /* 좁은 화면에서 고정폭 그리드가 넘치면 가로 스크롤 */
 }
 /* 수수료 구조 제목 (Figma: 19/700) */
 .feeTitle {
   font-size: 19px;
   font-weight: var(--font-weight-bold);
 }
+/* 칩들이 행마다 같은 열에 정렬되도록 5열 고정 그리드 (카테고리 + 스텝 4) */
 .feeRow {
+  display: grid;
+  grid-template-columns: repeat(5, 168px);
+  align-items: center;
+  min-width: max-content;
+}
+/* 각 열 셀: (화살표 +) 칩. 칩은 내용 너비로 왼쪽 정렬 */
+.feeCell {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
 }
 /* 각 스텝을 감싸는 칩 (역할별 색) */
 .feeChip {
+  justify-self: start;
   padding: 4px var(--space-3);
   border-radius: var(--radius-pill);
   font-size: var(--font-size-12);
@@ -336,6 +345,11 @@
   border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
   border-radius: 20px;
   box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+}
+/* 자동 정산 안내 제목 — "수수료 구조"(.feeTitle)와 동일하게 19/700 */
+.autoTitle {
+  font-size: 19px;
+  font-weight: var(--font-weight-bold);
 }
 .autoHighlight {
   padding: var(--space-3) var(--space-4);
