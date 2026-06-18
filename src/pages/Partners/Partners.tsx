@@ -12,7 +12,7 @@ import { usePartners } from './usePartners'
  */
 export default function Partners() {
   const { t } = useTranslation()
-  const { stats, columns, rows: rawRows } = usePartners()
+  const { stats, columns, rows: rawRows, isLoading, error } = usePartners()
 
   // 액션은 행마다 다르므로(정지요청/해제요청) 각 행의 actions를 사용
   const rows: TableRow[] = rawRows.map((r) => ({
@@ -37,6 +37,7 @@ export default function Partners() {
     <RequestListPage
       title={t('partnerList.title')}
       sectionTitle={t('partnerList.section')}
+      sectionDesc={error ? t('common.apiFallback') : isLoading ? t('common.loading') : undefined}
       stats={stats}
       columns={columns}
       rows={rows}

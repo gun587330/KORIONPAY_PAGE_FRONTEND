@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import { useTranslation } from '../../i18n'
 import type { StatCardData } from '../../components/molecules/StatCard'
 import type { Column } from '../../components/organisms/DataTable'
+import { fetchLeaderPartners } from '../../services/korionChongApi'
 import data from './partnersData.json'
 
 interface StatRaw {
@@ -34,6 +36,46 @@ export interface PartnerListRow {
  */
 export function usePartners() {
   const { t } = useTranslation()
+  const [rows, setRows] = useState<PartnerListRow[]>(data.rows as PartnerListRow[])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    setIsLoading(true)
+    setError(null)
+
+    fetchLeaderPartners('KR')
+      .then((response) => {
+        if (cancelled) return
+        setRows(
+          response.items.map((partner, index) => ({
+            no: String(index + 1),
+            partner: `SP-${partner.partnerId}`,
+            name: partner.loginId,
+            telegram: '-',
+            region: [partner.region, partner.city].filter(Boolean).join(' / ') || partner.country,
+            subCount: String(partner.merchantCount),
+            volume: partner.completedTransactionAmount,
+            txCount: '-',
+            hqStatus: '승인',
+            opStatus: partner.status === 'SALES_PARTNER_APPROVED' ? '활성' : partner.status,
+            lastTx: partner.lastActivityAt ?? '-',
+            actions: ['상세', '정지요청'],
+          }))
+        )
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'API error')
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const stats: StatCardData[] = (data.stats as StatRaw[]).map((s) => ({
     id: s.id,
@@ -56,5 +98,5 @@ export function usePartners() {
     { key: 'action', label: t('partnerList.col.action'), width: '1.2fr' },
   ]
 
-  return { stats, columns, rows: data.rows as PartnerListRow[] }
+  return { stats, columns, rows, isLoading, error }
 }

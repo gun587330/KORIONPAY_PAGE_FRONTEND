@@ -1,14 +1,99 @@
 {
-  "kpis": [
-    { "id": "sales-partner", "labelKey": "dashboard.kpi.salesPartner", "value": "148", "delta": "+10", "tag": "관리", "accent": "cyan" },
-    { "id": "sub-merchant", "labelKey": "dashboard.kpi.subMerchant", "value": "2,840", "delta": "+18", "tag": "관리", "accent": "green" },
-    { "id": "total-members", "labelKey": "dashboard.kpi.totalMembers", "value": "1.28M", "delta": "+21k", "accent": "cyan" },
-    { "id": "active-members", "labelKey": "dashboard.kpi.activeMembers", "value": "1.28M", "delta": "+21k", "accent": "cyan" },
-    { "id": "monthly-volume", "labelKey": "dashboard.kpi.monthlyVolume", "value": "$1.28M", "delta": "+21k", "accent": "cyan" },
-    { "id": "settled-count", "labelKey": "dashboard.kpi.settledCount", "value": "1.28M", "delta": "+30k", "accent": "green" },
-    { "id": "pending-approval", "labelKey": "dashboard.kpi.pendingApproval", "value": "36", "tag": "본사", "accent": "orange" },
-    { "id": "unread-notice", "labelKey": "dashboard.kpi.unreadNotice", "value": "4건", "accent": "orange" },
-    { "id": "expected-fee", "labelKey": "dashboard.kpi.expectedFee", "value": "18,420 KORI", "tag": "정산가능", "accent": "purple" },
-    { "id": "risk", "labelKey": "dashboard.kpi.risk", "value": "17건", "tag": "주의", "accent": "red" }
-  ]
+  "leaderProfile": {
+    "leaderId": "leader-kr-001",
+    "displayName": "KORION Korea Leader",
+    "countryScopes": [
+      { "code": "KR", "label": "대한민국" },
+      { "code": "JP", "label": "일본" }
+    ],
+    "defaultCountryScope": "KR"
+  },
+  "countries": {
+    "KR": {
+      "periods": {
+        "30D": {
+          "kpis": [
+            { "id": "partners", "labelKey": "dashboard.kpi.salesPartner", "value": "148", "delta": "+10", "tag": "운영", "accent": "cyan" },
+            { "id": "merchants", "labelKey": "dashboard.kpi.subMerchant", "value": "2,840", "delta": "+18", "tag": "가맹", "accent": "green" },
+            { "id": "monthly-volume", "labelKey": "dashboard.kpi.monthlyVolume", "value": "₩8.42B", "delta": "+12.4%", "accent": "cyan" },
+            { "id": "fee", "labelKey": "dashboard.kpi.expectedFee", "value": "184,200 KORI", "delta": "+7.8%", "tag": "정산", "accent": "purple" },
+            { "id": "risk", "labelKey": "dashboard.kpi.risk", "value": "17건", "delta": "-3", "tag": "주의", "accent": "orange" },
+            { "id": "pending-approval", "labelKey": "dashboard.kpi.pendingApproval", "value": "36", "tag": "승인", "accent": "orange" },
+            { "id": "active-members", "labelKey": "dashboard.kpi.activeMembers", "value": "1.28M", "delta": "+21k", "accent": "green" },
+            { "id": "settled-count", "labelKey": "dashboard.kpi.settledCount", "value": "92,410", "delta": "+6.1%", "accent": "blue" }
+          ],
+          "organizationSummary": {
+            "partners": [
+              { "id": "partner-kr-seoul", "name": "Seoul Prime Partner", "country": "KR", "merchantCount": 428, "monthlyVolume": "₩1.84B", "fee": "41,200 KORI", "risk": "정상" },
+              { "id": "partner-kr-busan", "name": "Busan Commerce Partner", "country": "KR", "merchantCount": 315, "monthlyVolume": "₩980M", "fee": "25,400 KORI", "risk": "주의" },
+              { "id": "partner-kr-jeju", "name": "Jeju Travel Partner", "country": "KR", "merchantCount": 186, "monthlyVolume": "₩610M", "fee": "14,900 KORI", "risk": "정상" }
+            ],
+            "merchants": [
+              { "id": "merchant-kr-101", "name": "Korion Market Seoul", "country": "KR", "partnerName": "Seoul Prime Partner", "monthlyVolume": "₩214M", "fee": "5,200 KORI", "risk": "정상" },
+              { "id": "merchant-kr-144", "name": "Haeundae Pay Store", "country": "KR", "partnerName": "Busan Commerce Partner", "monthlyVolume": "₩188M", "fee": "4,850 KORI", "risk": "주의" },
+              { "id": "merchant-kr-208", "name": "Jeju Offline Hub", "country": "KR", "partnerName": "Jeju Travel Partner", "monthlyVolume": "₩142M", "fee": "3,410 KORI", "risk": "정상" }
+            ]
+          },
+          "monthlyVolume": [
+            { "month": "1월", "volume": "₩5.91B", "txCount": "58,420" },
+            { "month": "2월", "volume": "₩6.34B", "txCount": "61,780" },
+            { "month": "3월", "volume": "₩7.02B", "txCount": "70,118" },
+            { "month": "4월", "volume": "₩7.88B", "txCount": "81,490" },
+            { "month": "5월", "volume": "₩8.42B", "txCount": "92,410" }
+          ],
+          "feeSummary": [
+            { "label": "리더 예상 수수료", "amount": "184,200 KORI", "delta": "+7.8%" },
+            { "label": "파트너 귀속 수수료", "amount": "412,980 KORI", "delta": "+6.4%" },
+            { "label": "가맹점 지급 예정", "amount": "7,840,000 KORI", "delta": "+9.2%" }
+          ],
+          "riskAlerts": [
+            { "id": "risk-kr-001", "severity": "high", "title": "부산권 실패 거래 증가", "message": "최근 24시간 실패/취소 거래가 기준치보다 18% 높습니다.", "target": "Busan Commerce Partner" },
+            { "id": "risk-kr-002", "severity": "medium", "title": "월렛 미인증 가맹점", "message": "정산 지급 전 KORION WALLET 인증이 필요한 가맹점 5곳이 있습니다.", "target": "KR merchants" },
+            { "id": "risk-kr-003", "severity": "low", "title": "정산일 변경 예정", "message": "다음 미확정 주기부터 적용될 파트너 정산일 변경 2건이 있습니다.", "target": "Settlement policy" }
+          ]
+        }
+      }
+    },
+    "JP": {
+      "periods": {
+        "30D": {
+          "kpis": [
+            { "id": "partners", "labelKey": "dashboard.kpi.salesPartner", "value": "62", "delta": "+4", "tag": "운영", "accent": "cyan" },
+            { "id": "merchants", "labelKey": "dashboard.kpi.subMerchant", "value": "980", "delta": "+11", "tag": "가맹", "accent": "green" },
+            { "id": "monthly-volume", "labelKey": "dashboard.kpi.monthlyVolume", "value": "¥612M", "delta": "+8.1%", "accent": "cyan" },
+            { "id": "fee", "labelKey": "dashboard.kpi.expectedFee", "value": "72,100 KORI", "delta": "+5.4%", "tag": "정산", "accent": "purple" },
+            { "id": "risk", "labelKey": "dashboard.kpi.risk", "value": "6건", "delta": "-1", "tag": "주의", "accent": "orange" },
+            { "id": "pending-approval", "labelKey": "dashboard.kpi.pendingApproval", "value": "14", "tag": "승인", "accent": "orange" },
+            { "id": "active-members", "labelKey": "dashboard.kpi.activeMembers", "value": "412k", "delta": "+8k", "accent": "green" },
+            { "id": "settled-count", "labelKey": "dashboard.kpi.settledCount", "value": "34,880", "delta": "+4.2%", "accent": "blue" }
+          ],
+          "organizationSummary": {
+            "partners": [
+              { "id": "partner-jp-tokyo", "name": "Tokyo Retail Partner", "country": "JP", "merchantCount": 210, "monthlyVolume": "¥188M", "fee": "22,400 KORI", "risk": "정상" },
+              { "id": "partner-jp-osaka", "name": "Osaka Local Partner", "country": "JP", "merchantCount": 146, "monthlyVolume": "¥121M", "fee": "15,800 KORI", "risk": "정상" }
+            ],
+            "merchants": [
+              { "id": "merchant-jp-011", "name": "Tokyo Pay Market", "country": "JP", "partnerName": "Tokyo Retail Partner", "monthlyVolume": "¥42M", "fee": "4,600 KORI", "risk": "정상" },
+              { "id": "merchant-jp-082", "name": "Osaka Offline Store", "country": "JP", "partnerName": "Osaka Local Partner", "monthlyVolume": "¥38M", "fee": "3,900 KORI", "risk": "정상" }
+            ]
+          },
+          "monthlyVolume": [
+            { "month": "1월", "volume": "¥442M", "txCount": "21,980" },
+            { "month": "2월", "volume": "¥490M", "txCount": "25,810" },
+            { "month": "3월", "volume": "¥542M", "txCount": "29,440" },
+            { "month": "4월", "volume": "¥580M", "txCount": "31,900" },
+            { "month": "5월", "volume": "¥612M", "txCount": "34,880" }
+          ],
+          "feeSummary": [
+            { "label": "리더 예상 수수료", "amount": "72,100 KORI", "delta": "+5.4%" },
+            { "label": "파트너 귀속 수수료", "amount": "166,200 KORI", "delta": "+3.8%" },
+            { "label": "가맹점 지급 예정", "amount": "2,140,000 KORI", "delta": "+6.1%" }
+          ],
+          "riskAlerts": [
+            { "id": "risk-jp-001", "severity": "medium", "title": "정산 월렛 인증 대기", "message": "파트너 2곳의 KORION WALLET 인증이 지급 전 필요합니다.", "target": "JP partners" }
+          ]
+        }
+      }
+    }
+  }
 }

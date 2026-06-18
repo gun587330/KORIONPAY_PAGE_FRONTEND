@@ -3,6 +3,14 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import Button from '../../../components/atoms/Button'
 import AuthShell from '../AuthShell'
 import { useTranslation } from '../../../i18n'
+import {
+  checkSignupAvailability,
+  createSignupApplication,
+  sendEmailVerification,
+  validateReferralCode,
+  confirmEmailVerification,
+  type SignupAvailabilityField,
+} from '../../../services/korionChongApi'
 import data from './signupData.json'
 import styles from './RoleSignup.module.css'
 
@@ -21,38 +29,66 @@ const CFG = data as Record<
 
 /** 입력 한 칸 (라벨 + placeholder, 선택적으로 우측 버튼/넓게) */
 interface FieldDef {
+  name: keyof SignupForm
   labelKey: string
   placeholder: string
+  type?: string
   buttonKey?: string
+  action?: 'availability' | 'sendEmail' | 'confirmEmail'
+  availabilityField?: SignupAvailabilityField
   wide?: boolean
+}
+
+interface SignupForm {
+  loginId: string
+  email: string
+  emailCode: string
+  password: string
+  passwordConfirm: string
+  telegram: string
+  whatsapp: string
+  twitter: string
+  companyName: string
+  contactName: string
+  country: string
+  region: string
+  language: string
+  integrationPlan: string
+  storeName: string
+  ownerName: string
+  address: string
+  industry: string
+  walletAddress: string
+  referralCode: string
 }
 
 /* A. 계정 정보 */
 const ACCOUNT_FIELDS: FieldDef[] = [
-  { labelKey: 'auth.signup.f.id', placeholder: '중복 확인 필요', buttonKey: 'auth.signup.btn.dupCheck' },
-  { labelKey: 'auth.signup.f.email', placeholder: 'example@email.com', buttonKey: 'auth.signup.btn.verify' },
-  { labelKey: 'auth.signup.f.pw', placeholder: '8자 이상' },
-  { labelKey: 'auth.signup.f.pwConfirm', placeholder: '8자 이상' },
-  { labelKey: 'auth.signup.f.telegram', placeholder: '@telegram_id' },
-  { labelKey: 'auth.signup.f.phone', placeholder: '+234 000 000 0000' },
-  { labelKey: 'auth.signup.f.twitter', placeholder: '선택 입력' },
+  { name: 'loginId', labelKey: 'auth.signup.f.id', placeholder: '중복 확인 필요', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'loginId' },
+  { name: 'email', labelKey: 'auth.signup.f.email', placeholder: 'example@email.com', buttonKey: 'auth.signup.btn.sendCode', action: 'sendEmail' },
+  { name: 'emailCode', labelKey: 'auth.signup.f.emailCode', placeholder: '인증번호', buttonKey: 'auth.signup.btn.verify', action: 'confirmEmail' },
+  { name: 'password', labelKey: 'auth.signup.f.pw', placeholder: '8자 이상', type: 'password' },
+  { name: 'passwordConfirm', labelKey: 'auth.signup.f.pwConfirm', placeholder: '8자 이상', type: 'password' },
+  { name: 'telegram', labelKey: 'auth.signup.f.telegram', placeholder: '@telegram_id', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'telegram' },
+  { name: 'whatsapp', labelKey: 'auth.signup.f.phone', placeholder: '+234 000 000 0000', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'whatsapp' },
+  { name: 'twitter', labelKey: 'auth.signup.f.twitter', placeholder: '선택 입력' },
 ]
 
 /* B. 기본 / 소속 정보 */
 const BASIC_FIELDS: FieldDef[] = [
-  { labelKey: 'auth.signup.f.name', placeholder: '예: Samuel O.' },
-  { labelKey: 'auth.signup.f.country', placeholder: 'Nigeria' },
-  { labelKey: 'auth.signup.f.region', placeholder: 'Lagos Island, Ikeja' },
-  { labelKey: 'auth.signup.f.language', placeholder: 'English, Local Language' },
-  { labelKey: 'auth.signup.f.hqReason', placeholder: '선택 시 필수', wide: true },
+  { name: 'companyName', labelKey: 'auth.signup.f.name', placeholder: '예: Samuel O.' },
+  { name: 'country', labelKey: 'auth.signup.f.country', placeholder: 'NG' },
+  { name: 'region', labelKey: 'auth.signup.f.region', placeholder: 'Lagos Island, Ikeja' },
+  { name: 'language', labelKey: 'auth.signup.f.language', placeholder: 'English, Local Language' },
+  { name: 'integrationPlan', labelKey: 'auth.signup.f.hqReason', placeholder: '선택 시 필수', wide: true },
 ]
 
 /* D. 매장 기본 정보 (가맹점만) */
 const STORE_FIELDS: FieldDef[] = [
-  { labelKey: 'auth.signup.f.storeName', placeholder: 'Kori Cafe Lagos' },
-  { labelKey: 'auth.signup.f.owner', placeholder: '대표자명' },
-  { labelKey: 'auth.signup.f.address', placeholder: '주소 입력' },
-  { labelKey: 'auth.signup.f.industry', placeholder: '카페 / 리테일' },
+  { name: 'storeName', labelKey: 'auth.signup.f.storeName', placeholder: 'Kori Cafe Lagos' },
+  { name: 'ownerName', labelKey: 'auth.signup.f.owner', placeholder: '대표자명' },
+  { name: 'address', labelKey: 'auth.signup.f.address', placeholder: '주소 입력' },
+  { name: 'industry', labelKey: 'auth.signup.f.industry', placeholder: '카페 / 리테일' },
 ]
 
 const AGREEMENTS = ['1', '2', '3', '4', '5', '6']
@@ -72,18 +108,160 @@ export default function RoleSignup() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [done, setDone] = useState(false)
   const [mode, setMode] = useState('leader')
+  const [busy, setBusy] = useState(false)
+  const [statusMessage, setStatusMessage] = useState('')
+  const [form, setForm] = useState<SignupForm>({
+    loginId: '',
+    email: '',
+    emailCode: '',
+    password: '',
+    passwordConfirm: '',
+    telegram: '',
+    whatsapp: '',
+    twitter: '',
+    companyName: '',
+    contactName: '',
+    country: '',
+    region: '',
+    language: '',
+    integrationPlan: '',
+    storeName: '',
+    ownerName: '',
+    address: '',
+    industry: '',
+    walletAddress: '',
+    referralCode: '',
+  })
 
   if (!role || !CFG[role]) return <Navigate to="/login" replace />
   const cfg = CFG[role]
+  const requestId = `signup-${role}-${form.loginId || form.email || 'draft'}`
+
+  const updateField = (name: keyof SignupForm, value: string) => {
+    setForm((current) => ({ ...current, [name]: value }))
+  }
+
+  const runAction = async (field: FieldDef) => {
+    setStatusMessage('')
+    setBusy(true)
+    try {
+      if (field.action === 'availability' && field.availabilityField) {
+        const value = form[field.name]
+        if (!value.trim()) throw new Error('값을 입력한 뒤 확인하세요.')
+        const result = await checkSignupAvailability(field.availabilityField, value.trim())
+        setStatusMessage(result.available ? '사용 가능한 값입니다.' : '이미 사용 중인 값입니다.')
+      }
+      if (field.action === 'sendEmail') {
+        if (!form.email.trim()) throw new Error('이메일을 입력하세요.')
+        await sendEmailVerification(form.email.trim(), requestId)
+        setStatusMessage('이메일 인증번호 발송 요청이 완료되었습니다.')
+      }
+      if (field.action === 'confirmEmail') {
+        if (!form.email.trim() || !form.emailCode.trim()) throw new Error('이메일과 인증번호를 입력하세요.')
+        await confirmEmailVerification(form.email.trim(), form.emailCode.trim(), requestId)
+        setStatusMessage('이메일 인증이 완료되었습니다.')
+      }
+    } catch (error) {
+      setStatusMessage(error instanceof Error ? error.message : '요청 처리 중 오류가 발생했습니다.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const checkReferral = async (code: string) => {
+    if (!code.trim()) return
+    setStatusMessage('')
+    setBusy(true)
+    try {
+      const result = await validateReferralCode(code.trim())
+      setStatusMessage(result.valid ? '유효한 소속 코드입니다.' : '사용할 수 없는 소속 코드입니다.')
+    } catch (error) {
+      setStatusMessage(error instanceof Error ? error.message : '코드 확인 중 오류가 발생했습니다.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const checkWalletAddress = async () => {
+    setStatusMessage('')
+    setBusy(true)
+    try {
+      if (!form.walletAddress.trim()) throw new Error('Wallet 주소를 입력하세요.')
+      const result = await checkSignupAvailability('walletAddress', form.walletAddress.trim())
+      setStatusMessage(result.available ? '등록 가능한 KORION Wallet 주소입니다.' : '이미 등록되었거나 검토 중인 Wallet 주소입니다.')
+    } catch (error) {
+      setStatusMessage(error instanceof Error ? error.message : 'Wallet 확인 중 오류가 발생했습니다.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const normalizeCountry = (value: string) => {
+    const code = value.trim().toUpperCase()
+    return /^[A-Z]{2}$/.test(code) ? code : undefined
+  }
+
+  const submitApplication = async () => {
+    setStatusMessage('')
+    setBusy(true)
+    try {
+      const applicantType = role === 'merchant' ? 'MERCHANT' : 'PARTNER'
+      const companyName = applicantType === 'MERCHANT'
+        ? form.storeName.trim()
+        : form.companyName.trim()
+      const contactName = applicantType === 'MERCHANT'
+        ? form.ownerName.trim()
+        : form.contactName.trim() || form.companyName.trim()
+      if (!form.loginId.trim() || !form.email.trim() || !form.password || !companyName || !contactName) {
+        throw new Error('아이디, 비밀번호, 이메일, 이름/매장명은 필수입니다.')
+      }
+      if (form.password !== form.passwordConfirm) {
+        throw new Error('비밀번호 확인이 일치하지 않습니다.')
+      }
+      const response = await createSignupApplication({
+        applicantType,
+        loginId: form.loginId.trim(),
+        password: form.password,
+        email: form.email.trim(),
+        companyName,
+        contactName,
+        phone: form.whatsapp.trim() || undefined,
+        telegram: form.telegram.trim() || undefined,
+        whatsapp: form.whatsapp.trim() || undefined,
+        referralCode: mode === 'hq' ? undefined : form.referralCode.trim() || undefined,
+        country: normalizeCountry(form.country),
+        region: form.region.trim() || undefined,
+        city: undefined,
+        address: form.address.trim() || undefined,
+        businessType: form.industry.trim() || undefined,
+        walletAddress: form.walletAddress.trim() || undefined,
+        integrationPlan: [form.integrationPlan, form.industry, form.language].filter(Boolean).join('\n') || undefined,
+        requestId,
+      })
+      setConfirmOpen(false)
+      setDone(true)
+      setStatusMessage(`가입 신청이 접수되었습니다. 상태: ${response.status}`)
+    } catch (error) {
+      setStatusMessage(error instanceof Error ? error.message : '가입 신청 중 오류가 발생했습니다.')
+    } finally {
+      setBusy(false)
+    }
+  }
 
   const renderFields = (fields: FieldDef[]) =>
     fields.map((f) => (
       <div key={f.labelKey} className={`${styles.field} ${f.wide ? styles.wide : ''}`}>
         <span className={styles.fieldLabel}>{t(f.labelKey)}</span>
         <div className={styles.inputRow}>
-          <input className={styles.input} type="text" placeholder={f.placeholder} />
+          <input
+            className={styles.input}
+            type={f.type ?? 'text'}
+            placeholder={f.placeholder}
+            value={form[f.name]}
+            onChange={(e) => updateField(f.name, e.target.value)}
+          />
           {f.buttonKey && (
-            <button type="button" className={styles.smallBtn}>
+            <button type="button" className={styles.smallBtn} disabled={busy} onClick={() => runAction(f)}>
               {t(f.buttonKey)}
             </button>
           )}
@@ -117,12 +295,16 @@ export default function RoleSignup() {
                         className={styles.codeInput}
                         type="text"
                         placeholder={m.codePlaceholder}
-                        defaultValue={selected ? m.confirmed : ''}
+                        value={form.referralCode || (selected ? m.confirmed ?? '' : '')}
                         onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => updateField('referralCode', e.target.value)}
                       />
                       <span className={styles.codeConfirmed}>{t('auth.signup.codeConfirmed')}</span>
                     </div>
-                    <span className={styles.codeCheckBtn}>{t('auth.signup.btn.codeCheck')}</span>
+                    <span className={styles.codeCheckBtn} onClick={(e) => {
+                      e.stopPropagation()
+                      checkReferral(form.referralCode)
+                    }}>{t('auth.signup.btn.codeCheck')}</span>
                   </div>
                 ) : (
                   // 본사 직접 계약: 본사 검토 필요 배지
@@ -146,12 +328,20 @@ export default function RoleSignup() {
         <div className={styles.field}>
           <span className={styles.fieldLabel}>{t('auth.signup.f.wallet')}</span>
           <div className={styles.inputRow}>
-            <input className={styles.input} type="text" placeholder="앱에서 인증번호 확인" />
-            <button type="button" className={styles.smallBtn}>
+            <input
+              className={styles.input}
+              type="text"
+              placeholder="TRON 네트워크 Wallet 주소"
+              value={form.walletAddress}
+              onChange={(e) => updateField('walletAddress', e.target.value)}
+            />
+            <button type="button" className={styles.smallBtn} disabled={busy} onClick={checkWalletAddress}>
               {t('auth.signup.btn.walletLink')}
             </button>
           </div>
         </div>
+
+        {statusMessage && <div className={styles.inlineNotice}>{statusMessage}</div>}
 
         {/* D. 매장 기본 정보 (가맹점만) */}
         {cfg.store && (
@@ -159,9 +349,9 @@ export default function RoleSignup() {
             <h3 className={styles.sectionTitle}>{t('auth.signup.sec.store')}</h3>
             <div className={styles.grid}>{renderFields(STORE_FIELDS)}</div>
             <div className={styles.field}>
-              <span className={styles.fieldLabel}>{t('auth.signup.f.storeImage')}</span>
+              <span className={styles.fieldLabel}>{t('auth.signup.f.evidence')}</span>
               <div className={styles.inputRow}>
-                <input className={styles.input} type="text" readOnly placeholder="사진" />
+                <input className={styles.input} type="text" readOnly placeholder="사업자/매장 검증자료" />
                 <button type="button" className={styles.smallBtn}>
                   {t('profile.req.upload')}
                 </button>
@@ -204,10 +394,7 @@ export default function RoleSignup() {
               </Button>
               <Button
                 variant="primary"
-                onClick={() => {
-                  setConfirmOpen(false)
-                  setDone(true)
-                }}
+                onClick={submitApplication}
               >
                 {t('auth.signup.submit')}
               </Button>

@@ -5,16 +5,136 @@
   gap: 18px;                /* Figma 콘텐츠 세로 간격 18 (헤더↔KPI↔패널 모두 동일) */
 }
 
-/*
- * 하단 요약 패널 — 5개 모두 동일 크기(Figma 기준 330×220).
- * 3열 고정 그리드에 5개를 넣어 윗줄 3개 + 아랫줄 2개(왼쪽 정렬, 3번째 칸 빈자리)로 배치한다.
- * grid-auto-rows로 행 높이를 220px 고정 → 모든 패널의 크기가 균일해진다.
- */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  min-height: 38px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-10);
+  font-weight: var(--font-weight-bold);
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 112px;
+  padding: var(--space-2) var(--space-6) var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-accent-purple);
+  background-color: color-mix(in srgb, var(--color-accent-purple) 17%, transparent);
+  color: var(--color-text);
+  font-size: var(--font-size-10);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'><path d='M1 2.5L4 5.5L7 2.5' stroke='%23f2f0ff' stroke-width='1.2' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+}
+
+.select option {
+  color: #1a122a;
+  background-color: #f2f0ff;
+}
+
+.validation {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--color-warning) 62%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  color: var(--color-text);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+}
+
 .panelGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 220px;
+  align-items: stretch;
   gap: var(--space-6);        /* Figma 패널 간격 ~25px */
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.row,
+.alertRow,
+.volumeRow {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border-accent) 22%, transparent);
+}
+
+.row {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.row strong,
+.alertRow strong,
+.volumeRow strong {
+  display: block;
+  color: var(--color-text);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-bold);
+}
+
+.row span,
+.alertRow span,
+.volumeRow span,
+.volumeRow small,
+.alertRow small {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-10);
+}
+
+.rowMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.volumeList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.volumeRow {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.amount {
+  color: var(--color-accent-green);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}
+
+.alertRow {
+  align-items: flex-start;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-3);
 }
 
 /* 반응형: 좁은 화면에서 열 수 축소 (CLAUDE.md 반응형 주석 규칙) */
@@ -24,6 +144,20 @@
   }
 }
 @media (max-width: 640px) {
+  .controls,
+  .field {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .field {
+    flex-direction: column;
+  }
+
+  .select {
+    width: 100%;
+  }
+
   .panelGrid {
     grid-template-columns: 1fr;
   }

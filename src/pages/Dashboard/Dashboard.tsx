@@ -1,7 +1,10 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import PageHeader from '../../components/organisms/PageHeader'
-import DateRangeSelect from '../../components/molecules/DateRangeSelect'
 import KpiGrid from '../../components/organisms/KpiGrid'
 import Panel from '../../components/molecules/Panel'
+import Button from '../../components/atoms/Button'
+import Badge from '../../components/atoms/Badge'
 import { useTranslation } from '../../i18n'
 import { useDashboardData } from './useDashboardData'
 import styles from './Dashboard.module.css'
@@ -18,43 +21,177 @@ import styles from './Dashboard.module.css'
  */
 export default function Dashboard() {
   const { t } = useTranslation()
-  // 데이터는 훅에서 받아온다 (현재는 하드코딩 JSON, 추후 API로 교체 가능)
-  const { kpis } = useDashboardData()
+  const navigate = useNavigate()
+  const [period, setPeriod] = useState('2026-06')
+  const [countryScope, setCountryScope] = useState<string | undefined>()
+  const {
+    kpis,
+    leaderProfile,
+    selectedCountryScope,
+    invalidScope,
+    organizationSummary,
+    monthlyVolume,
+    feeSummary,
+    riskAlerts,
+    isLoading,
+    error,
+  } = useDashboardData(period, countryScope)
+
+  const go = (path: string) => navigate(`/leader/${path}`)
 
   return (
     <div className={styles.page}>
-      {/* 공통 헤더 + 대시보드 전용 기간 선택 드롭다운(우측 정렬, children 슬롯) */}
+      {/* 공통 헤더 + 국가 리더용 기간/국가 scope 입력 */}
       <PageHeader title={t('dashboard.title')}>
-        <DateRangeSelect />
+        <div className={styles.controls} aria-label={t('dashboard.filters.label')}>
+          <label className={styles.field}>
+            <span>{t('dashboard.filters.period')}</span>
+            <select
+              className={styles.select}
+              value={period}
+              onChange={(event) => setPeriod(event.target.value)}
+            >
+              <option value="2026-06">2026-06</option>
+              <option value="30D">30D</option>
+            </select>
+          </label>
+          <label className={styles.field}>
+            <span>{t('dashboard.filters.countryScope')}</span>
+            <select
+              className={styles.select}
+              value={selectedCountryScope}
+              onChange={(event) => setCountryScope(event.target.value)}
+            >
+              {leaderProfile.countryScopes.map((scope) => (
+                <option key={scope.code} value={scope.code}>
+                  {scope.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </PageHeader>
 
-      {/* KPI 카드 그리드 (데이터: useDashboardData 훅) */}
+      {invalidScope && (
+        <div className={styles.validation} role="alert">
+          {t('dashboard.validation.ownCountryOnly')}
+        </div>
+      )}
+      {(isLoading || error) && (
+        <div className={styles.validation} role={error ? 'alert' : 'status'}>
+          {error ? t('common.apiFallback') : t('common.loading')}
+        </div>
+      )}
+
       <KpiGrid items={kpis} />
 
-      {/*
-        요약 패널 5종 — 모두 동일 크기(330×220) 3열 그리드.
-        윗줄: 파트너 순위 / 가맹점 순위 / 최근 활동, 아랫줄: 요청 / 공지 (왼쪽 정렬).
-        내용이 비어 있는 패널은 "들어갈 자리" 주석만 남기고 빈 공간으로 둔다.
-      */}
       <div className={styles.panelGrid}>
-        <Panel title={t('dashboard.panel.partnerRank')}>
-          {/* 들어갈 자리: 상위 파트너 순위 리스트 (매출/거래량 기준 정렬) */}
+        <Panel title={t('dashboard.panel.subOrganizations')}>
+          <div className={styles.list}>
+            {organizationSummary.partners.map((partner) => (
+              <div key={partner.id} className={styles.row}>
+                <div>
+                  <strong>{partner.name}</strong>
+                  <span>
+                    {partner.country} · {partner.merchantCount}
+                    {t('dashboard.unit.merchants')}
+                  </span>
+                </div>
+                <div className={styles.rowMeta}>
+                  <span>{partner.monthlyVolume}</span>
+                  <Badge accent={partner.risk === '주의' ? 'orange' : 'green'} size="sm">
+                    {partner.risk}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className={styles.actions}>
+            <Button onClick={() => go('partners')}>{t('dashboard.action.detail')}</Button>
+          </div>
         </Panel>
-        <Panel title={t('dashboard.panel.merchantRank')}>
-          {/* 들어갈 자리: 상위 가맹점 순위 리스트 */}
+
+        <Panel title={t('dashboard.panel.merchantSummary')}>
+          <div className={styles.list}>
+            {organizationSummary.merchants.map((merchant) => (
+              <div key={merchant.id} className={styles.row}>
+                <div>
+                  <strong>{merchant.name}</strong>
+                  <span>{merchant.partnerName}</span>
+                </div>
+                <div className={styles.rowMeta}>
+                  <span>{merchant.monthlyVolume}</span>
+                  <Badge accent={merchant.risk === '주의' ? 'orange' : 'green'} size="sm">
+                    {merchant.risk}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className={styles.actions}>
+            <Button onClick={() => go('merchants')}>{t('dashboard.action.detail')}</Button>
+          </div>
         </Panel>
-        {/* 최근 활동 패널만 디자인에 설명줄이 있어 subtitle로 표시 */}
-        <Panel
-          title={t('dashboard.panel.recentActivity')}
-          subtitle={t('dashboard.panel.recentActivityDesc')}
-        >
-          {/* 들어갈 자리: 활동 피드 항목 리스트 */}
+
+        <Panel title={t('dashboard.panel.monthlyVolume')}>
+          <div className={styles.volumeList}>
+            {monthlyVolume.map((item) => (
+              <div key={item.month} className={styles.volumeRow}>
+                <span>{item.month}</span>
+                <strong>{item.volume}</strong>
+                <small>{item.txCount} tx</small>
+              </div>
+            ))}
+          </div>
+          <div className={styles.actions}>
+            <Button onClick={() => go('transactions')}>{t('dashboard.action.report')}</Button>
+          </div>
         </Panel>
-        <Panel title={t('dashboard.panel.request')}>
-          {/* 들어갈 자리: 처리 대기 중인 요청 목록 (내용 정의 필요) */}
+
+        <Panel title={t('dashboard.panel.feeSummary')}>
+          <div className={styles.list}>
+            {feeSummary.map((fee) => (
+              <div key={fee.label} className={styles.row}>
+                <div>
+                  <strong>{fee.label}</strong>
+                  <span>{fee.delta}</span>
+                </div>
+                <span className={styles.amount}>{fee.amount}</span>
+              </div>
+            ))}
+          </div>
+          <div className={styles.actions}>
+            <Button onClick={() => go('settlement/history')}>{t('dashboard.action.report')}</Button>
+          </div>
         </Panel>
-        <Panel title={t('dashboard.panel.notice')}>
-          {/* 들어갈 자리: 본사 공지/소식 요약 (내용 정의 필요) */}
+
+        <Panel title={t('dashboard.panel.riskAlerts')}>
+          <div className={styles.list}>
+            {riskAlerts.map((alert) => (
+              <div key={alert.id} className={styles.alertRow}>
+                <Badge
+                  accent={
+                    alert.severity === 'high'
+                      ? 'red'
+                      : alert.severity === 'medium'
+                        ? 'orange'
+                        : 'blue'
+                  }
+                  size="sm"
+                >
+                  {alert.severity}
+                </Badge>
+                <div>
+                  <strong>{alert.title}</strong>
+                  <span>{alert.message}</span>
+                  <small>{alert.target}</small>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className={styles.actions}>
+            <Button onClick={() => go('transactions/failed')}>{t('dashboard.action.detail')}</Button>
+          </div>
         </Panel>
       </div>
     </div>
