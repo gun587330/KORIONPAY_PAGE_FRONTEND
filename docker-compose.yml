@@ -11,7 +11,7 @@ services:
     init: true
     restart: unless-stopped
     environment:
-      KORION_CHONG_UPSTREAM: ${KORION_CHONG_UPSTREAM:-http://54.83.183.123}
+      KORION_CHONG_UPSTREAM: ${KORION_CHONG_UPSTREAM:-https://chong.korion.io.kr}
       KORION_CHONG_HOST_HEADER: ${KORION_CHONG_HOST_HEADER:-chong.korion.io.kr}
     ports:
       - "127.0.0.1:${KORI_PARTNERS_HOST_PORT:-8082}:8080"
