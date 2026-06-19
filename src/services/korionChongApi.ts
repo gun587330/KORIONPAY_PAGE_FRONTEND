@@ -171,6 +171,7 @@ export type SignupAvailabilityField =
   | 'loginId'
   | 'email'
   | 'telegram'
+  | 'phone'
   | 'whatsapp'
   | 'walletAddress'
 
@@ -234,6 +235,18 @@ export interface EmailVerificationConfirmApiResponse {
   messageKey: string
 }
 
+export interface TelegramVerificationSendApiResponse {
+  resultCode: 'TELEGRAM_VERIFICATION_SENT'
+  messageKey: string
+  expiresAt: string
+}
+
+export interface TelegramVerificationConfirmApiResponse {
+  verified: boolean
+  resultCode: 'TELEGRAM_VERIFIED'
+  messageKey: string
+}
+
 export interface WalletLinkVerifyApiResponse {
   verified: boolean
   authStatus: 'VERIFIED'
@@ -245,6 +258,7 @@ export interface LoginApiRequest {
   loginId: string
   password: string
   role: 'LEADER' | 'PARTNER' | 'MERCHANT'
+  twoFactorCode?: string
   requestId?: string
 }
 
@@ -287,6 +301,21 @@ export function sendEmailVerification(email: string, requestId?: string) {
 export function confirmEmailVerification(email: string, code: string, requestId?: string) {
   return postJson<EmailVerificationConfirmApiResponse>('/api/auth/email-verifications/confirm', {
     email,
+    code,
+    requestId,
+  })
+}
+
+export function sendTelegramVerification(telegram: string, requestId?: string) {
+  return postJson<TelegramVerificationSendApiResponse>('/api/auth/telegram-verifications/send', {
+    telegram,
+    requestId,
+  })
+}
+
+export function confirmTelegramVerification(telegram: string, code: string, requestId?: string) {
+  return postJson<TelegramVerificationConfirmApiResponse>('/api/auth/telegram-verifications/confirm', {
+    telegram,
     code,
     requestId,
   })

@@ -17,7 +17,6 @@ type RoleConfig = {
 type LoginForm = {
   loginId: string
   password: string
-  twoFactorCode: string
   keepSignedIn: boolean
 }
 
@@ -47,7 +46,6 @@ export function useRoleLogin() {
   const [form, setForm] = useState<LoginForm>({
     loginId: '',
     password: '',
-    twoFactorCode: '',
     keepSignedIn: false,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)

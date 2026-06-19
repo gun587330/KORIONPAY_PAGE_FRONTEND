@@ -61,21 +61,6 @@ export default function RoleLogin() {
               autoComplete="current-password"
             />
           </div>
-          <div className={styles.field}>
-            <label className={styles.fieldLabel} htmlFor={`${roleKey}-two-factor`}>
-              {t('auth.login.twofa')}
-            </label>
-            <input
-              id={`${roleKey}-two-factor`}
-              className={styles.input}
-              type="text"
-              placeholder={t('auth.login.twofa')}
-              value={form.twoFactorCode}
-              onChange={(event) => updateField('twoFactorCode', event.target.value)}
-              autoComplete="one-time-code"
-            />
-          </div>
-
           <div className={styles.formRow}>
             <label className={styles.keep}>
               <input
