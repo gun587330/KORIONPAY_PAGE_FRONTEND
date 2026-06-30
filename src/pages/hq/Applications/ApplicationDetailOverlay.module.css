@@ -1,0 +1,170 @@
+/*
+ * ApplicationDetailOverlay — 신청서 목록 행 클릭 시 뜨는 상세 오버레이
+ * 별도 라우팅 없이 현재 페이지 위에 고정 레이어로 노출 (Figma 1:16618).
+ * 비율은 유지하되 전체 크기를 줄여 스크롤 없이 한 화면에 들어오도록 조정.
+ */
+
+/* 사이드바 영역(300px)을 제외한 콘텐츠 섹션 위에만 띄움 */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+}
+
+.panel {
+  background: #151127;
+  border: 1px solid rgba(123, 92, 255, 0.34);
+  border-radius: 22px;
+  box-shadow: 0px 20px 52px -20px rgba(0, 0, 0, 0.45);
+  width: 560px;
+  max-width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: 26px;
+  margin: 0;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(36, 216, 255, 0.28);
+  border-radius: var(--radius-pill);
+}
+
+/* 2열 그리드 — 필드를 왼→오 순서로 배치 */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.input {
+  height: 36px;
+  background: rgba(12, 10, 30, 0.88);
+  border: 1px solid rgba(123, 92, 255, 0.34);
+  border-radius: 10px;
+  padding: 0 10px;
+  font-size: 12px;
+  color: #8e89b7;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-family-base);
+}
+
+.input::placeholder {
+  color: #8e89b7;
+}
+
+.textarea {
+  height: 80px;
+  background: rgba(12, 10, 30, 0.88);
+  border: 1px solid rgba(123, 92, 255, 0.34);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #8e89b7;
+  resize: none;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-family-base);
+}
+
+.textarea::placeholder {
+  color: #8e89b7;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 6px;
+}
+
+.buttonsLeft {
+  display: flex;
+  gap: 10px;
+}
+
+/* 확인 — Figma: 그라디언트 + 글로우 그림자 */
+.btnConfirm {
+  height: 38px;
+  width: 88px;
+  border-radius: 11px;
+  border: 1px solid rgba(34, 217, 255, 0.32);
+  background: linear-gradient(90deg, #7033ff 0%, #1a9eff 52%, #1fffb8 100%);
+  box-shadow: 0px 0px 24px 0px rgba(0, 204, 255, 0.14), 0px 18px 44px -18px rgba(117, 51, 255, 0.28);
+  color: #ffffff;
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+/* 검토 / 위험 — 반투명 보라 배경 */
+.btnSecondary {
+  height: 38px;
+  width: 72px;
+  border-radius: 11px;
+  border: 1px solid rgba(107, 98, 164, 0.32);
+  background: rgba(33, 27, 61, 0.92);
+  color: var(--color-text);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+/* 삭제 — 빨강 솔리드 */
+.btnDelete {
+  height: 38px;
+  width: 72px;
+  border-radius: 11px;
+  border: 1px solid rgba(107, 98, 164, 0.32);
+  background: #ff4e4e;
+  color: #ffffff;
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+/* 반응형: 모바일(<680px)에서 2열 → 1열 */
+@media (max-width: 680px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    padding: var(--space-4);
+  }
+}

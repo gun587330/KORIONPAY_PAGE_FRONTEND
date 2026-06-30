@@ -1,0 +1,472 @@
+/*
+ * 본사어드민 · 정산 신청 상세 검토 화면 스타일
+ * ------------------------------------------------------------------
+ * 정산 화면 전용 외형(보라 테두리 카드 + 시안 히어로 + 역할별 색 칩).
+ * 색·간격은 tokens.css 변수 기준, 화면 고유 색만 리터럴(Figma 정확값).
+ */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ===== 패널 헤더: 정산번호 + 컨텍스트 배지(좌) / 상태 배지(우) ===== */
+.panelHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.panelHeadLeft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.panelTitle {
+  font-size: 22px;
+  font-weight: var(--font-weight-bold);
+}
+.ctxBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.ctxBadge {
+  padding: 3px var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-11);
+  font-weight: var(--font-weight-semibold);
+  color: #e2dff8;
+  background-color: color-mix(in srgb, #5c5878 36%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+}
+/* "정산 신청 가능" — 솔리드 청록 + 어두운 글씨 */
+.statusBadge {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-bold);
+  color: #061612;
+  background-color: color-mix(in srgb, #24e6b8 92%, transparent);
+  border: 1px solid color-mix(in srgb, #24e6b8 32%, transparent);
+}
+
+/* ===== 공통 섹션 박스 ===== */
+.sectionBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background-color: color-mix(in srgb, #141027 82%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  border-radius: 20px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+}
+.sectionTitle {
+  font-size: 19px;
+  font-weight: var(--font-weight-bold);
+}
+.sectionDesc {
+  font-size: var(--font-size-11);
+  color: #bdb7e7;
+  line-height: 1.6;
+}
+.autoTag {
+  color: #24e6b8;
+  font-weight: var(--font-weight-semibold);
+}
+.heldTag {
+  color: #ff8a3d;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ===== 정산 기간 배너 박스 ===== */
+.bannerBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-height: 120px;
+  padding: var(--space-6);
+  background-color: color-mix(in srgb, #141027 84%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  border-radius: 22px;
+  box-shadow: 0 18px 44px -18px rgba(117, 51, 255, 0.28), 0 0 24px rgba(0, 204, 255, 0.14);
+}
+.notice {
+  font-size: var(--font-size-16);
+  font-weight: var(--font-weight-semibold);
+  color: #fff;
+}
+
+/* ===== 요약 KPI 카드 (감싸는 박스 없이 그리드) ===== */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+.kpiCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 134px;
+  padding: var(--space-4);
+  background-color: color-mix(in srgb, #141027 82%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  border-radius: 18px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+}
+/* 제목 칩 — 색은 --chip(카드별 다름)으로 주입 */
+.kpiLabel {
+  align-self: flex-start;
+  padding: 3px var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  border: 1px solid color-mix(in srgb, var(--chip) 32%, transparent);
+}
+.kpiLabelTranslucent {
+  color: #ffffff;
+  background-color: color-mix(in srgb, var(--chip) 24%, transparent);
+}
+.kpiLabelSolid {
+  color: #061612;
+  background-color: color-mix(in srgb, var(--chip) 92%, transparent);
+}
+.kpiValue {
+  font-size: var(--font-size-23);
+  font-weight: var(--font-weight-bold);
+}
+.kpiNote {
+  margin-top: auto;
+  font-size: var(--font-size-12);
+  color: #8c86b5;
+}
+
+/* ===== 정산 가능 금액 계산 (시안 히어로 박스) ===== */
+.calcHero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background-color: color-mix(in srgb, #0f0b24 98%, transparent);
+  border: 1px solid color-mix(in srgb, #22d9ff 36%, transparent);
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(117, 51, 255, 0.22), 0 0 28px rgba(0, 204, 255, 0.14);
+}
+.calcTitle {
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+}
+.calcDesc {
+  font-size: 13px;
+  color: #bdb7e7;
+  line-height: 1.6;
+}
+.formula {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+.amountCard {
+  flex: 1 1 150px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 18px;
+}
+.amountAdd {
+  background-color: color-mix(in srgb, #111327 94%, transparent);
+  border: 1px solid color-mix(in srgb, #22d9ff 36%, transparent);
+}
+.amountMinus {
+  background-color: color-mix(in srgb, #22101d 94%, transparent);
+  border: 1px solid color-mix(in srgb, #ff4d70 36%, transparent);
+}
+.amountFinal {
+  background: linear-gradient(135deg, #7033ff, #1aadff, #1affb8);
+  border: 1px solid color-mix(in srgb, #24e6b8 36%, transparent);
+}
+.amountChip {
+  align-self: flex-start;
+  padding: 3px var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+}
+.amountChipTeal {
+  color: #061612;
+  background-color: color-mix(in srgb, #24e6b8 94%, transparent);
+}
+.amountChipRed {
+  color: #ffffff;
+  background-color: color-mix(in srgb, #ff4d70 24%, transparent);
+}
+.amountFinal .amountChip {
+  color: #061612;
+  background-color: color-mix(in srgb, #ffffff 28%, transparent);
+}
+.amountValueRow {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.amountValue {
+  font-size: 28px;
+  font-weight: var(--font-weight-bold);
+}
+.amountUnit {
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-bold);
+}
+.valTeal { color: #24e6b8; }
+.valRed { color: #ff4d70; }
+.amountFinal .amountValue {
+  font-size: 34px;
+  color: #061612;
+}
+.amountFinal .amountUnit { color: #061612; }
+.formulaOp {
+  display: flex;
+  align-items: center;
+  font-size: 26px;
+  font-weight: var(--font-weight-bold);
+  color: #22d9ff;
+}
+
+/* ===== 분배 게이지 바 ===== */
+.gauges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  margin-top: var(--space-2);
+}
+.gaugeGroup {
+  flex: 1 1 220px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.gaugeBar {
+  display: flex;
+  gap: 4px;
+  height: 22px;
+}
+.gaugeSeg {
+  border-radius: var(--radius-pill);
+}
+.gaugeLabels {
+  display: flex;
+  gap: 4px;
+}
+.gaugeLabels span {
+  font-size: var(--font-size-11);
+  font-weight: var(--font-weight-semibold);
+  color: #bdb7e7;
+}
+
+/* ===== 수수료 구조 박스 ===== */
+.feeBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background-color: color-mix(in srgb, #1c1637 78%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  border-radius: 20px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+  overflow-x: auto;
+}
+.feeTitle {
+  font-size: 19px;
+  font-weight: var(--font-weight-bold);
+}
+.feeRow {
+  display: grid;
+  grid-template-columns: repeat(5, 168px);
+  align-items: center;
+  min-width: max-content;
+}
+.feeCell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.feeChip {
+  justify-self: start;
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+}
+.feeCatPartner {
+  color: #ffffff;
+  background-color: color-mix(in srgb, #7c5cff 24%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+}
+.feeCatDirect {
+  color: #ffffff;
+  background-color: color-mix(in srgb, #2a8bff 24%, transparent);
+  border: 1px solid color-mix(in srgb, #2a8bff 32%, transparent);
+}
+.feeHq {
+  color: #e2dff8;
+  background-color: color-mix(in srgb, #5c5878 74%, transparent);
+  border: 1px solid color-mix(in srgb, #5c5878 32%, transparent);
+}
+.feeLeader {
+  color: #061612;
+  background-color: color-mix(in srgb, #24e6b8 92%, transparent);
+}
+.feePartner {
+  color: #1b1426;
+  background-color: color-mix(in srgb, #f6c85a 94%, transparent);
+}
+.feeArrow {
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  color: #22d9ff;
+}
+
+/* ===== 본사 정산 요청 폼 ===== */
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+/* 메모/답장처럼 전체 폭을 차지하는 필드 */
+.fieldFull {
+  grid-column: 1 / -1;
+}
+.fieldCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.fieldLabel {
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  color: #bdb7e7;
+}
+.fieldBox {
+  display: flex;
+  align-items: center;
+  height: 46px;
+  padding: 0 var(--space-4);
+  background-color: color-mix(in srgb, #0d0b1d 85%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  border-radius: 12px;
+}
+.fieldValue {
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  color: #8c86b5;
+}
+/* 편집 가능한 입력 — 값은 흰 글씨 */
+.fieldInput {
+  height: 46px;
+  padding: 0 var(--space-4);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  background-color: color-mix(in srgb, #0d0b1d 85%, transparent);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+}
+.fieldInput::placeholder {
+  color: #8c86b5;
+}
+.replyBox {
+  min-height: 87px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  background-color: color-mix(in srgb, #0d0b1d 85%, transparent);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+  resize: vertical;
+}
+.replyBox::placeholder {
+  color: #8c86b5;
+}
+.saveRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}
+/* 저장 버튼 — 보조(어두운 보라 배경) */
+.saveBtn {
+  padding: var(--space-2) var(--space-5);
+  border-radius: 11px;
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  color: #f2f0ff;
+  background-color: color-mix(in srgb, #1a122a 82%, transparent);
+  border: 1px solid color-mix(in srgb, #6138db 55%, transparent);
+  cursor: pointer;
+}
+
+.checks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-12);
+  color: var(--color-text-muted);
+}
+
+/* ===== 액션 버튼 줄 ===== */
+.actionRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+/* 보조 버튼 — 회보라 솔리드 */
+.subBtn {
+  height: 32px;
+  padding: 0 var(--space-4);
+  border-radius: 11px;
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  color: #f2f0ff;
+  background-color: #736e94;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+/* 보조 버튼(아웃라인) — 자료요청/정산거절 */
+.subBtnOutline {
+  height: 32px;
+  padding: 0 var(--space-4);
+  border-radius: 11px;
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  color: #f2f0ff;
+  background-color: transparent;
+  border: 1px solid color-mix(in srgb, #7c5cff 85%, transparent);
+  cursor: pointer;
+}
+
+/* 반응형: 좁은 화면에서 KPI 3→2→1열, 폼 2→1열 */
+@media (max-width: 1024px) {
+  .kpiGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .kpiGrid,
+  .fieldGrid {
+    grid-template-columns: 1fr;
+  }
+  .panelHead {
+    flex-direction: column;
+  }
+}

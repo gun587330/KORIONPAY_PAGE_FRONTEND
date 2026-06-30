@@ -1,0 +1,89 @@
+{
+  "kpis": [
+    { "labelKey": "hqSettle.req.kpi.totalRequests", "value": "12 건", "noteKey": "hqSettle.req.note.totalRequests" },
+    { "labelKey": "hqSettle.req.kpi.pendingAmount", "value": "42,800 KORI", "noteKey": "hqSettle.req.note.pendingAmount" },
+    { "labelKey": "hqSettle.req.kpi.heldExcluded", "value": "6,420 KORI", "noteKey": "hqSettle.req.note.heldExcluded" },
+    { "labelKey": "hqSettle.req.kpi.payable", "value": "36,380 KORI", "noteKey": "hqSettle.req.note.payable" },
+    { "labelKey": "hqSettle.req.kpi.autoPartner", "value": "18,950 KORI", "noteKey": "hqSettle.req.note.autoPartner" },
+    { "labelKey": "hqSettle.req.kpi.heldRequests", "value": "3건", "noteKey": "hqSettle.req.note.heldRequests" },
+    { "labelKey": "hqSettle.req.kpi.todayNew", "value": "4건", "noteKey": "hqSettle.req.note.todayNew" },
+    { "labelKey": "hqSettle.req.kpi.avgTime", "value": "2.5일", "noteKey": "hqSettle.req.note.avgTime" }
+  ],
+  "rows": [
+    {
+      "id": "SET-LD-20260614-001",
+      "date": "2026.06.14",
+      "applicant": "NG-SP-0001",
+      "partnerName": "Richard jang",
+      "country": "나이지리아",
+      "period": "2026.05.02~2026.06.01",
+      "totalAmount": "1,842,000",
+      "partnerProfit": "0",
+      "directProfit": "0",
+      "partnerSettle": "2,950",
+      "held": "640",
+      "finalAmount": "2,950",
+      "status": "review"
+    },
+    {
+      "id": "SET-LD-20260614-001",
+      "date": "2026.06.14",
+      "applicant": "NG-SP-0002",
+      "partnerName": "Richard jang",
+      "country": "나이지리아",
+      "period": "2026.05.02~2026.06.01",
+      "totalAmount": "1,842,000",
+      "partnerProfit": "0",
+      "directProfit": "0",
+      "partnerSettle": "2,950",
+      "held": "640",
+      "finalAmount": "2,950",
+      "status": "done"
+    },
+    {
+      "id": "SET-LD-20260614-001",
+      "date": "2026.06.14",
+      "applicant": "NG-READ-0001",
+      "partnerName": "Richard jang",
+      "country": "나이지리아",
+      "period": "2026.05.02~2026.06.01",
+      "totalAmount": "1,842,000",
+      "partnerProfit": "3,120",
+      "directProfit": "1,480",
+      "partnerSettle": "2,950",
+      "held": "640",
+      "finalAmount": "3,960",
+      "status": "done"
+    },
+    {
+      "id": "SET-LD-20260614-001",
+      "date": "2026.06.14",
+      "applicant": "NG-READ-0001",
+      "partnerName": "Richard jang",
+      "country": "나이지리아",
+      "period": "2026.05.02~2026.06.01",
+      "totalAmount": "1,842,000",
+      "partnerProfit": "3,120",
+      "directProfit": "1,480",
+      "partnerSettle": "2,950",
+      "held": "640",
+      "finalAmount": "3,960",
+      "status": "hold"
+    },
+    {
+      "id": "SET-LD-20260614-001",
+      "date": "2026.06.14",
+      "applicant": "NG-READ-0001",
+      "partnerName": "Richard jang",
+      "country": "나이지리아",
+      "period": "2026.05.02~2026.06.01",
+      "totalAmount": "1,842,000",
+      "partnerProfit": "3,120",
+      "directProfit": "1,480",
+      "partnerSettle": "2,950",
+      "held": "640",
+      "finalAmount": "3,960",
+      "status": "done"
+    }
+  ]
+}

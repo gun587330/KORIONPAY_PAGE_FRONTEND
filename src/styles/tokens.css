@@ -33,6 +33,7 @@
   --color-accent-green: #29e085;  /* 긍정/성공 */
   --color-accent-orange: #ffad33; /* 주의 */
   --color-accent-red: #ff3d5c;    /* 위험/실패 */
+  --color-accent-amber: #f7c948;  /* 중간 경고(Medium) — orange와 별개 색조(본사어드민 대시보드 실측) */
 
   /* ===== 의미별 상태색 (위 포인트색의 역할 별칭) ===== */
   --color-success: var(--color-accent-green);
@@ -55,6 +56,7 @@
   --font-size-14: 0.875rem;   /* 14px — 기본 본문 */
   --font-size-15: 0.9375rem;  /* 15px */
   --font-size-16: 1rem;       /* 16px */
+  --font-size-18: 1.125rem;   /* 18px — 섹션 패널 제목 */
   --font-size-23: 1.4375rem;  /* 23px — 카드 수치 */
   --font-size-27: 1.6875rem;  /* 27px — 큰 수치/제목 */
 

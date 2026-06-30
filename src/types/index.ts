@@ -9,7 +9,7 @@
  * 강조색 키. Figma 리더 어드민에서 쓰이는 포인트 색의 의미 키.
  * tokens.css의 --color-accent-* 와 1:1 대응한다. (매핑은 utils/accent.ts)
  */
-export type AccentKey = 'cyan' | 'blue' | 'purple' | 'green' | 'orange' | 'red'
+export type AccentKey = 'cyan' | 'blue' | 'purple' | 'green' | 'orange' | 'red' | 'amber'
 
 /** 사이드바의 개별 메뉴 항목 (실제 이동 가능한 링크) */
 export interface NavItem {
