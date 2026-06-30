@@ -35,11 +35,14 @@ export default function Leaders() {
   return (
     <RequestListPage
       title={t('hqLeaderList.title')}
-      sectionTitle={t('hqLeaderList.section')}
+      statsBare
       stats={stats}
       columns={columns}
       rows={rows}
+      tableTitle={t('hqLeaderList.section')}
       toolbar={[t('common.search'), t('common.filter'), t('common.excel')]}
+      toolbarInline
+      tableMutedText
     />
   )
 }

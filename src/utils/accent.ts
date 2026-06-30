@@ -14,4 +14,5 @@ export const ACCENT_VAR: Record<AccentKey, string> = {
   green: 'var(--color-accent-green)',
   orange: 'var(--color-accent-orange)',
   red: 'var(--color-accent-red)',
+  amber: 'var(--color-accent-amber)',
 }

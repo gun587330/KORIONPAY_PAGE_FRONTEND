@@ -7,6 +7,7 @@ interface StatRaw {
   id: string
   labelKey: string
   value: string
+  deltaKey?: string
 }
 
 /** 파트너 전체 목록(본사) 행 원본 데이터 형태 (Figma 샘플값 하드코딩) */
@@ -37,6 +38,7 @@ export function usePartners() {
     id: s.id,
     label: t(s.labelKey),
     value: s.value,
+    delta: s.deltaKey ? t(s.deltaKey) : undefined,
   }))
 
   const columns: Column[] = [

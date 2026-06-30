@@ -24,6 +24,19 @@
   gap: 20px;
 }
 
+/*
+ * bare 모드(Card 없이 그리드만) 전용 — Figma "전체 운영 KPI 그리드" 실측값.
+ * 카드 폭 238 / 높이 118 고정, 간격 세로14·가로12.
+ * ⚠️ auto-fit은 화면이 넓으면 4개보다 많이 채워버려서(실측: 6개) repeat(4, ...)로
+ * 항상 정확히 4열 고정. 화면이 988px보다 좁을 땐 overflow-x로 가로 스크롤.
+ */
+.gridBare {
+  grid-template-columns: repeat(4, 238px);
+  grid-auto-rows: 118px;
+  gap: 14px 12px;
+  overflow-x: auto;
+}
+
 /* 반응형: 좁은 화면에서 열 수 축소 */
 @media (max-width: 1024px) {
   .grid {

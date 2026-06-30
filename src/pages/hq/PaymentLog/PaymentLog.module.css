@@ -1,0 +1,133 @@
+/*
+ * PaymentLog 전용 스타일 — 상태 셀의 색 글자만 담당.
+ * 글자 색은 인라인으로 토큰 변수(--color-accent-*)를 주입받으므로 여기선 굵기만 고정한다.
+ */
+.status {
+  font-weight: var(--font-weight-bold);
+}
+
+/* 액션 컬럼: 정산 처리 배지 + 클릭 가능한 "상세" 배지 */
+.actionCell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* "상세" 배지를 감싸는 버튼 — 배지 외형은 그대로, 클릭만 가능하게 */
+.detailButton {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* ── 상세 Drawer 헤더 영역 ── */
+.drawerHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* 거래 식별자 — Figma 실측 시안색 강조 */
+.drawerId {
+  font-size: var(--font-size-15);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-cyan);
+}
+
+.statusRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.metaLine {
+  font-size: var(--font-size-11);
+  color: var(--color-text-muted);
+}
+
+/* ── E. Sync 스텝퍼 ── */
+.stepper {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* 단계 노드(REQ/APP/…) — 상태별 색 구분 */
+.stepNode {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  padding: 6px var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-10);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  background: var(--color-bg-elevated);
+}
+
+/* 완료: 초록 / 진행중: 시안 / 대기: 중립(기본) */
+.stepDone {
+  color: var(--color-text);
+  border-color: color-mix(in srgb, var(--color-accent-green) 65%, transparent);
+  background: color-mix(in srgb, var(--color-accent-green) 22%, transparent);
+}
+.stepActive {
+  color: var(--color-text);
+  border-color: color-mix(in srgb, var(--color-accent-cyan) 70%, transparent);
+  background: color-mix(in srgb, var(--color-accent-cyan) 22%, transparent);
+}
+.stepPending {
+  /* 기본값 유지(중립) */
+}
+
+/* 단계 사이 연결선 */
+.stepConnector {
+  width: 8px;
+  height: 2px;
+  background: var(--color-border-accent);
+}
+
+.syncStatus {
+  font-size: var(--font-size-11);
+  color: var(--color-text-muted);
+}
+
+/* ── H. 관리자 메모 ── */
+.memoInput {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+  color: var(--color-text);
+  font-size: var(--font-size-11);
+  font-family: inherit;
+  resize: none;
+}
+.memoInput::placeholder {
+  color: var(--color-text-subtle);
+}
+
+.memoLogs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.memoLogs li {
+  font-size: var(--font-size-11);
+  color: var(--color-text-muted);
+}

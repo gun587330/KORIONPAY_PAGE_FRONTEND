@@ -33,11 +33,14 @@ export default function Partners() {
   return (
     <RequestListPage
       title={t('hqPartnerList.title')}
-      sectionTitle={t('hqPartnerList.section')}
+      statsBare
       stats={stats}
       columns={columns}
       rows={rows}
+      tableTitle={t('hqPartnerList.section')}
       toolbar={[t('common.search'), t('common.filter'), t('common.excel')]}
+      toolbarInline
+      tableMutedText
     />
   )
 }

@@ -23,6 +23,16 @@ interface RequestListPageProps {
   toolbar?: string[]
   /** 행 클릭 콜백 (지정 시 행 전체 클릭 가능 — 예: 상세로 이동) */
   onRowClick?: (id: string) => void
+  /** true면 지표 카드를 Card 박스 없이 그리드만 표시(sectionTitle/sectionDesc 무시됨) */
+  statsBare?: boolean
+  /** true면 테이블 제목 우측에 툴바가 바로 붙음(기본은 양끝 정렬) */
+  toolbarInline?: boolean
+  /** true면 테이블 제목/헤더/셀 글자 크기·색을 본사어드민 Figma 정확값으로 적용 */
+  tableMutedText?: boolean
+  /** true면 테이블 가로폭을 컨테이너에 고정(행 최소폭/가로 스크롤 제거) */
+  tableFluid?: boolean
+  /** true면 긴 셀 내용을 말줄임 대신 다음 줄로 줄바꿈 */
+  tableWrapCells?: boolean
 }
 
 /*
@@ -42,12 +52,28 @@ export default function RequestListPage({
   tableTitle,
   toolbar,
   onRowClick,
+  statsBare,
+  toolbarInline,
+  tableMutedText,
+  tableFluid,
+  tableWrapCells,
 }: RequestListPageProps) {
   return (
     <div className={styles.page}>
       <PageHeader title={title} />
-      <StatSection title={sectionTitle} desc={sectionDesc} stats={stats} />
-      <DataTable title={tableTitle} columns={columns} rows={rows} toolbar={toolbar} fill onRowClick={onRowClick} />
+      <StatSection title={sectionTitle} desc={sectionDesc} stats={stats} bare={statsBare} />
+      <DataTable
+        title={tableTitle}
+        columns={columns}
+        rows={rows}
+        toolbar={toolbar}
+        fill
+        onRowClick={onRowClick}
+        inlineToolbar={toolbarInline}
+        mutedText={tableMutedText}
+        fluid={tableFluid}
+        wrapCells={tableWrapCells}
+      />
     </div>
   )
 }

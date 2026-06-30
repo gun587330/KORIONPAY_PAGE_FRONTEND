@@ -1,9 +1,9 @@
 {
   "stats": [
-    { "id": "countries", "labelKey": "hqLeaderList.kpi.countries", "value": "150" },
-    { "id": "totalLeaders", "labelKey": "hqLeaderList.kpi.totalLeaders", "value": "170" },
-    { "id": "approvedLeaders", "labelKey": "hqLeaderList.kpi.approvedLeaders", "value": "160" },
-    { "id": "suspendedLeaders", "labelKey": "hqLeaderList.kpi.suspendedLeaders", "value": "10" }
+    { "id": "countries", "labelKey": "hqLeaderList.kpi.countries", "value": "150", "deltaKey": "hqLeaderList.kpi.delta5" },
+    { "id": "totalLeaders", "labelKey": "hqLeaderList.kpi.totalLeaders", "value": "170", "deltaKey": "hqLeaderList.kpi.delta5" },
+    { "id": "approvedLeaders", "labelKey": "hqLeaderList.kpi.approvedLeaders", "value": "160", "deltaKey": "hqLeaderList.kpi.delta5" },
+    { "id": "suspendedLeaders", "labelKey": "hqLeaderList.kpi.suspendedLeaders", "value": "10", "deltaKey": "hqLeaderList.kpi.delta5" }
   ],
   "rows": [
     {
