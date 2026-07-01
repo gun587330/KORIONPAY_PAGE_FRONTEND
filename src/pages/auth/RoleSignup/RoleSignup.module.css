@@ -1,5 +1,5 @@
 /* 역할별 회원가입 폼 (파트너/가맹점) */
-.panel {
+.signupPanel {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -10,7 +10,7 @@
 }
 
 /* 가입 방식 카드들 (추천인 코드 입력 포함) — 한 줄 그리드 */
-.modes {
+.modeCardGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-4);
@@ -24,14 +24,34 @@
   min-height: 200px;
   padding: var(--space-5);
   text-align: left;
-  background-color: color-mix(in srgb, #151127 82%, transparent);
-  border: 1px solid color-mix(in srgb, #7b5cff 34%, transparent);
+  background-color: color-mix(in srgb, #0e0b1b 78%, transparent);
+  border: 1px solid color-mix(in srgb, #7b5cff 18%, transparent);
   border-radius: 22px;
   cursor: pointer;
+  opacity: 0.54;
+  filter: saturate(0.7);
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    filter 0.16s ease,
+    opacity 0.16s ease,
+    transform 0.16s ease;
+}
+.modeCard:hover {
+  opacity: 0.78;
+  border-color: color-mix(in srgb, #7b5cff 34%, transparent);
 }
 /* 선택된 카드 — 보더 강조 (Figma 0.60) */
 .modeCardActive {
-  border-color: color-mix(in srgb, #7b5cff 60%, transparent);
+  background-color: color-mix(in srgb, #191332 92%, transparent);
+  border-color: color-mix(in srgb, #26e6b2 70%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #26e6b2 26%, transparent),
+    0 18px 46px color-mix(in srgb, #090615 42%, transparent);
+  opacity: 1;
+  filter: none;
+  transform: translateY(-1px);
 }
 .modeBadge {
   padding: 4px var(--space-4);
@@ -42,25 +62,33 @@
   background-color: color-mix(in srgb, #238cff 22%, transparent);
   border: 1px solid color-mix(in srgb, #238cff 34%, transparent);
 }
-.modeDesc {
+.modeCardActive .modeBadge {
+  color: #061612;
+  background-color: color-mix(in srgb, #26e6b2 94%, transparent);
+  border-color: color-mix(in srgb, #26e6b2 72%, transparent);
+}
+.modeDescription {
   flex: 1;
   font-size: var(--font-size-12);
   line-height: 1.5;
   color: var(--color-text-muted);
 }
+.modeCardActive .modeDescription {
+  color: color-mix(in srgb, var(--color-text) 88%, #dffdf5);
+}
 /* 추천인 코드 입력 + 코드 확인 버튼 */
-.codeRow {
+.referralCodeRow {
   display: flex;
   gap: var(--space-2);
   width: 100%;
 }
 /* 입력란 래퍼 — '확인 완료' 배지를 입력란 안에 겹쳐 배치하기 위해 relative */
-.codeInputWrap {
+.referralCodeInputWrap {
   position: relative;
   flex: 1;
   min-width: 0;
 }
-.codeInput {
+.referralCodeInput {
   width: 100%;
   height: 46px;
   /* 우측은 '확인 완료' 배지 자리만큼 패딩 확보 */
@@ -72,11 +100,15 @@
   font: inherit;
   font-size: 13px;
 }
-.codeInput::placeholder {
+.modeCard:not(.modeCardActive) .referralCodeInput {
+  background-color: color-mix(in srgb, #090715 86%, transparent);
+  color: color-mix(in srgb, var(--color-text-muted) 82%, transparent);
+}
+.referralCodeInput::placeholder {
   color: #8c86b5;
 }
 /* 코드 확인 — 그라데이션 버튼(표시용) */
-.codeCheckBtn {
+.referralCodeCheckButton {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -88,8 +120,13 @@
   font-size: var(--font-size-12);
   font-weight: var(--font-weight-semibold);
 }
+.modeCard:not(.modeCardActive) .referralCodeCheckButton,
+.modeCard:not(.modeCardActive) .hqReviewBadge {
+  opacity: 0.72;
+  filter: saturate(0.7);
+}
 /* 확인 완료 — 청록 솔리드 상태 배지 (입력란 안 우측에 겹쳐 표시) */
-.codeConfirmed {
+.referralCodeConfirmedBadge {
   position: absolute;
   right: var(--space-2);
   top: 50%;
@@ -103,7 +140,7 @@
   pointer-events: none;        /* 입력 클릭을 가리지 않도록 */
 }
 /* 본사 검토확인 — 보라 상태 배지 */
-.hqBadge {
+.hqReviewBadge {
   padding: 4px var(--space-3);
   border-radius: var(--radius-pill);
   font-size: var(--font-size-11);
@@ -121,17 +158,17 @@
 }
 
 /* 필드 그리드 (3열) */
-.grid {
+.formFieldGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-4);
 }
-.field {
+.formField {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
-.wide {
+.formFieldWide {
   grid-column: span 3;
 }
 .fieldLabel {
@@ -140,11 +177,11 @@
   color: #ffffff;
 }
 /* 입력 + (선택) 우측 버튼 한 줄 */
-.inputRow {
+.fieldControlRow {
   display: flex;
   gap: var(--space-2);
 }
-.input {
+.fieldControl {
   flex: 1;
   min-width: 0;
   height: 46px;
@@ -156,11 +193,30 @@
   font: inherit;
   font-size: 13px;
 }
-.input::placeholder {
+.fieldControl::placeholder {
   color: #8c86b5;
 }
+.fieldControlError {
+  border-color: #ff5a7a;
+  box-shadow: 0 0 0 1px color-mix(in srgb, #ff5a7a 44%, transparent);
+}
+.fieldError {
+  font-size: var(--font-size-12);
+  line-height: 1.4;
+  color: #ff6b86;
+}
+.fieldHint {
+  font-size: var(--font-size-12);
+  line-height: 1.4;
+  color: #bdb7e7;
+}
+.fieldSuccess {
+  font-size: var(--font-size-12);
+  line-height: 1.4;
+  color: #26e6b2;
+}
 /* 중복 확인/인증/지갑 연결 등 보조 버튼 — 청록 솔리드 */
-.smallBtn {
+.fieldActionButton {
   flex-shrink: 0;
   height: 46px;
   padding: 0 var(--space-4);
@@ -173,12 +229,12 @@
   cursor: pointer;
   white-space: nowrap;
 }
-.smallBtn:disabled {
+.fieldActionButton:disabled {
   cursor: wait;
   opacity: 0.65;
 }
 
-.inlineNotice {
+.formStatusNotice {
   padding: var(--space-3) var(--space-4);
   border-radius: 12px;
   border: 1px solid color-mix(in srgb, #26e6b2 34%, transparent);
@@ -189,21 +245,35 @@
 }
 
 /* 동의 체크 */
-.agree {
+.agreementItem {
   display: flex;
   align-items: flex-start;
   gap: var(--space-2);
+  padding: var(--space-2) 0;
   font-size: var(--font-size-12);
   line-height: 1.5;
   color: var(--color-text-muted);
+  cursor: pointer;
+  transition: color 0.16s ease;
 }
-.agreeAll {
+.agreementItem input {
+  flex-shrink: 0;
+  margin-top: 2px;
+  accent-color: #26e6b2;
+}
+.agreementItemChecked {
+  color: color-mix(in srgb, var(--color-text) 86%, #26e6b2);
+}
+.agreementAllItem {
   font-weight: var(--font-weight-bold);
   color: var(--color-text);
 }
+.agreementAllItemActive {
+  color: #26e6b2;
+}
 
 /* 하단 버튼 */
-.buttons {
+.formFooterActions {
   display: flex;
   justify-content: flex-end;
   gap: var(--space-3);
@@ -211,7 +281,7 @@
 }
 
 /* 확인 모달 */
-.overlay {
+.dialogOverlay {
   position: fixed;
   inset: 0;
   display: flex;
@@ -221,7 +291,7 @@
   background-color: rgba(4, 3, 10, 0.6);
   z-index: 100;
 }
-.modal {
+.dialogPanel {
   width: 100%;
   max-width: 440px;
   display: flex;
@@ -233,16 +303,16 @@
   border-radius: 22px;
   box-shadow: 0 12px 40px rgba(117, 51, 255, 0.28), 0 0 28px rgba(0, 204, 255, 0.14);
 }
-.modalTitle {
+.dialogTitle {
   font-size: var(--font-size-16);
   font-weight: var(--font-weight-bold);
 }
-.modalDesc {
+.dialogDescription {
   font-size: var(--font-size-12);
   line-height: 1.6;
   color: #bdb7e7;
 }
-.modalButtons {
+.dialogActions {
   display: flex;
   justify-content: flex-end;
   gap: var(--space-3);
@@ -250,7 +320,7 @@
 }
 
 /* 완료 토스트 (클릭 시 로그인 화면으로) */
-.toast {
+.successToast {
   position: fixed;
   right: var(--space-6);
   bottom: var(--space-6);
@@ -268,10 +338,10 @@
 
 /* 반응형: 좁은 화면에서 1열 */
 @media (max-width: 900px) {
-  .grid {
+  .formFieldGrid {
     grid-template-columns: 1fr;
   }
-  .wide {
+  .formFieldWide {
     grid-column: span 1;
   }
 }

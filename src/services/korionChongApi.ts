@@ -7,7 +7,10 @@ function buildUrl(path: string, query?: Record<string, string | number | undefin
     if (value !== undefined && value !== '') params.set(key, String(value))
   })
   const suffix = params.toString() ? `?${params.toString()}` : ''
-  return `${API_BASE_URL}${path}${suffix}`
+  const normalizedPath = API_BASE_URL.endsWith('/api') && path.startsWith('/api/')
+    ? path.slice('/api'.length)
+    : path
+  return `${API_BASE_URL}${normalizedPath}${suffix}`
 }
 
 function leaderHeaders() {
@@ -193,6 +196,17 @@ export interface ReferralCodeValidationApiResponse {
   messageKey: string
 }
 
+export interface SignupCountryOptionApiResponse {
+  code: string
+  nameEn: string
+  nameKo?: string | null
+  flag?: string | null
+}
+
+export interface SignupOptionsApiResponse {
+  countries: SignupCountryOptionApiResponse[]
+}
+
 export interface SignupApplicationApiRequest {
   applicantType: 'PARTNER' | 'MERCHANT'
   loginId: string
@@ -254,6 +268,14 @@ export interface WalletLinkVerifyApiResponse {
   messageKey: string
 }
 
+export interface WalletAddressValidateApiResponse {
+  verified: boolean
+  walletNetwork: 'TRON' | 'BTC' | 'EVM'
+  authStatus: 'VERIFIED'
+  resultCode: 'WALLET_ADDRESS_VERIFIED'
+  messageKey: string
+}
+
 export interface LoginApiRequest {
   loginId: string
   password: string
@@ -289,6 +311,10 @@ export function checkSignupAvailability(field: SignupAvailabilityField, value: s
 
 export function validateReferralCode(code: string) {
   return getJson<ReferralCodeValidationApiResponse>(`/api/auth/referral-codes/${encodeURIComponent(code)}/validate`)
+}
+
+export function fetchSignupOptions() {
+  return getJson<SignupOptionsApiResponse>('/api/auth/signup-options')
 }
 
 export function sendEmailVerification(email: string, requestId?: string) {
@@ -335,6 +361,20 @@ export function verifyWalletLink(
     walletAddress,
     nonce,
     signature,
+    requestId,
+  })
+}
+
+export function validateWalletAddress(
+  applicantType: 'PARTNER' | 'MERCHANT',
+  email: string,
+  walletAddress: string,
+  requestId?: string,
+) {
+  return postJson<WalletAddressValidateApiResponse>('/api/auth/wallet-addresses/validate', {
+    applicantType,
+    email,
+    walletAddress,
     requestId,
   })
 }

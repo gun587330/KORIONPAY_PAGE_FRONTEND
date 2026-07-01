@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import Button from '../../../components/atoms/Button'
 import AuthShell from '../AuthShell'
@@ -6,11 +6,13 @@ import { useTranslation } from '../../../i18n'
 import {
   checkSignupAvailability,
   createSignupApplication,
+  fetchSignupOptions,
   sendEmailVerification,
   validateReferralCode,
   confirmEmailVerification,
-  sendTelegramVerification,
-  confirmTelegramVerification,
+  validateWalletAddress,
+  type SignupCountryOptionApiResponse,
+  type ReferralCodeValidationApiResponse,
   type SignupAvailabilityField,
 } from '../../../services/korionChongApi'
 import data from './signupData.json'
@@ -22,6 +24,7 @@ interface ModeDef {
   descKey: string
   type: 'code' | 'hq'
   codePlaceholder?: string
+  codePlaceholderKey?: string
   confirmed?: string
 }
 const CFG = data as Record<
@@ -34,9 +37,10 @@ interface FieldDef {
   name: keyof SignupForm
   labelKey: string
   placeholder: string
+  placeholderKey?: string
   type?: string
   buttonKey?: string
-  action?: 'availability' | 'sendEmail' | 'confirmEmail' | 'sendTelegram' | 'confirmTelegram'
+  action?: 'availability' | 'sendEmail' | 'confirmEmail'
   availabilityField?: SignupAvailabilityField
   wide?: boolean
 }
@@ -48,7 +52,6 @@ interface SignupForm {
   password: string
   passwordConfirm: string
   telegram: string
-  telegramCode: string
   whatsapp: string
   twitter: string
   companyName: string
@@ -66,44 +69,93 @@ interface SignupForm {
   referralCode: string
 }
 
+interface AlertModalState {
+  title: string
+  message: string
+}
+
 /* A. 계정 정보 */
 const ACCOUNT_FIELDS: FieldDef[] = [
-  { name: 'loginId', labelKey: 'auth.signup.f.id', placeholder: '중복 확인 필요', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'loginId' },
-  { name: 'email', labelKey: 'auth.signup.f.email', placeholder: 'example@email.com', buttonKey: 'auth.signup.btn.sendCode', action: 'sendEmail' },
-  { name: 'emailCode', labelKey: 'auth.signup.f.emailCode', placeholder: '인증번호', buttonKey: 'auth.signup.btn.verify', action: 'confirmEmail' },
-  { name: 'password', labelKey: 'auth.signup.f.pw', placeholder: '8자 이상', type: 'password' },
-  { name: 'passwordConfirm', labelKey: 'auth.signup.f.pwConfirm', placeholder: '8자 이상', type: 'password' },
-  { name: 'telegram', labelKey: 'auth.signup.f.telegram', placeholder: '@telegram_id', buttonKey: 'auth.signup.btn.sendCode', action: 'sendTelegram' },
-  { name: 'telegramCode', labelKey: 'auth.signup.f.telegramCode', placeholder: '인증번호', buttonKey: 'auth.signup.btn.verify', action: 'confirmTelegram' },
-  { name: 'whatsapp', labelKey: 'auth.signup.f.phone', placeholder: '+234 000 000 0000', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'phone' },
-  { name: 'twitter', labelKey: 'auth.signup.f.twitter', placeholder: '선택 입력' },
+  { name: 'loginId', labelKey: 'auth.signup.f.id', placeholder: '영문/숫자 20자 이내', placeholderKey: 'auth.signup.placeholder.loginId', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'loginId' },
+  { name: 'email', labelKey: 'auth.signup.f.email', placeholder: 'example@email.com', placeholderKey: 'auth.signup.placeholder.email', buttonKey: 'auth.signup.btn.sendCode', action: 'sendEmail' },
+  { name: 'emailCode', labelKey: 'auth.signup.f.emailCode', placeholder: '인증번호', placeholderKey: 'auth.signup.placeholder.emailCode', buttonKey: 'auth.signup.btn.verify', action: 'confirmEmail' },
+  { name: 'password', labelKey: 'auth.signup.f.pw', placeholder: '8자 이상', placeholderKey: 'auth.signup.placeholder.password', type: 'password' },
+  { name: 'passwordConfirm', labelKey: 'auth.signup.f.pwConfirm', placeholder: '8자 이상', placeholderKey: 'auth.signup.placeholder.password', type: 'password' },
+  { name: 'telegram', labelKey: 'auth.signup.f.telegram', placeholder: '@telegram_id', placeholderKey: 'auth.signup.placeholder.telegram', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'telegram' },
+  { name: 'whatsapp', labelKey: 'auth.signup.f.phone', placeholder: '+234 000 000 0000', placeholderKey: 'auth.signup.placeholder.phone', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'phone' },
+  { name: 'twitter', labelKey: 'auth.signup.f.twitter', placeholder: '선택 입력', placeholderKey: 'auth.signup.placeholder.twitter' },
 ]
 
 /* B. 기본 / 소속 정보 */
 const BASIC_FIELDS: FieldDef[] = [
-  { name: 'companyName', labelKey: 'auth.signup.f.name', placeholder: '예: Samuel O.' },
-  { name: 'country', labelKey: 'auth.signup.f.country', placeholder: 'NG' },
-  { name: 'region', labelKey: 'auth.signup.f.region', placeholder: 'Lagos Island, Ikeja' },
-  { name: 'language', labelKey: 'auth.signup.f.language', placeholder: 'English, Local Language' },
-  { name: 'integrationPlan', labelKey: 'auth.signup.f.hqReason', placeholder: '선택 시 필수', wide: true },
+  { name: 'companyName', labelKey: 'auth.signup.f.name', placeholder: '예: Samuel O.', placeholderKey: 'auth.signup.placeholder.companyName' },
+  { name: 'country', labelKey: 'auth.signup.f.country', placeholder: 'NG', placeholderKey: 'auth.signup.placeholder.country' },
+  { name: 'region', labelKey: 'auth.signup.f.region', placeholder: 'Lagos Island, Ikeja', placeholderKey: 'auth.signup.placeholder.region' },
+  { name: 'language', labelKey: 'auth.signup.f.language', placeholder: 'English, Local Language', placeholderKey: 'auth.signup.placeholder.language' },
+  { name: 'integrationPlan', labelKey: 'auth.signup.f.hqReason', placeholder: '선택 시 필수', placeholderKey: 'auth.signup.placeholder.hqReason', wide: true },
 ]
 
 /* D. 매장 기본 정보 (가맹점만) */
 const STORE_FIELDS: FieldDef[] = [
-  { name: 'storeName', labelKey: 'auth.signup.f.storeName', placeholder: 'Kori Cafe Lagos' },
-  { name: 'ownerName', labelKey: 'auth.signup.f.owner', placeholder: '대표자명' },
-  { name: 'address', labelKey: 'auth.signup.f.address', placeholder: '주소 입력' },
-  { name: 'industry', labelKey: 'auth.signup.f.industry', placeholder: '카페 / 리테일' },
+  { name: 'storeName', labelKey: 'auth.signup.f.storeName', placeholder: 'Kori Cafe Lagos', placeholderKey: 'auth.signup.placeholder.storeName' },
+  { name: 'ownerName', labelKey: 'auth.signup.f.owner', placeholder: '대표자명', placeholderKey: 'auth.signup.placeholder.ownerName' },
+  { name: 'address', labelKey: 'auth.signup.f.address', placeholder: '주소 입력', placeholderKey: 'auth.signup.placeholder.address' },
+  { name: 'industry', labelKey: 'auth.signup.f.industry', placeholder: '카페 / 리테일', placeholderKey: 'auth.signup.placeholder.industry' },
 ]
 
+const SIGNUP_COUNTRY_FALLBACK_OPTIONS: SignupCountryOptionApiResponse[] = [
+  { code: 'NG', nameEn: 'Nigeria', nameKo: '나이지리아', flag: '🇳🇬' },
+  { code: 'KR', nameEn: 'Korea (South)', nameKo: '대한민국', flag: '🇰🇷' },
+  { code: 'US', nameEn: 'United States', nameKo: '미국', flag: '🇺🇸' },
+]
 const AGREEMENTS = ['1', '2', '3', '4', '5', '6']
+const EMAIL_VERIFICATION_TTL_SECONDS = 300
+const LEADER_CODE_PATTERN = /^[A-Z]{2}-LEAD-[0-9]{3}$/
+const PARTNER_CODE_PATTERN = /^[A-Z]{2}-SP-[0-9]{3}$/
+const EMAIL_ADDRESS_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const PASSWORD_NUMBER_PATTERN = /\d/
+const PASSWORD_SPECIAL_PATTERN = /[^A-Za-z0-9]/
+const PHONE_NUMBER_PATTERN = /^\+?[0-9\s().-]{7,24}$/
+const TWITTER_PROFILE_PATTERN = /^@?[A-Za-z0-9_]{1,30}$/
+
+const normalizeReferralCode = (value: string) => value.trim().toUpperCase()
+const isValidEmailAddress = (value: string) => EMAIL_ADDRESS_PATTERN.test(value.trim())
+const hasPasswordNumberAndSpecial = (value: string) =>
+  PASSWORD_NUMBER_PATTERN.test(value) && PASSWORD_SPECIAL_PATTERN.test(value)
+const isValidPhoneNumber = (value: string) => {
+  const trimmed = value.trim()
+  const digitCount = trimmed.replace(/\D/g, '').length
+  return PHONE_NUMBER_PATTERN.test(trimmed) && digitCount >= 7 && digitCount <= 15
+}
+const textValidationMessageKey = (name: keyof SignupForm, value: string) => {
+  const trimmed = value.trim()
+  if (!trimmed) return ''
+  if (name === 'whatsapp' && !isValidPhoneNumber(trimmed)) return 'auth.signup.validation.phoneInvalid'
+  if (name === 'twitter' && !TWITTER_PROFILE_PATTERN.test(trimmed)) return 'auth.signup.validation.twitterInvalid'
+  return ''
+}
+const formatRemainingTime = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60)
+  const paddedSeconds = String(seconds % 60).padStart(2, '0')
+  return `${minutes}:${paddedSeconds}`
+}
+const referralPatternForMode = (modeKey: string) => (
+  modeKey === 'partner' ? PARTNER_CODE_PATTERN : LEADER_CODE_PATTERN
+)
+const referralExampleForMode = (modeKey: string) => (
+  modeKey === 'partner' ? 'NG-SP-004' : 'NG-LEAD-001'
+)
+const alertReferralCodeApiResponse = (response: ReferralCodeValidationApiResponse) => {
+  if (typeof window === 'undefined') return
+  window.alert(`코드확인 API 응답\n${JSON.stringify(response, null, 2)}`)
+}
 
 /*
  * RoleSignup (page) — 역할별 회원가입 (파트너/가맹점)
  * ------------------------------------------------------------------
  * 가입 방식 탭(리더 코드/파트너 코드/본사 직접) + A.계정 / B.기본·소속 / C.Wallet
  *  (+ 가맹점: D.매장 정보) + 동의 체크 + 가입 신청.
- * 중복 확인/이메일/Telegram 인증을 통과해야 확인 모달과 가입 신청 제출이 가능하다.
+ * 중복 확인과 이메일 인증을 통과해야 확인 모달과 가입 신청 제출이 가능하다.
  */
 export default function RoleSignup() {
   const { role } = useParams<{ role: string }>()
@@ -115,6 +167,11 @@ export default function RoleSignup() {
   const [mode, setMode] = useState('leader')
   const [busy, setBusy] = useState(false)
   const [statusMessage, setStatusMessage] = useState('')
+  const [alertModal, setAlertModal] = useState<AlertModalState | null>(null)
+  const [countryOptions, setCountryOptions] = useState<SignupCountryOptionApiResponse[]>(SIGNUP_COUNTRY_FALLBACK_OPTIONS)
+  const [emailVerificationSent, setEmailVerificationSent] = useState(false)
+  const [emailVerificationExpiresAtMs, setEmailVerificationExpiresAtMs] = useState<number | null>(null)
+  const [emailVerificationRemainingSeconds, setEmailVerificationRemainingSeconds] = useState(0)
   const [checks, setChecks] = useState({
     loginId: false,
     emailVerified: false,
@@ -133,7 +190,6 @@ export default function RoleSignup() {
     password: '',
     passwordConfirm: '',
     telegram: '',
-    telegramCode: '',
     whatsapp: '',
     twitter: '',
     companyName: '',
@@ -151,14 +207,54 @@ export default function RoleSignup() {
     referralCode: '',
   })
 
+  useEffect(() => {
+    let cancelled = false
+    fetchSignupOptions()
+      .then((response) => {
+        if (cancelled) return
+        setCountryOptions(response.countries.length > 0 ? response.countries : SIGNUP_COUNTRY_FALLBACK_OPTIONS)
+      })
+      .catch(() => {
+        if (!cancelled) setCountryOptions(SIGNUP_COUNTRY_FALLBACK_OPTIONS)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!emailVerificationExpiresAtMs || checks.emailVerified) {
+      setEmailVerificationRemainingSeconds(0)
+      return
+    }
+    const refreshRemainingSeconds = () => {
+      const nextSeconds = Math.max(0, Math.ceil((emailVerificationExpiresAtMs - Date.now()) / 1000))
+      setEmailVerificationRemainingSeconds(nextSeconds)
+      if (nextSeconds === 0) {
+        setEmailVerificationExpiresAtMs(null)
+      }
+    }
+    refreshRemainingSeconds()
+    const intervalId = window.setInterval(refreshRemainingSeconds, 1000)
+    return () => window.clearInterval(intervalId)
+  }, [checks.emailVerified, emailVerificationExpiresAtMs])
+
   if (!role || !CFG[role]) return <Navigate to="/login" replace />
   const cfg = CFG[role]
   const requestId = `signup-${role}-${form.loginId || form.email || 'draft'}`
+  const passwordMismatch = Boolean(form.password && form.passwordConfirm && form.password !== form.passwordConfirm)
+  const passwordCompositionInvalid = Boolean(form.password && !hasPasswordNumberAndSpecial(form.password))
+  const allAgreementsChecked = AGREEMENTS.every((key) => agreements[key])
 
   const updateField = (name: keyof SignupForm, value: string) => {
     setForm((current) => ({ ...current, [name]: value }))
     if (name === 'loginId') setChecks((current) => ({ ...current, loginId: false }))
-    if (name === 'email') setChecks((current) => ({ ...current, emailVerified: false }))
+    if (name === 'email') {
+      setChecks((current) => ({ ...current, emailVerified: false }))
+      setEmailVerificationSent(false)
+      setEmailVerificationExpiresAtMs(null)
+      setEmailVerificationRemainingSeconds(0)
+    }
     if (name === 'telegram') setChecks((current) => ({ ...current, telegramVerified: false }))
     if (name === 'whatsapp') setChecks((current) => ({ ...current, whatsapp: false }))
     if (name === 'walletAddress') setChecks((current) => ({ ...current, walletAddress: false }))
@@ -172,59 +268,137 @@ export default function RoleSignup() {
       if (field.action === 'availability' && field.availabilityField) {
         const value = form[field.name]
         if (!value.trim()) throw new Error('값을 입력한 뒤 확인하세요.')
+        if ((field.availabilityField === 'phone' || field.availabilityField === 'whatsapp')
+          && !isValidPhoneNumber(value)) {
+          throw new Error(t('auth.signup.validation.phoneInvalid'))
+        }
         const result = await checkSignupAvailability(field.availabilityField, value.trim())
         if (field.availabilityField === 'loginId') {
           setChecks((current) => ({ ...current, loginId: result.available }))
+          setAlertModal({
+            title: t('auth.signup.availability.loginIdTitle'),
+            message: result.available
+              ? t('auth.signup.availability.loginIdAvailable')
+              : t('auth.signup.availability.loginIdDuplicate'),
+          })
+        }
+        if (field.availabilityField === 'telegram') {
+          setChecks((current) => ({ ...current, telegramVerified: result.available }))
+          setAlertModal({
+            title: t('auth.signup.availability.telegramTitle'),
+            message: result.available
+              ? t('auth.signup.availability.telegramAvailable')
+              : t('auth.signup.availability.telegramDuplicate'),
+          })
         }
         if (field.availabilityField === 'whatsapp') {
           setChecks((current) => ({ ...current, whatsapp: result.available }))
+          setAlertModal({
+            title: t('auth.signup.availability.phoneTitle'),
+            message: result.available
+              ? t('auth.signup.availability.phoneAvailable')
+              : t('auth.signup.availability.phoneDuplicate'),
+          })
         }
         if (field.availabilityField === 'phone') {
           setChecks((current) => ({ ...current, whatsapp: result.available }))
+          setAlertModal({
+            title: t('auth.signup.availability.phoneTitle'),
+            message: result.available
+              ? t('auth.signup.availability.phoneAvailable')
+              : t('auth.signup.availability.phoneDuplicate'),
+          })
         }
-        setStatusMessage(result.available ? '사용 가능한 값입니다.' : '이미 사용 중인 값입니다.')
+        setStatusMessage(result.available
+          ? t('auth.signup.availability.available')
+          : t('auth.signup.availability.duplicate'))
       }
       if (field.action === 'sendEmail') {
-        if (!form.email.trim()) throw new Error('이메일을 입력하세요.')
+        if (!form.email.trim()) throw new Error(t('auth.signup.email.required'))
+        if (!isValidEmailAddress(form.email)) throw new Error(t('auth.signup.email.invalid'))
         setChecks((current) => ({ ...current, emailVerified: false }))
-        await sendEmailVerification(form.email.trim(), requestId)
-        setStatusMessage('이메일 인증번호 발송 요청이 완료되었습니다.')
+        const response = await sendEmailVerification(form.email.trim(), requestId)
+        const parsedExpiresAt = Date.parse(response.expiresAt)
+        const expiresAtMs = Number.isFinite(parsedExpiresAt)
+          ? parsedExpiresAt
+          : Date.now() + EMAIL_VERIFICATION_TTL_SECONDS * 1000
+        setEmailVerificationSent(true)
+        setEmailVerificationExpiresAtMs(expiresAtMs)
+        setEmailVerificationRemainingSeconds(Math.max(0, Math.ceil((expiresAtMs - Date.now()) / 1000)))
+        setStatusMessage(t('auth.signup.email.sent'))
       }
       if (field.action === 'confirmEmail') {
-        if (!form.email.trim() || !form.emailCode.trim()) throw new Error('이메일과 인증번호를 입력하세요.')
-        await confirmEmailVerification(form.email.trim(), form.emailCode.trim(), requestId)
-        setChecks((current) => ({ ...current, emailVerified: true }))
-        setStatusMessage('이메일 인증이 완료되었습니다.')
-      }
-      if (field.action === 'sendTelegram') {
-        if (!form.telegram.trim()) throw new Error('Telegram ID를 입력하세요.')
-        setChecks((current) => ({ ...current, telegramVerified: false }))
-        await sendTelegramVerification(form.telegram.trim(), requestId)
-        setStatusMessage('Telegram 인증번호 발송 요청이 완료되었습니다.')
-      }
-      if (field.action === 'confirmTelegram') {
-        if (!form.telegram.trim() || !form.telegramCode.trim()) throw new Error('Telegram ID와 인증번호를 입력하세요.')
-        await confirmTelegramVerification(form.telegram.trim(), form.telegramCode.trim(), requestId)
-        setChecks((current) => ({ ...current, telegramVerified: true }))
-        setStatusMessage('Telegram 인증이 완료되었습니다.')
+        if (!form.email.trim() || !form.emailCode.trim()) throw new Error(t('auth.signup.email.codeRequired'))
+        const response = await confirmEmailVerification(form.email.trim(), form.emailCode.trim(), requestId)
+        setChecks((current) => ({ ...current, emailVerified: response.verified }))
+        if (response.verified) {
+          setEmailVerificationExpiresAtMs(null)
+          setEmailVerificationRemainingSeconds(0)
+          setAlertModal({
+            title: t('auth.signup.email.verifyTitle'),
+            message: t('auth.signup.email.verifiedAlert'),
+          })
+        }
+        setStatusMessage(t('auth.signup.email.verified'))
       }
     } catch (error) {
-      setStatusMessage(error instanceof Error ? error.message : '요청 처리 중 오류가 발생했습니다.')
+      const message = error instanceof Error ? error.message : '요청 처리 중 오류가 발생했습니다.'
+      if (field.action === 'confirmEmail') {
+        setChecks((current) => ({ ...current, emailVerified: false }))
+        setAlertModal({
+          title: t('auth.signup.email.verifyTitle'),
+          message: message === t('auth.signup.email.codeRequired')
+            ? message
+            : t('auth.signup.email.invalidCodeAlert'),
+        })
+      }
+      if (field.action === 'availability'
+        && (field.availabilityField === 'phone' || field.availabilityField === 'whatsapp')) {
+        setChecks((current) => ({ ...current, whatsapp: false }))
+        setAlertModal({
+          title: t('auth.signup.availability.phoneTitle'),
+          message,
+        })
+      }
+      if (field.action === 'availability' && field.availabilityField === 'loginId') {
+        setChecks((current) => ({ ...current, loginId: false }))
+        setAlertModal({
+          title: t('auth.signup.availability.loginIdTitle'),
+          message,
+        })
+      }
+      setStatusMessage(message)
     } finally {
       setBusy(false)
     }
   }
 
   const checkReferral = async (code: string) => {
-    if (!code.trim()) return
+    const normalizedCode = normalizeReferralCode(code)
     setStatusMessage('')
+    if (!normalizedCode) {
+      setChecks((current) => ({ ...current, referralCode: false }))
+      setStatusMessage(`코드를 입력하세요. 예: ${referralExampleForMode(mode)}`)
+      return
+    }
+    if (!referralPatternForMode(mode).test(normalizedCode)) {
+      setChecks((current) => ({ ...current, referralCode: false }))
+      setStatusMessage(`코드 형식은 ${referralExampleForMode(mode)} 입니다.`)
+      return
+    }
+    setForm((current) => ({ ...current, referralCode: normalizedCode }))
     setBusy(true)
     try {
-      const result = await validateReferralCode(code.trim())
+      const result = await validateReferralCode(normalizedCode)
+      alertReferralCodeApiResponse(result)
       setChecks((current) => ({ ...current, referralCode: result.valid }))
-      setStatusMessage(result.valid ? '유효한 소속 코드입니다.' : '사용할 수 없는 소속 코드입니다.')
+      setStatusMessage(result.valid ? '유효한 소속 코드입니다.' : 'DB에 등록되지 않았거나 비활성화된 코드입니다.')
     } catch (error) {
-      setStatusMessage(error instanceof Error ? error.message : '코드 확인 중 오류가 발생했습니다.')
+      const message = error instanceof Error ? error.message : '코드 확인 중 오류가 발생했습니다.'
+      if (typeof window !== 'undefined') {
+        window.alert(`코드확인 API 오류\n${message}`)
+      }
+      setStatusMessage(message)
     } finally {
       setBusy(false)
     }
@@ -234,12 +408,30 @@ export default function RoleSignup() {
     setStatusMessage('')
     setBusy(true)
     try {
-      if (!form.walletAddress.trim()) throw new Error('Wallet 주소를 입력하세요.')
-      const result = await checkSignupAvailability('walletAddress', form.walletAddress.trim())
-      setChecks((current) => ({ ...current, walletAddress: result.available }))
-      setStatusMessage(result.available ? '등록 가능한 KORION Wallet 주소입니다.' : '이미 등록되었거나 검토 중인 Wallet 주소입니다.')
+      if (!form.walletAddress.trim()) throw new Error(t('auth.signup.wallet.required'))
+      const applicantType = role === 'merchant' ? 'MERCHANT' : 'PARTNER'
+      const result = await validateWalletAddress(
+        applicantType,
+        form.email.trim(),
+        form.walletAddress.trim(),
+        requestId,
+      )
+      setChecks((current) => ({ ...current, walletAddress: result.verified }))
+      setAlertModal({
+        title: t('auth.signup.wallet.verifyTitle'),
+        message: t('auth.signup.wallet.verifiedAlert'),
+      })
+      setStatusMessage(t('auth.signup.wallet.verifiedAlert'))
     } catch (error) {
-      setStatusMessage(error instanceof Error ? error.message : 'Wallet 확인 중 오류가 발생했습니다.')
+      setChecks((current) => ({ ...current, walletAddress: false }))
+      const message = error instanceof Error && error.message === t('auth.signup.wallet.required')
+        ? error.message
+        : t('auth.signup.wallet.invalidAlert')
+      setAlertModal({
+        title: t('auth.signup.wallet.verifyTitle'),
+        message,
+      })
+      setStatusMessage(message)
     } finally {
       setBusy(false)
     }
@@ -261,11 +453,18 @@ export default function RoleSignup() {
       const contactName = applicantType === 'MERCHANT'
         ? form.ownerName.trim()
         : form.contactName.trim() || form.companyName.trim()
+      const directContractReason = form.integrationPlan.trim()
       if (!form.loginId.trim() || !form.email.trim() || !form.password || !companyName || !contactName) {
-        throw new Error('아이디, 비밀번호, 이메일, 이름/매장명은 필수입니다.')
+        throw new Error(t('auth.signup.validation.requiredBasics'))
       }
       if (form.password !== form.passwordConfirm) {
-        throw new Error('비밀번호 확인이 일치하지 않습니다.')
+        throw new Error(t('auth.signup.password.mismatch'))
+      }
+      if (!hasPasswordNumberAndSpecial(form.password)) {
+        throw new Error(t('auth.signup.password.requireNumberSpecial'))
+      }
+      if (mode === 'hq' && !directContractReason) {
+        throw new Error(t('auth.signup.validation.hqReasonRequired'))
       }
       const response = await createSignupApplication({
         applicantType,
@@ -284,15 +483,24 @@ export default function RoleSignup() {
         address: form.address.trim() || undefined,
         businessType: form.industry.trim() || undefined,
         walletAddress: form.walletAddress.trim() || undefined,
-        integrationPlan: [form.integrationPlan, form.industry, form.language].filter(Boolean).join('\n') || undefined,
+        integrationPlan: mode === 'hq' ? directContractReason : undefined,
         evidenceNote: form.evidenceNote.trim() || undefined,
         requestId,
       })
       setConfirmOpen(false)
-      setDone(true)
-      setStatusMessage(`가입 신청이 접수되었습니다. 상태: ${response.status}`)
+      setDone(false)
+      setAlertModal({
+        title: t('auth.signup.submitCompleteTitle'),
+        message: t('auth.signup.submitCompleteMessage'),
+      })
+      setStatusMessage(`${t('auth.signup.submitCompleteMessage')} (${response.status})`)
     } catch (error) {
-      setStatusMessage(error instanceof Error ? error.message : '가입 신청 중 오류가 발생했습니다.')
+      const message = error instanceof Error ? error.message : t('auth.signup.submitFailed')
+      setStatusMessage(message)
+      setAlertModal({
+        title: t('auth.signup.validation.title'),
+        message,
+      })
     } finally {
       setBusy(false)
     }
@@ -302,44 +510,87 @@ export default function RoleSignup() {
     const applicantType = role === 'merchant' ? 'MERCHANT' : 'PARTNER'
     const companyName = applicantType === 'MERCHANT' ? form.storeName.trim() : form.companyName.trim()
     const contactName = applicantType === 'MERCHANT' ? form.ownerName.trim() : form.contactName.trim() || form.companyName.trim()
-    if (!form.loginId.trim() || !form.password || !form.passwordConfirm || !form.email.trim()) {
-      return '아이디, 비밀번호, 이메일은 필수입니다.'
-    }
-    if (form.password !== form.passwordConfirm) {
-      return '비밀번호 확인이 일치하지 않습니다.'
+    if (!form.loginId.trim()) {
+      return t('auth.signup.validation.loginIdRequired')
     }
     if (!checks.loginId) {
-      return '아이디 중복 확인을 완료하세요.'
+      return t('auth.signup.validation.loginIdCheckRequired')
+    }
+    if (!form.email.trim()) {
+      return t('auth.signup.email.required')
     }
     if (!checks.emailVerified) {
-      return '이메일 인증번호 확인을 완료하세요.'
+      return t('auth.signup.validation.emailVerifyRequired')
     }
-    if (!form.telegram.trim() || !checks.telegramVerified) {
-      return 'Telegram 인증을 완료하세요.'
+    if (!form.password) {
+      return t('auth.signup.validation.passwordRequired')
     }
-    if (!form.whatsapp.trim() || !checks.whatsapp) {
-      return '휴대폰 / WhatsApp 중복 확인을 완료하세요.'
+    if (!form.passwordConfirm) {
+      return t('auth.signup.validation.passwordConfirmRequired')
     }
-    if (!companyName || !contactName || !form.country.trim() || !form.region.trim() || !form.language.trim()) {
-      return '이름/소속, 국가, 지역, 활동 가능 언어는 필수입니다.'
+    if (form.password !== form.passwordConfirm) {
+      return t('auth.signup.password.mismatch')
+    }
+    if (!hasPasswordNumberAndSpecial(form.password)) {
+      return t('auth.signup.password.requireNumberSpecial')
+    }
+    if (!form.telegram.trim()) {
+      return t('auth.signup.validation.telegramRequired')
+    }
+    if (!checks.telegramVerified) {
+      return t('auth.signup.availability.telegramRequired')
+    }
+    const phoneValidationKey = textValidationMessageKey('whatsapp', form.whatsapp)
+    if (!form.whatsapp.trim()) {
+      return t('auth.signup.validation.phoneRequired')
+    }
+    if (phoneValidationKey) {
+      return t(phoneValidationKey)
+    }
+    if (!checks.whatsapp) {
+      return t('auth.signup.availability.phoneRequired')
+    }
+    const twitterValidationKey = textValidationMessageKey('twitter', form.twitter)
+    if (twitterValidationKey) {
+      return t(twitterValidationKey)
+    }
+    if (!companyName) {
+      return applicantType === 'MERCHANT'
+        ? t('auth.signup.validation.storeNameRequired')
+        : t('auth.signup.validation.companyNameRequired')
+    }
+    if (!contactName) {
+      return t('auth.signup.validation.contactNameRequired')
+    }
+    if (!form.country.trim()) {
+      return t('auth.signup.validation.countryRequired')
     }
     if (!normalizeCountry(form.country)) {
-      return '국가는 ISO 2자리 코드로 입력하세요. 예: KR, NG'
+      return t('auth.signup.validation.countryInvalid')
+    }
+    if (!form.region.trim()) {
+      return t('auth.signup.validation.regionRequired')
+    }
+    if (!form.language.trim()) {
+      return t('auth.signup.validation.languageRequired')
     }
     if (!form.walletAddress.trim() || !checks.walletAddress) {
-      return 'KORION Wallet 주소 확인을 완료하세요.'
+      return t('auth.signup.wallet.requiredCheck')
     }
     if (mode !== 'hq' && (!form.referralCode.trim() || !checks.referralCode)) {
-      return '소속 코드를 확인하세요.'
+      return t('auth.signup.validation.referralRequired')
+    }
+    if (mode === 'hq' && !form.integrationPlan.trim()) {
+      return t('auth.signup.validation.hqReasonRequired')
     }
     if (applicantType === 'MERCHANT' && (!form.address.trim() || !form.industry.trim())) {
-      return '가맹점 주소와 업종은 필수입니다.'
+      return t('auth.signup.validation.storeAddressIndustryRequired')
     }
     if (applicantType === 'MERCHANT' && !form.evidenceNote.trim()) {
-      return '가맹점 검증자료를 입력하세요.'
+      return t('auth.signup.validation.evidenceRequired')
     }
-    if (!AGREEMENTS.every((key) => agreements[key])) {
-      return '필수 동의 항목을 모두 체크하세요.'
+    if (!allAgreementsChecked) {
+      return t('auth.signup.validation.agreementsRequired')
     }
     return ''
   }
@@ -348,10 +599,22 @@ export default function RoleSignup() {
     const error = validateBeforeConfirm()
     if (error) {
       setStatusMessage(error)
+      setAlertModal({
+        title: t('auth.signup.validation.title'),
+        message: error,
+      })
       return
     }
     setStatusMessage('')
     setConfirmOpen(true)
+  }
+
+  const handleCancel = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      navigate(-1)
+      return
+    }
+    navigate('/login')
   }
 
   const toggleAgreement = (key: string, checked: boolean) => {
@@ -362,33 +625,92 @@ export default function RoleSignup() {
     setAgreements(Object.fromEntries(AGREEMENTS.map((key) => [key, checked])))
   }
 
+  const countryOptionLabel = (option: SignupCountryOptionApiResponse) =>
+    [option.flag, option.code, option.nameKo || option.nameEn].filter(Boolean).join(' · ')
+
   const renderFields = (fields: FieldDef[]) =>
-    fields.map((f) => (
-      <div key={f.labelKey} className={`${styles.field} ${f.wide ? styles.wide : ''}`}>
-        <span className={styles.fieldLabel}>{t(f.labelKey)}</span>
-        <div className={styles.inputRow}>
-          <input
-            className={styles.input}
-            type={f.type ?? 'text'}
-            placeholder={f.placeholder}
-            value={form[f.name]}
-            onChange={(e) => updateField(f.name, e.target.value)}
-            aria-label={t(f.labelKey)}
-          />
-          {f.buttonKey && (
-            <button type="button" className={styles.smallBtn} disabled={busy} onClick={() => runAction(f)}>
-              {t(f.buttonKey)}
-            </button>
+    fields.map((f) => {
+      const isPasswordConfirm = f.name === 'passwordConfirm'
+      const isPassword = f.name === 'password'
+      const isCountry = f.name === 'country'
+      const isEmailCode = f.name === 'emailCode'
+      const isEmailSendButton = f.action === 'sendEmail'
+      const isEmailConfirmButton = f.action === 'confirmEmail'
+      const fieldValidationKey = textValidationMessageKey(f.name, form[f.name])
+      const buttonLabelKey = isEmailSendButton
+        ? checks.emailVerified
+          ? 'auth.signup.btn.emailVerified'
+          : emailVerificationSent
+            ? 'auth.signup.btn.resendCode'
+            : f.buttonKey
+        : isEmailConfirmButton && checks.emailVerified
+          ? 'auth.signup.btn.emailVerified'
+          : f.buttonKey
+      const buttonDisabled = busy || ((isEmailSendButton || isEmailConfirmButton) && checks.emailVerified)
+      const hasFieldError = (isPassword && passwordCompositionInvalid) || (isPasswordConfirm && passwordMismatch) || Boolean(fieldValidationKey)
+      const fieldErrorId = `${String(f.name)}-error`
+      return (
+        <div key={f.labelKey} className={`${styles.formField} ${f.wide ? styles.formFieldWide : ''}`}>
+          <span className={styles.fieldLabel}>{t(f.labelKey)}</span>
+          <div className={styles.fieldControlRow}>
+            {isCountry ? (
+              <select
+                className={styles.fieldControl}
+                value={form.country}
+                onChange={(e) => updateField('country', e.target.value)}
+                aria-label={t(f.labelKey)}
+              >
+                <option value="">{t('auth.signup.placeholder.countrySelect')}</option>
+                {countryOptions.map((option) => (
+                  <option key={option.code} value={option.code}>
+                    {countryOptionLabel(option)}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                className={`${styles.fieldControl} ${hasFieldError ? styles.fieldControlError : ''}`}
+                type={f.type ?? 'text'}
+                placeholder={f.placeholderKey ? t(f.placeholderKey) : f.placeholder}
+                value={form[f.name]}
+                onChange={(e) => updateField(f.name, e.target.value)}
+                aria-label={t(f.labelKey)}
+                aria-invalid={hasFieldError || undefined}
+                aria-describedby={hasFieldError ? fieldErrorId : undefined}
+              />
+            )}
+            {f.buttonKey && (
+              <button type="button" className={styles.fieldActionButton} disabled={buttonDisabled} onClick={() => runAction(f)}>
+                {t(buttonLabelKey ?? f.buttonKey)}
+              </button>
+            )}
+          </div>
+          {hasFieldError && (
+            <span id={fieldErrorId} className={styles.fieldError}>
+              {isPassword
+                ? t('auth.signup.password.requireNumberSpecial')
+                : isPasswordConfirm
+                  ? t('auth.signup.password.mismatch')
+                  : t(fieldValidationKey)}
+            </span>
+          )}
+          {isEmailCode && emailVerificationRemainingSeconds > 0 && !checks.emailVerified && (
+            <span className={styles.fieldHint} aria-live="polite">
+              {t('auth.signup.email.remaining')} {formatRemainingTime(emailVerificationRemainingSeconds)}
+            </span>
+          )}
+          {isEmailCode && checks.emailVerified && (
+            <span className={styles.fieldSuccess}>{t('auth.signup.email.verified')}</span>
           )}
         </div>
-      </div>
-    ))
+      )
+    })
 
   return (
     <AuthShell title={t(cfg.titleKey)} subtitle={t(cfg.subtitleKey)}>
-      <section className={styles.panel}>
+      <section className={styles.signupPanel}>
         {/* 가입 방식 카드 — 각 카드에 추천인(코드) 입력란 포함. 선택 시 보더 강조 */}
-        <div className={styles.modes}>
+        <div className={styles.modeCardGrid}>
           {cfg.modes.map((m) => {
             const selected = mode === m.key
             return (
@@ -396,34 +718,42 @@ export default function RoleSignup() {
                 key={m.key}
                 type="button"
                 className={`${styles.modeCard} ${selected ? styles.modeCardActive : ''}`}
-                onClick={() => setMode(m.key)}
+                onClick={() => {
+                  if (m.key !== mode) {
+                    setForm((current) => ({ ...current, referralCode: '' }))
+                    setChecks((current) => ({ ...current, referralCode: false }))
+                  }
+                  setMode(m.key)
+                }}
               >
                 <span className={styles.modeBadge}>{t(m.labelKey)}</span>
-                <span className={styles.modeDesc}>{t(m.descKey)}</span>
+                <span className={styles.modeDescription}>{t(m.descKey)}</span>
 
                 {m.type === 'code' ? (
                   // 추천인(리더/파트너) 코드 입력 + 코드 확인 버튼.
                   // '확인 완료' 상태 배지는 입력란 안 우측에 겹쳐 표시(Figma 기준).
-                  <div className={styles.codeRow}>
-                    <div className={styles.codeInputWrap}>
+                  <div className={styles.referralCodeRow}>
+                    <div className={styles.referralCodeInputWrap}>
                       <input
-                        className={styles.codeInput}
+                        className={styles.referralCodeInput}
                         type="text"
-                        placeholder={m.codePlaceholder}
-                        value={form.referralCode || (selected ? m.confirmed ?? '' : '')}
+                        placeholder={m.confirmed ?? (m.codePlaceholderKey ? t(m.codePlaceholderKey) : m.codePlaceholder)}
+                        value={selected ? form.referralCode : ''}
                         onClick={(e) => e.stopPropagation()}
                         onChange={(e) => updateField('referralCode', e.target.value)}
                       />
-                      <span className={styles.codeConfirmed}>{t('auth.signup.codeConfirmed')}</span>
+                      {selected && checks.referralCode && (
+                        <span className={styles.referralCodeConfirmedBadge}>{t('auth.signup.codeConfirmed')}</span>
+                      )}
                     </div>
-                    <span className={styles.codeCheckBtn} onClick={(e) => {
+                    <span className={styles.referralCodeCheckButton} onClick={(e) => {
                       e.stopPropagation()
                       checkReferral(form.referralCode)
                     }}>{t('auth.signup.btn.codeCheck')}</span>
                   </div>
                 ) : (
                   // 본사 직접 계약: 본사 검토 필요 배지
-                  <span className={styles.hqBadge}>{t('auth.signup.hqReview')}</span>
+                  <span className={styles.hqReviewBadge}>{t('auth.signup.hqReview')}</span>
                 )}
               </button>
             )
@@ -432,44 +762,44 @@ export default function RoleSignup() {
 
         {/* A. 계정 정보 */}
         <h3 className={styles.sectionTitle}>{t('auth.signup.sec.account')}</h3>
-        <div className={styles.grid}>{renderFields(ACCOUNT_FIELDS)}</div>
+        <div className={styles.formFieldGrid}>{renderFields(ACCOUNT_FIELDS)}</div>
 
         {/* B. 기본 / 소속 정보 */}
         <h3 className={styles.sectionTitle}>{t('auth.signup.sec.basic')}</h3>
-        <div className={styles.grid}>{renderFields(BASIC_FIELDS)}</div>
+        <div className={styles.formFieldGrid}>{renderFields(BASIC_FIELDS)}</div>
 
         {/* C. KORION Wallet 연결 */}
         <h3 className={styles.sectionTitle}>{t('auth.signup.sec.wallet')}</h3>
-        <div className={styles.field}>
+        <div className={styles.formField}>
           <span className={styles.fieldLabel}>{t('auth.signup.f.wallet')}</span>
-          <div className={styles.inputRow}>
+          <div className={styles.fieldControlRow}>
             <input
-              className={styles.input}
+              className={styles.fieldControl}
               type="text"
-              placeholder="TRON 네트워크 Wallet 주소"
+              placeholder={t('auth.signup.placeholder.wallet')}
               value={form.walletAddress}
               onChange={(e) => updateField('walletAddress', e.target.value)}
             />
-            <button type="button" className={styles.smallBtn} disabled={busy} onClick={checkWalletAddress}>
-              {t('auth.signup.btn.walletLink')}
+            <button type="button" className={styles.fieldActionButton} disabled={busy || checks.walletAddress} onClick={checkWalletAddress}>
+              {checks.walletAddress ? t('auth.signup.btn.walletVerified') : t('auth.signup.btn.walletLink')}
             </button>
           </div>
         </div>
 
-        {statusMessage && <div className={styles.inlineNotice}>{statusMessage}</div>}
+        {statusMessage && <div className={styles.formStatusNotice}>{statusMessage}</div>}
 
         {/* D. 매장 기본 정보 (가맹점만) */}
         {cfg.store && (
           <>
             <h3 className={styles.sectionTitle}>{t('auth.signup.sec.store')}</h3>
-            <div className={styles.grid}>{renderFields(STORE_FIELDS)}</div>
-            <div className={styles.field}>
+            <div className={styles.formFieldGrid}>{renderFields(STORE_FIELDS)}</div>
+            <div className={styles.formField}>
               <span className={styles.fieldLabel}>{t('auth.signup.f.evidence')}</span>
-              <div className={styles.inputRow}>
+              <div className={styles.fieldControlRow}>
                 <input
-                  className={styles.input}
+                  className={styles.fieldControl}
                   type="text"
-                  placeholder="사업자/매장 검증자료 링크 또는 메모"
+                  placeholder={t('auth.signup.placeholder.evidence')}
                   value={form.evidenceNote}
                   onChange={(e) => updateField('evidenceNote', e.target.value)}
                   aria-label={t('auth.signup.f.evidence')}
@@ -481,26 +811,38 @@ export default function RoleSignup() {
 
         {/* 동의 체크 */}
         <h3 className={styles.sectionTitle}>{t('auth.signup.sec.agree')}</h3>
-        <label className={`${styles.agree} ${styles.agreeAll}`}>
+        <label className={[
+          styles.agreementItem,
+          styles.agreementAllItem,
+          allAgreementsChecked ? styles.agreementAllItemActive : '',
+        ].filter(Boolean).join(' ')}>
           <input
             type="checkbox"
-            checked={AGREEMENTS.every((key) => agreements[key])}
+            checked={allAgreementsChecked}
             onChange={(e) => toggleAllAgreements(e.target.checked)}
+            aria-label={t('auth.signup.agreeAll')}
           /> {t('auth.signup.agreeAll')}
         </label>
         {AGREEMENTS.map((n) => (
-          <label key={n} className={styles.agree}>
+          <label
+            key={n}
+            className={[
+              styles.agreementItem,
+              agreements[n] ? styles.agreementItemChecked : '',
+            ].filter(Boolean).join(' ')}
+          >
             <input
               type="checkbox"
               checked={agreements[n]}
               onChange={(e) => toggleAgreement(n, e.target.checked)}
+              aria-label={t(`auth.signup.agree.${n}`)}
             /> {t(`auth.signup.agree.${n}`)}
           </label>
         ))}
 
         {/* 버튼 */}
-        <div className={styles.buttons}>
-          <Button variant="secondary" onClick={() => navigate('/login')}>
+        <div className={styles.formFooterActions}>
+          <Button variant="secondary" onClick={handleCancel}>
             {t('auth.signup.cancel')}
           </Button>
           <Button variant="primary" onClick={openConfirmModal}>
@@ -511,11 +853,11 @@ export default function RoleSignup() {
 
       {/* 확인 모달 */}
       {confirmOpen && (
-        <div className={styles.overlay} onClick={() => setConfirmOpen(false)}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <h3 className={styles.modalTitle}>{t('auth.signup.modal.title')}</h3>
-            <p className={styles.modalDesc}>{t('auth.signup.modal.desc')}</p>
-            <div className={styles.modalButtons}>
+        <div className={styles.dialogOverlay} onClick={() => setConfirmOpen(false)}>
+          <div className={styles.dialogPanel} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.dialogTitle}>{t('auth.signup.modal.title')}</h3>
+            <p className={styles.dialogDescription}>{t('auth.signup.modal.desc')}</p>
+            <div className={styles.dialogActions}>
               <Button variant="secondary" onClick={() => setConfirmOpen(false)}>
                 {t('auth.signup.cancel')}
               </Button>
@@ -530,10 +872,30 @@ export default function RoleSignup() {
         </div>
       )}
 
+      {alertModal && (
+        <div className={styles.dialogOverlay} onClick={() => setAlertModal(null)}>
+          <div
+            className={styles.dialogPanel}
+            onClick={(e) => e.stopPropagation()}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="signup-alert-title"
+          >
+            <h3 id="signup-alert-title" className={styles.dialogTitle}>{alertModal.title}</h3>
+            <p className={styles.dialogDescription}>{alertModal.message}</p>
+            <div className={styles.dialogActions}>
+              <Button variant="primary" onClick={() => setAlertModal(null)}>
+                {t('auth.signup.alert.confirm')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 완료 토스트 → 해당 역할 로그인 화면으로 */}
       {done && (
         <div
-          className={styles.toast}
+          className={styles.successToast}
           onClick={() => navigate(`/login/${role}`)}
           role="status"
         >
