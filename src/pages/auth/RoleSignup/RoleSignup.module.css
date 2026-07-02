@@ -4,6 +4,8 @@
   flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-6);
+  font-size: var(--font-size-15);
+  line-height: 1.5;
   background-color: color-mix(in srgb, #151127 82%, transparent);
   border: 1px solid color-mix(in srgb, #7b5cff 34%, transparent);
   border-radius: 26px;
@@ -67,7 +69,7 @@
 .modeBadge {
   padding: 4px var(--space-4);
   border-radius: var(--radius-pill);
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   font-weight: var(--font-weight-semibold);
   color: #ffffff;
   background-color: color-mix(in srgb, #238cff 22%, transparent);
@@ -80,7 +82,7 @@
 }
 .modeDescription {
   flex: 1;
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   line-height: 1.5;
   color: var(--color-text-muted);
 }
@@ -101,15 +103,15 @@
 }
 .referralCodeInput {
   width: 100%;
-  height: 46px;
+  height: 52px;
   /* 우측은 '확인 완료' 배지 자리만큼 패딩 확보 */
-  padding: 0 96px 0 var(--space-4);
+  padding: 0 108px 0 var(--space-4);
   border-radius: 12px;
   border: 1px solid color-mix(in srgb, #7b5cff 34%, transparent);
   background-color: color-mix(in srgb, #0c0a1e 88%, transparent);
   color: var(--color-text);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--font-size-16);
 }
 .modeCard:not(.modeCardActive) .referralCodeInput {
   background-color: color-mix(in srgb, #090715 86%, transparent);
@@ -124,12 +126,13 @@
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
+  min-height: 52px;
   padding: 0 var(--space-4);
   border-radius: 13px;
   border: 1px solid color-mix(in srgb, #24d8ff 34%, transparent);
   background: linear-gradient(135deg, #7033ff, #1a9eff, #1fffb8);
   color: #ffffff;
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   font-weight: var(--font-weight-semibold);
 }
 .codeCheckBtn {
@@ -152,7 +155,7 @@
   transform: translateY(-50%);
   padding: 4px var(--space-3);
   border-radius: var(--radius-pill);
-  font-size: var(--font-size-11);
+  font-size: var(--font-size-12);
   font-weight: var(--font-weight-semibold);
   color: #061612;
   background-color: color-mix(in srgb, #26e6b2 92%, transparent);
@@ -164,19 +167,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 46px;
+  min-height: 52px;
   padding: 0 var(--space-4);
   border-radius: 13px;
   border: 1px solid color-mix(in srgb, #24d8ff 34%, transparent);
   background: linear-gradient(135deg, #7033ff, #1a9eff, #1fffb8);
   color: #ffffff;
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
 }
 
 .sectionTitle {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: var(--font-weight-bold);
   color: #ffffff;
   margin-top: var(--space-2);
@@ -197,7 +200,7 @@
   grid-column: span 2;
 }
 .fieldLabel {
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   font-weight: var(--font-weight-semibold);
   color: #ffffff;
 }
@@ -212,14 +215,14 @@
 .fieldControl {
   flex: 1;
   min-width: 0;
-  height: 46px;
+  height: 52px;
   padding: 0 var(--space-4);
   border-radius: 12px;
   border: 1px solid color-mix(in srgb, #7b5cff 34%, transparent);
   background-color: color-mix(in srgb, #0c0a1e 88%, transparent);
   color: var(--color-text);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--font-size-16);
 }
 .fieldControl::placeholder {
   color: #8c86b5;
@@ -229,23 +232,23 @@
   box-shadow: 0 0 0 1px color-mix(in srgb, #ff5a7a 44%, transparent);
 }
 .fieldError {
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   line-height: 1.4;
   color: #ff6b86;
 }
 .modeFieldError {
   display: block;
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   line-height: 1.4;
   color: #ff6b86;
 }
 .fieldHint {
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   line-height: 1.4;
   color: #bdb7e7;
 }
 .fieldSuccess {
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   line-height: 1.4;
   color: #26e6b2;
 }
@@ -277,7 +280,7 @@
 }
 .evidencePreviewEmpty {
   padding: 0 var(--space-3);
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   line-height: 1.4;
   color: #8c86b5;
   text-align: center;
@@ -300,13 +303,13 @@
 /* 중복 확인/인증/지갑 연결 등 보조 버튼 — 청록 솔리드 */
 .fieldActionButton {
   flex-shrink: 0;
-  height: 46px;
+  min-height: 52px;
   padding: 0 var(--space-4);
   border-radius: 12px;
   border: 1px solid color-mix(in srgb, #26e6b2 34%, transparent);
   background-color: color-mix(in srgb, #26e6b2 92%, transparent);
   color: #061815;
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
   white-space: nowrap;
@@ -322,7 +325,7 @@
   border: 1px solid color-mix(in srgb, #26e6b2 34%, transparent);
   background-color: color-mix(in srgb, #123c36 64%, transparent);
   color: #dffdf5;
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   line-height: 1.5;
 }
 
@@ -332,7 +335,7 @@
   align-items: flex-start;
   gap: var(--space-2);
   padding: var(--space-2) 0;
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   line-height: 1.5;
   color: var(--color-text-muted);
   cursor: pointer;
@@ -361,6 +364,10 @@
   gap: var(--space-3);
   margin-top: var(--space-2);
 }
+.signupButton {
+  min-height: 48px;
+  font-size: var(--font-size-14);
+}
 
 /* 확인 모달 */
 .dialogOverlay {
@@ -386,11 +393,11 @@
   box-shadow: 0 12px 40px rgba(117, 51, 255, 0.28), 0 0 28px rgba(0, 204, 255, 0.14);
 }
 .dialogTitle {
-  font-size: var(--font-size-16);
+  font-size: 20px;
   font-weight: var(--font-weight-bold);
 }
 .dialogDescription {
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   line-height: 1.6;
   color: #bdb7e7;
 }
@@ -425,7 +432,7 @@
   bottom: var(--space-6);
   max-width: 440px;
   padding: var(--space-4) var(--space-5);
-  font-size: var(--font-size-12);
+  font-size: var(--font-size-14);
   color: var(--color-text);
   background-color: color-mix(in srgb, #1b1534 94%, transparent);
   border: 1px solid color-mix(in srgb, #24e6b8 80%, transparent);
@@ -437,6 +444,9 @@
 
 /* 반응형: 좁은 화면에서 1열 */
 @media (max-width: 900px) {
+  .signupPanel {
+    padding: var(--space-5);
+  }
   .formFieldGrid {
     grid-template-columns: 1fr;
   }
@@ -454,5 +464,38 @@
   }
   .evidenceControlRow {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .signupPanel {
+    padding: var(--space-4);
+    border-radius: 18px;
+  }
+  .modeCardGrid {
+    grid-template-columns: 1fr;
+  }
+  .modeCard {
+    min-height: 0;
+    padding: var(--space-4);
+  }
+  .referralCodeRow,
+  .fieldControlRow {
+    flex-direction: column;
+  }
+  .referralCodeCheckButton,
+  .fieldActionButton,
+  .signupButton {
+    width: 100%;
+    justify-content: center;
+  }
+  .formFooterActions {
+    flex-direction: column-reverse;
+  }
+  .dialogPanel {
+    padding: var(--space-5);
+  }
+  .dialogActions {
+    flex-direction: column-reverse;
   }
 }

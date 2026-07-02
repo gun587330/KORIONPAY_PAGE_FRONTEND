@@ -1092,10 +1092,10 @@ export default function RoleSignup() {
 
         {/* 버튼 */}
         <div className={styles.formFooterActions}>
-          <Button variant="secondary" onClick={handleCancel}>
+          <Button variant="secondary" className={styles.signupButton} onClick={handleCancel}>
             {t('auth.signup.cancel')}
           </Button>
-          <Button variant="primary" onClick={openConfirmModal}>
+          <Button variant="primary" className={styles.signupButton} onClick={openConfirmModal}>
             {t('auth.signup.submit')}
           </Button>
         </div>
@@ -1108,11 +1108,12 @@ export default function RoleSignup() {
             <h3 className={styles.dialogTitle}>{t('auth.signup.modal.title')}</h3>
             <p className={styles.dialogDescription}>{t('auth.signup.modal.desc')}</p>
             <div className={styles.dialogActions}>
-              <Button variant="secondary" onClick={() => setConfirmOpen(false)}>
+              <Button variant="secondary" className={styles.signupButton} onClick={() => setConfirmOpen(false)}>
                 {t('auth.signup.cancel')}
               </Button>
               <Button
                 variant="primary"
+                className={styles.signupButton}
                 onClick={submitApplication}
               >
                 {t('auth.signup.submit')}
@@ -1158,13 +1159,13 @@ export default function RoleSignup() {
               </span>
             )}
             <div className={styles.dialogActions}>
-              <Button variant="secondary" onClick={() => setEmailVerificationModalOpen(false)}>
+              <Button variant="secondary" className={styles.signupButton} onClick={() => setEmailVerificationModalOpen(false)}>
                 {t('auth.signup.cancel')}
               </Button>
-              <Button variant="secondary" disabled={busy} onClick={() => runAction(EMAIL_SEND_FIELD)}>
+              <Button variant="secondary" className={styles.signupButton} disabled={busy} onClick={() => runAction(EMAIL_SEND_FIELD)}>
                 {t('auth.signup.btn.resendCode')}
               </Button>
-              <Button variant="primary" disabled={busy} onClick={() => runAction(EMAIL_CODE_FIELD)}>
+              <Button variant="primary" className={styles.signupButton} disabled={busy} onClick={() => runAction(EMAIL_CODE_FIELD)}>
                 {t('auth.signup.btn.verify')}
               </Button>
             </div>
@@ -1184,7 +1185,7 @@ export default function RoleSignup() {
             <h3 id="signup-alert-title" className={styles.dialogTitle}>{alertModal.title}</h3>
             <p className={styles.dialogDescription}>{alertModal.message}</p>
             <div className={styles.dialogActions}>
-              <Button variant="primary" onClick={() => setAlertModal(null)}>
+              <Button variant="primary" className={styles.signupButton} onClick={() => setAlertModal(null)}>
                 {t('auth.signup.alert.confirm')}
               </Button>
             </div>
