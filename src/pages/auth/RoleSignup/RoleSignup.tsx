@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import Button from '../../../components/atoms/Button'
 import AuthShell from '../AuthShell'
@@ -165,6 +165,9 @@ const referralPatternForMode = (modeKey: string) => (
 const referralExampleForMode = (modeKey: string) => (
   modeKey === 'partner' ? 'KR-SP-004' : 'KR-LEAD-001'
 )
+const isPreviewableImageUrl = (value: string) => (
+  /^https?:\/\/.+\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(value.trim())
+)
 
 /*
  * RoleSignup (page) — 역할별 회원가입 (파트너/가맹점)
@@ -177,6 +180,8 @@ export default function RoleSignup() {
   const { role } = useParams<{ role: string }>()
   const navigate = useNavigate()
   const { lang, t } = useTranslation()
+  const evidenceFileInputRef = useRef<HTMLInputElement | null>(null)
+  const evidencePreviewObjectUrlRef = useRef('')
 
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [done, setDone] = useState(false)
@@ -191,6 +196,7 @@ export default function RoleSignup() {
   const [emailVerificationExpiresAtMs, setEmailVerificationExpiresAtMs] = useState<number | null>(null)
   const [emailVerificationRemainingSeconds, setEmailVerificationRemainingSeconds] = useState(0)
   const [verifiedReferralCode, setVerifiedReferralCode] = useState<VerifiedReferralCodeState | null>(null)
+  const [evidencePreviewUrl, setEvidencePreviewUrl] = useState('')
   const [checks, setChecks] = useState({
     loginId: false,
     emailVerified: false,
@@ -256,6 +262,12 @@ export default function RoleSignup() {
     return () => window.clearInterval(intervalId)
   }, [checks.emailVerified, emailVerificationExpiresAtMs])
 
+  useEffect(() => () => {
+    if (evidencePreviewObjectUrlRef.current) {
+      URL.revokeObjectURL(evidencePreviewObjectUrlRef.current)
+    }
+  }, [])
+
   if (!role || !CFG[role]) return <Navigate to="/login" replace />
   const cfg = CFG[role]
   const requestId = `signup-${role}-${form.loginId || form.email || 'draft'}`
@@ -289,6 +301,28 @@ export default function RoleSignup() {
       setChecks((current) => ({ ...current, referralCode: false }))
       setVerifiedReferralCode(null)
     }
+  }
+
+  const clearEvidenceFilePreview = () => {
+    if (evidencePreviewObjectUrlRef.current) {
+      URL.revokeObjectURL(evidencePreviewObjectUrlRef.current)
+      evidencePreviewObjectUrlRef.current = ''
+    }
+    setEvidencePreviewUrl('')
+  }
+
+  const updateEvidenceLink = (value: string) => {
+    clearEvidenceFilePreview()
+    updateField('evidenceNote', value)
+  }
+
+  const selectEvidenceFile = (file?: File) => {
+    if (!file) return
+    clearEvidenceFilePreview()
+    const nextPreviewUrl = URL.createObjectURL(file)
+    evidencePreviewObjectUrlRef.current = nextPreviewUrl
+    setEvidencePreviewUrl(nextPreviewUrl)
+    updateField('evidenceNote', file.name)
   }
 
   const runAction = async (field: FieldDef) => {
@@ -749,7 +783,7 @@ export default function RoleSignup() {
     const countryName = lang === 'en'
       ? option.nameEn || option.nameKo
       : option.nameKo || option.nameEn
-    return [option.flag, option.code, countryName].filter(Boolean).join(' · ')
+    return [option.flag, countryName].filter(Boolean).join(' · ')
   }
 
   const renderFields = (fields: FieldDef[]) =>
@@ -825,6 +859,13 @@ export default function RoleSignup() {
         </div>
       )
     })
+
+  const evidenceDisplayUrl = evidencePreviewUrl || (
+    isPreviewableImageUrl(form.evidenceNote) ? form.evidenceNote.trim() : ''
+  )
+  const evidenceValidationKey = fieldValidationMessageKey('evidenceNote')
+  const evidenceErrorId = 'evidenceNote-error'
+  const evidenceHintId = 'evidenceNote-hint'
 
   return (
     <AuthShell title={t(cfg.titleKey)} subtitle={t(cfg.subtitleKey)}>
@@ -965,21 +1006,53 @@ export default function RoleSignup() {
             <div className={styles.formFieldGrid}>{renderFields(STORE_FIELDS)}</div>
             <div className={styles.formField}>
               <span className={styles.fieldLabel}>{t('auth.signup.f.evidence')}</span>
-              <div className={styles.fieldControlRow}>
-                <input
-                  className={`${styles.fieldControl} ${fieldValidationMessageKey('evidenceNote') ? styles.fieldControlError : ''}`}
-                  type="text"
-                  placeholder={t('auth.signup.placeholder.evidence')}
-                  value={form.evidenceNote}
-                  onChange={(e) => updateField('evidenceNote', e.target.value)}
-                  aria-label={t('auth.signup.f.evidence')}
-                  aria-invalid={Boolean(fieldValidationMessageKey('evidenceNote')) || undefined}
-                  aria-describedby={fieldValidationMessageKey('evidenceNote') ? 'evidenceNote-error' : undefined}
-                />
+              <div className={styles.evidenceUploader}>
+                <div
+                  className={`${styles.evidencePreviewBox} ${evidenceValidationKey ? styles.evidencePreviewError : ''}`}
+                  aria-label={t('auth.signup.evidence.previewLabel')}
+                >
+                  {evidenceDisplayUrl ? (
+                    <img
+                      className={styles.evidencePreviewImage}
+                      src={evidenceDisplayUrl}
+                      alt={t('auth.signup.evidence.previewLabel')}
+                    />
+                  ) : (
+                    <span className={styles.evidencePreviewEmpty}>{t('auth.signup.evidence.previewEmpty')}</span>
+                  )}
+                </div>
+                <span id={evidenceHintId} className={styles.fieldHint}>{t('auth.signup.hint.evidence')}</span>
+                <div className={styles.evidenceControlRow}>
+                  <input
+                    className={`${styles.fieldControl} ${evidenceValidationKey ? styles.fieldControlError : ''}`}
+                    type="text"
+                    placeholder={t('auth.signup.placeholder.evidence')}
+                    value={form.evidenceNote}
+                    onChange={(e) => updateEvidenceLink(e.target.value)}
+                    aria-label={t('auth.signup.f.evidence')}
+                    aria-invalid={Boolean(evidenceValidationKey) || undefined}
+                    aria-describedby={evidenceValidationKey ? `${evidenceErrorId} ${evidenceHintId}` : evidenceHintId}
+                  />
+                  <button
+                    type="button"
+                    className={styles.fieldActionButton}
+                    onClick={() => evidenceFileInputRef.current?.click()}
+                  >
+                    {t('auth.signup.btn.upload')}
+                  </button>
+                  <input
+                    ref={evidenceFileInputRef}
+                    className={styles.visuallyHiddenInput}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                    onChange={(e) => selectEvidenceFile(e.target.files?.[0])}
+                    aria-label={t('auth.signup.btn.upload')}
+                  />
+                </div>
               </div>
-              {fieldValidationMessageKey('evidenceNote') && (
-                <span id="evidenceNote-error" className={styles.fieldError}>
-                  {t(fieldValidationMessageKey('evidenceNote'))}
+              {evidenceValidationKey && (
+                <span id={evidenceErrorId} className={styles.fieldError}>
+                  {t(evidenceValidationKey)}
                 </span>
               )}
             </div>
@@ -1064,7 +1137,7 @@ export default function RoleSignup() {
               <span className={styles.fieldLabel}>{t('auth.signup.f.emailCode')}</span>
               <input
                 id="signup-email-code"
-                className={`${styles.fieldControl} ${fieldValidationMessageKey('emailCode') ? styles.fieldControlError : ''}`}
+                className={`${styles.fieldControl} ${styles.emailCodeInput} ${fieldValidationMessageKey('emailCode') ? styles.fieldControlError : ''}`}
                 type="text"
                 inputMode="numeric"
                 placeholder={t('auth.signup.placeholder.emailCode')}
@@ -1080,7 +1153,7 @@ export default function RoleSignup() {
               </span>
             )}
             {emailVerificationRemainingSeconds > 0 && (
-              <span className={styles.fieldHint} aria-live="polite">
+              <span className={`${styles.fieldHint} ${styles.emailCountdownHint}`} aria-live="polite">
                 {t('auth.signup.email.remaining')} {formatRemainingTime(emailVerificationRemainingSeconds)}
               </span>
             )}
