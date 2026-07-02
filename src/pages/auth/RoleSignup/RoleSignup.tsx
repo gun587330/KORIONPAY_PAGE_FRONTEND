@@ -81,13 +81,22 @@ interface VerifiedReferralCodeState {
 const ACCOUNT_FIELDS: FieldDef[] = [
   { name: 'loginId', labelKey: 'auth.signup.f.id', placeholderKey: 'auth.signup.placeholder.loginId', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'loginId' },
   { name: 'email', labelKey: 'auth.signup.f.email', placeholderKey: 'auth.signup.placeholder.email', buttonKey: 'auth.signup.btn.sendCode', action: 'sendEmail' },
-  { name: 'emailCode', labelKey: 'auth.signup.f.emailCode', placeholderKey: 'auth.signup.placeholder.emailCode', buttonKey: 'auth.signup.btn.verify', action: 'confirmEmail' },
+  // Screenshot target: keep the email verification code input out of the initial form.
+  // It is rendered only after a code is sent.
+  // { name: 'emailCode', labelKey: 'auth.signup.f.emailCode', placeholderKey: 'auth.signup.placeholder.emailCode', buttonKey: 'auth.signup.btn.verify', action: 'confirmEmail' },
   { name: 'password', labelKey: 'auth.signup.f.pw', placeholderKey: 'auth.signup.placeholder.password', type: 'password' },
   { name: 'passwordConfirm', labelKey: 'auth.signup.f.pwConfirm', placeholderKey: 'auth.signup.placeholder.password', type: 'password' },
   { name: 'telegram', labelKey: 'auth.signup.f.telegram', placeholderKey: 'auth.signup.placeholder.telegram', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'telegram' },
   { name: 'whatsapp', labelKey: 'auth.signup.f.phone', placeholderKey: 'auth.signup.placeholder.phone', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'phone' },
   { name: 'twitter', labelKey: 'auth.signup.f.twitter', placeholderKey: 'auth.signup.placeholder.twitter' },
 ]
+const EMAIL_CODE_FIELD: FieldDef = {
+  name: 'emailCode',
+  labelKey: 'auth.signup.f.emailCode',
+  placeholderKey: 'auth.signup.placeholder.emailCode',
+  buttonKey: 'auth.signup.btn.verify',
+  action: 'confirmEmail',
+}
 
 /* B. 기본 / 소속 정보 */
 const BASIC_FIELDS: FieldDef[] = [
@@ -95,7 +104,7 @@ const BASIC_FIELDS: FieldDef[] = [
   { name: 'country', labelKey: 'auth.signup.f.country', placeholderKey: 'auth.signup.placeholder.country' },
   { name: 'region', labelKey: 'auth.signup.f.region', placeholderKey: 'auth.signup.placeholder.region' },
   { name: 'language', labelKey: 'auth.signup.f.language', placeholderKey: 'auth.signup.placeholder.language' },
-  { name: 'integrationPlan', labelKey: 'auth.signup.f.hqReason', placeholderKey: 'auth.signup.placeholder.hqReason', wide: true },
+  { name: 'integrationPlan', labelKey: 'auth.signup.f.hqReason', placeholderKey: 'auth.signup.placeholder.hqReason' },
 ]
 
 /* D. 매장 기본 정보 (가맹점만) */
@@ -169,6 +178,7 @@ export default function RoleSignup() {
 
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [done, setDone] = useState(false)
+  const [submitAttempted, setSubmitAttempted] = useState(false)
   const [mode, setMode] = useState('leader')
   const [busy, setBusy] = useState(false)
   const [statusMessage, setStatusMessage] = useState('')
@@ -248,8 +258,6 @@ export default function RoleSignup() {
   if (!role || !CFG[role]) return <Navigate to="/login" replace />
   const cfg = CFG[role]
   const requestId = `signup-${role}-${form.loginId || form.email || 'draft'}`
-  const passwordMismatch = Boolean(form.password && form.passwordConfirm && form.password !== form.passwordConfirm)
-  const passwordCompositionInvalid = Boolean(form.password && !hasPasswordNumberAndSpecial(form.password))
   const allAgreementsChecked = AGREEMENTS.every((key) => agreements[key])
   const isReferralCodeConfirmedForMode = (modeKey: string) => (
     checks.referralCode
@@ -257,6 +265,7 @@ export default function RoleSignup() {
     && verifiedReferralCode.code === normalizeReferralCode(form.referralCode)
   )
   const activeReferralCodeConfirmed = isReferralCodeConfirmedForMode(mode)
+  const emailCodeVisible = emailVerificationSent && !checks.emailVerified
 
   const updateField = (name: keyof SignupForm, value: string) => {
     setForm((current) => ({ ...current, [name]: value }))
@@ -651,7 +660,81 @@ export default function RoleSignup() {
     return ''
   }
 
+  const fieldValidationMessageKey = (name: keyof SignupForm) => {
+    const immediateValidationKey = textValidationMessageKey(name, form[name])
+    if (immediateValidationKey) return immediateValidationKey
+    if (!submitAttempted) return ''
+
+    const applicantType = role === 'merchant' ? 'MERCHANT' : 'PARTNER'
+    if (name === 'loginId') {
+      if (!form.loginId.trim()) return 'auth.signup.validation.loginIdRequired'
+      if (!checks.loginId) return 'auth.signup.validation.loginIdCheckRequired'
+    }
+    if (name === 'email') {
+      if (!form.email.trim()) return 'auth.signup.email.required'
+      if (!isValidEmailAddress(form.email)) return 'auth.signup.email.invalid'
+      if (!checks.emailVerified) return 'auth.signup.validation.emailVerifyRequired'
+    }
+    if (name === 'emailCode' && emailCodeVisible && !form.emailCode.trim()) {
+      return 'auth.signup.email.codeRequired'
+    }
+    if (name === 'password') {
+      if (!form.password) return 'auth.signup.validation.passwordRequired'
+      if (!hasPasswordNumberAndSpecial(form.password)) return 'auth.signup.password.requireNumberSpecial'
+    }
+    if (name === 'passwordConfirm') {
+      if (!form.passwordConfirm) return 'auth.signup.validation.passwordConfirmRequired'
+      if (form.password !== form.passwordConfirm) return 'auth.signup.password.mismatch'
+    }
+    if (name === 'telegram') {
+      if (!form.telegram.trim()) return 'auth.signup.validation.telegramRequired'
+      if (!checks.telegramVerified) return 'auth.signup.availability.telegramRequired'
+    }
+    if (name === 'whatsapp') {
+      if (!form.whatsapp.trim()) return 'auth.signup.validation.phoneRequired'
+      if (!isValidPhoneNumber(form.whatsapp)) return 'auth.signup.validation.phoneInvalid'
+      if (!checks.whatsapp) return 'auth.signup.availability.phoneRequired'
+    }
+    if (name === 'companyName' && applicantType === 'PARTNER' && !form.companyName.trim()) {
+      return 'auth.signup.validation.companyNameRequired'
+    }
+    if (name === 'storeName' && applicantType === 'MERCHANT' && !form.storeName.trim()) {
+      return 'auth.signup.validation.storeNameRequired'
+    }
+    if (name === 'ownerName' && applicantType === 'MERCHANT' && !form.ownerName.trim()) {
+      return 'auth.signup.validation.contactNameRequired'
+    }
+    if (name === 'country') {
+      if (!form.country.trim()) return 'auth.signup.validation.countryRequired'
+      if (!normalizeCountry(form.country)) return 'auth.signup.validation.countryInvalid'
+    }
+    if (name === 'region' && !form.region.trim()) return 'auth.signup.validation.regionRequired'
+    if (name === 'language' && !form.language.trim()) return 'auth.signup.validation.languageRequired'
+    if (name === 'integrationPlan' && mode === 'hq' && !form.integrationPlan.trim()) {
+      return 'auth.signup.validation.hqReasonRequired'
+    }
+    if (name === 'address' && applicantType === 'MERCHANT' && !form.address.trim()) {
+      return 'auth.signup.validation.storeAddressIndustryRequired'
+    }
+    if (name === 'industry' && applicantType === 'MERCHANT' && !form.industry.trim()) {
+      return 'auth.signup.validation.storeAddressIndustryRequired'
+    }
+    if (name === 'evidenceNote' && applicantType === 'MERCHANT' && !form.evidenceNote.trim()) {
+      return 'auth.signup.validation.evidenceRequired'
+    }
+    if (name === 'walletAddress' && (!form.walletAddress.trim() || !checks.walletAddress)) {
+      return 'auth.signup.wallet.requiredCheck'
+    }
+    return ''
+  }
+
+  const referralValidationMessage = () => {
+    if (!submitAttempted || mode === 'hq' || activeReferralCodeConfirmed) return ''
+    return t('auth.signup.validation.referralRequired')
+  }
+
   const openConfirmModal = () => {
+    setSubmitAttempted(true)
     const error = validateBeforeConfirm()
     if (error) {
       setStatusMessage(error)
@@ -690,13 +773,11 @@ export default function RoleSignup() {
 
   const renderFields = (fields: FieldDef[]) =>
     fields.map((f) => {
-      const isPasswordConfirm = f.name === 'passwordConfirm'
-      const isPassword = f.name === 'password'
       const isCountry = f.name === 'country'
       const isEmailCode = f.name === 'emailCode'
       const isEmailSendButton = f.action === 'sendEmail'
       const isEmailConfirmButton = f.action === 'confirmEmail'
-      const fieldValidationKey = textValidationMessageKey(f.name, form[f.name])
+      const fieldValidationKey = fieldValidationMessageKey(f.name)
       const buttonLabelKey = isEmailSendButton
         ? checks.emailVerified
           ? 'auth.signup.btn.emailVerified'
@@ -707,7 +788,7 @@ export default function RoleSignup() {
           ? 'auth.signup.btn.emailVerified'
           : f.buttonKey
       const buttonDisabled = busy || ((isEmailSendButton || isEmailConfirmButton) && checks.emailVerified)
-      const hasFieldError = (isPassword && passwordCompositionInvalid) || (isPasswordConfirm && passwordMismatch) || Boolean(fieldValidationKey)
+      const hasFieldError = Boolean(fieldValidationKey)
       const fieldErrorId = `${String(f.name)}-error`
       return (
         <div key={f.labelKey} className={`${styles.formField} ${f.wide ? styles.formFieldWide : ''}`}>
@@ -715,10 +796,12 @@ export default function RoleSignup() {
           <div className={styles.fieldControlRow}>
             {isCountry ? (
               <select
-                className={styles.fieldControl}
+                className={`${styles.fieldControl} ${hasFieldError ? styles.fieldControlError : ''}`}
                 value={form.country}
                 onChange={(e) => updateField('country', e.target.value)}
                 aria-label={t(f.labelKey)}
+                aria-invalid={hasFieldError || undefined}
+                aria-describedby={hasFieldError ? fieldErrorId : undefined}
               >
                 <option value="">{t('auth.signup.placeholder.countrySelect')}</option>
                 {countryOptions.map((option) => (
@@ -747,11 +830,7 @@ export default function RoleSignup() {
           </div>
           {hasFieldError && (
             <span id={fieldErrorId} className={styles.fieldError}>
-              {isPassword
-                ? t('auth.signup.password.requireNumberSpecial')
-                : isPasswordConfirm
-                  ? t('auth.signup.password.mismatch')
-                  : t(fieldValidationKey)}
+              {t(fieldValidationKey)}
             </span>
           )}
           {isEmailCode && emailVerificationRemainingSeconds > 0 && !checks.emailVerified && (
@@ -794,49 +873,54 @@ export default function RoleSignup() {
                 {m.type === 'code' ? (
                   // 추천인(리더/파트너) 코드 입력 + 코드 확인 버튼.
                   // '확인 완료' 상태 배지는 입력란 안 우측에 겹쳐 표시(Figma 기준).
-                  <div className={styles.referralCodeRow}>
-                    <div className={styles.referralCodeInputWrap}>
-                      <input
-                        className={styles.referralCodeInput}
-                        type="text"
-                        placeholder={m.confirmed ?? (m.codePlaceholderKey ? t(m.codePlaceholderKey) : '')}
-                        value={selected ? form.referralCode : ''}
-                        readOnly={!selected}
+                  <>
+                    <div className={styles.referralCodeRow}>
+                      <div className={styles.referralCodeInputWrap}>
+                        <input
+                          className={styles.referralCodeInput}
+                          type="text"
+                          placeholder={m.confirmed ?? (m.codePlaceholderKey ? t(m.codePlaceholderKey) : '')}
+                          value={selected ? form.referralCode : ''}
+                          readOnly={!selected}
+                          tabIndex={selected ? 0 : -1}
+                          aria-disabled={!selected}
+                          onClick={(e) => {
+                            if (selected) e.stopPropagation()
+                          }}
+                          onChange={(e) => {
+                            if (selected) updateField('referralCode', e.target.value)
+                          }}
+                        />
+                        {selected && isReferralCodeConfirmedForMode(m.key) && (
+                          <span className={styles.referralCodeConfirmedBadge}>{t('auth.signup.codeConfirmed')}</span>
+                        )}
+                      </div>
+                      <span
+                        className={`${styles.referralCodeCheckButton} ${styles.codeCheckBtn}`}
+                        role="button"
                         tabIndex={selected ? 0 : -1}
                         aria-disabled={!selected}
                         onClick={(e) => {
-                          if (selected) e.stopPropagation()
-                        }}
-                        onChange={(e) => {
-                          if (selected) updateField('referralCode', e.target.value)
-                        }}
-                      />
-                      {selected && isReferralCodeConfirmedForMode(m.key) && (
-                        <span className={styles.referralCodeConfirmedBadge}>{t('auth.signup.codeConfirmed')}</span>
-                      )}
-                    </div>
-                    <span
-                      className={`${styles.referralCodeCheckButton} ${styles.codeCheckBtn}`}
-                      role="button"
-                      tabIndex={selected ? 0 : -1}
-                      aria-disabled={!selected}
-                      onClick={(e) => {
-                        if (!selected) return
-                        e.stopPropagation()
-                        checkReferral(form.referralCode)
-                      }}
-                      onKeyDown={(e) => {
-                        if (!selected) return
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault()
+                          if (!selected) return
                           e.stopPropagation()
                           checkReferral(form.referralCode)
-                        }
-                      }}
-                    >
-                      {t('auth.signup.btn.codeCheck')}
-                    </span>
-                  </div>
+                        }}
+                        onKeyDown={(e) => {
+                          if (!selected) return
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            checkReferral(form.referralCode)
+                          }
+                        }}
+                      >
+                        {t('auth.signup.btn.codeCheck')}
+                      </span>
+                    </div>
+                    {selected && referralValidationMessage() && (
+                      <span className={styles.modeFieldError}>{referralValidationMessage()}</span>
+                    )}
+                  </>
                 ) : (
                   // 본사 직접 계약: 본사 검토 필요 배지
                   <span className={styles.hqReviewBadge}>{t('auth.signup.hqReview')}</span>
@@ -848,7 +932,10 @@ export default function RoleSignup() {
 
         {/* A. 계정 정보 */}
         <h3 className={styles.sectionTitle}>{t('auth.signup.sec.account')}</h3>
-        <div className={styles.formFieldGrid}>{renderFields(ACCOUNT_FIELDS)}</div>
+        <div className={styles.formFieldGrid}>
+          {renderFields(ACCOUNT_FIELDS)}
+          {emailCodeVisible && renderFields([EMAIL_CODE_FIELD])}
+        </div>
 
         {/* B. 기본 / 소속 정보 */}
         <h3 className={styles.sectionTitle}>{t('auth.signup.sec.basic')}</h3>
@@ -860,16 +947,23 @@ export default function RoleSignup() {
           <span className={styles.fieldLabel}>{t('auth.signup.f.wallet')}</span>
           <div className={styles.fieldControlRow}>
             <input
-              className={styles.fieldControl}
+              className={`${styles.fieldControl} ${fieldValidationMessageKey('walletAddress') ? styles.fieldControlError : ''}`}
               type="text"
               placeholder={t('auth.signup.placeholder.wallet')}
               value={form.walletAddress}
               onChange={(e) => updateField('walletAddress', e.target.value)}
+              aria-invalid={Boolean(fieldValidationMessageKey('walletAddress')) || undefined}
+              aria-describedby={fieldValidationMessageKey('walletAddress') ? 'walletAddress-error' : undefined}
             />
             <button type="button" className={styles.fieldActionButton} disabled={busy || checks.walletAddress} onClick={checkWalletAddress}>
               {checks.walletAddress ? t('auth.signup.btn.walletVerified') : t('auth.signup.btn.walletLink')}
             </button>
           </div>
+          {fieldValidationMessageKey('walletAddress') && (
+            <span id="walletAddress-error" className={styles.fieldError}>
+              {t(fieldValidationMessageKey('walletAddress'))}
+            </span>
+          )}
         </div>
 
         {statusMessage && <div className={styles.formStatusNotice}>{statusMessage}</div>}
@@ -883,14 +977,21 @@ export default function RoleSignup() {
               <span className={styles.fieldLabel}>{t('auth.signup.f.evidence')}</span>
               <div className={styles.fieldControlRow}>
                 <input
-                  className={styles.fieldControl}
+                  className={`${styles.fieldControl} ${fieldValidationMessageKey('evidenceNote') ? styles.fieldControlError : ''}`}
                   type="text"
                   placeholder={t('auth.signup.placeholder.evidence')}
                   value={form.evidenceNote}
                   onChange={(e) => updateField('evidenceNote', e.target.value)}
                   aria-label={t('auth.signup.f.evidence')}
+                  aria-invalid={Boolean(fieldValidationMessageKey('evidenceNote')) || undefined}
+                  aria-describedby={fieldValidationMessageKey('evidenceNote') ? 'evidenceNote-error' : undefined}
                 />
               </div>
+              {fieldValidationMessageKey('evidenceNote') && (
+                <span id="evidenceNote-error" className={styles.fieldError}>
+                  {t(fieldValidationMessageKey('evidenceNote'))}
+                </span>
+              )}
             </div>
           </>
         )}

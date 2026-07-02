@@ -173,10 +173,10 @@
   margin-top: var(--space-2);
 }
 
-/* 필드 그리드 (3열) */
+/* 필드 그리드 (캡처 기준 2열) */
 .formFieldGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-4);
 }
 .formField {
@@ -185,7 +185,7 @@
   gap: var(--space-2);
 }
 .formFieldWide {
-  grid-column: span 3;
+  grid-column: span 2;
 }
 .fieldLabel {
   font-size: var(--font-size-12);
@@ -217,6 +217,12 @@
   box-shadow: 0 0 0 1px color-mix(in srgb, #ff5a7a 44%, transparent);
 }
 .fieldError {
+  font-size: var(--font-size-12);
+  line-height: 1.4;
+  color: #ff6b86;
+}
+.modeFieldError {
+  display: block;
   font-size: var(--font-size-12);
   line-height: 1.4;
   color: #ff6b86;
