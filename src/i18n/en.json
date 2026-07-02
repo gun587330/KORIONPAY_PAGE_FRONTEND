@@ -1000,6 +1000,8 @@
   "auth.signup.referral.invalidFormat": "Code format must be {example}.",
   "auth.signup.referral.valid": "This affiliation code is valid.",
   "auth.signup.referral.invalid": "This code is not registered in DB or is inactive.",
+  "auth.signup.referral.checkTitle": "Code check",
+  "auth.signup.referral.verifiedAlert": "Verification succeeded.",
   "auth.signup.referral.apiResponseTitle": "Code check API response",
   "auth.signup.referral.apiErrorTitle": "Code check API error",
   "auth.signup.referral.apiError": "An error occurred while checking the code.",

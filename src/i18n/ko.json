@@ -1000,6 +1000,8 @@
   "auth.signup.referral.invalidFormat": "코드 형식은 {example} 입니다.",
   "auth.signup.referral.valid": "유효한 소속 코드입니다.",
   "auth.signup.referral.invalid": "DB에 등록되지 않았거나 비활성화된 코드입니다.",
+  "auth.signup.referral.checkTitle": "코드 확인",
+  "auth.signup.referral.verifiedAlert": "인증에 성공했습니다.",
   "auth.signup.referral.apiResponseTitle": "코드확인 API 응답",
   "auth.signup.referral.apiErrorTitle": "코드확인 API 오류",
   "auth.signup.referral.apiError": "코드 확인 중 오류가 발생했습니다.",

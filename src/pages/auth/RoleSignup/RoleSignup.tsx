@@ -12,7 +12,6 @@ import {
   confirmEmailVerification,
   validateWalletAddress,
   type SignupCountryOptionApiResponse,
-  type ReferralCodeValidationApiResponse,
   type SignupAvailabilityField,
 } from '../../../services/korionChongApi'
 import data from './signupData.json'
@@ -157,12 +156,8 @@ const referralPatternForMode = (modeKey: string) => (
   modeKey === 'partner' ? PARTNER_CODE_PATTERN : LEADER_CODE_PATTERN
 )
 const referralExampleForMode = (modeKey: string) => (
-  modeKey === 'partner' ? 'NG-SP-004' : 'NG-LEAD-001'
+  modeKey === 'partner' ? 'KR-SP-004' : 'KR-LEAD-001'
 )
-const alertReferralCodeApiResponse = (response: ReferralCodeValidationApiResponse, title: string) => {
-  if (typeof window === 'undefined') return
-  window.alert(`${title}\n${JSON.stringify(response, null, 2)}`)
-}
 
 /*
  * RoleSignup (page) — 역할별 회원가입 (파트너/가맹점)
@@ -442,17 +437,23 @@ export default function RoleSignup() {
     setBusy(true)
     try {
       const result = await validateReferralCode(normalizedCode)
-      alertReferralCodeApiResponse(result, t('auth.signup.referral.apiResponseTitle'))
       setChecks((current) => ({ ...current, referralCode: result.valid }))
       setVerifiedReferralCode(result.valid ? { modeKey: mode, code: normalizedCode } : null)
+      setAlertModal({
+        title: t('auth.signup.referral.checkTitle'),
+        message: result.valid
+          ? t('auth.signup.referral.verifiedAlert')
+          : t('auth.signup.referral.invalid'),
+      })
       setStatusMessage(result.valid ? t('auth.signup.referral.valid') : t('auth.signup.referral.invalid'))
     } catch (error) {
       const message = error instanceof Error ? error.message : t('auth.signup.referral.apiError')
       setChecks((current) => ({ ...current, referralCode: false }))
       setVerifiedReferralCode(null)
-      if (typeof window !== 'undefined') {
-        window.alert(`${t('auth.signup.referral.apiErrorTitle')}\n${message}`)
-      }
+      setAlertModal({
+        title: t('auth.signup.referral.apiErrorTitle'),
+        message,
+      })
       setStatusMessage(message)
     } finally {
       setBusy(false)

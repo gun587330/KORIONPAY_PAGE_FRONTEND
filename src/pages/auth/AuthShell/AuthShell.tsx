@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { ChevronDown, Globe2 } from 'lucide-react'
 import { useTranslation } from '../../../i18n'
 import styles from './AuthShell.module.css'
 
@@ -17,7 +18,25 @@ interface AuthShellProps {
  * 사이드바 없는 공개 화면이라 AdminLayout과 별개의 셸을 둔다.
  */
 export default function AuthShell({ title, subtitle, children }: AuthShellProps) {
-  const { t, toggleLang } = useTranslation()
+  const { lang, setLang, t } = useTranslation()
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
+  const languageMenuRef = useRef<HTMLDivElement | null>(null)
+  const languageOptions = [
+    { code: 'ko' as const, label: 'KR', name: '한국어' },
+    { code: 'en' as const, label: 'EN', name: 'English' },
+  ]
+  const currentLanguage = languageOptions.find((option) => option.code === lang) ?? languageOptions[0]
+
+  useEffect(() => {
+    if (!languageMenuOpen) return
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (!languageMenuRef.current?.contains(event.target as Node)) {
+        setLanguageMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', closeOnOutsideClick)
+    return () => document.removeEventListener('mousedown', closeOnOutsideClick)
+  }, [languageMenuOpen])
 
   return (
     <div className={styles.page}>
@@ -29,10 +48,47 @@ export default function AuthShell({ title, subtitle, children }: AuthShellProps)
         <header className={styles.header}>
           <div className={styles.brandRow}>
             <span className={styles.brand}>{t('auth.brand')}</span>
-            {/* 언어 토글만 (로그아웃은 로그인 후에만 의미) */}
-            <button type="button" className={styles.langButton} onClick={toggleLang}>
-              {t('common.langCurrent')}
-            </button>
+            <div
+              className={styles.langMenu}
+              ref={languageMenuRef}
+              onKeyDown={(event) => {
+                if (event.key === 'Escape') {
+                  setLanguageMenuOpen(false)
+                }
+              }}
+            >
+              <button
+                type="button"
+                className={styles.langButton}
+                aria-haspopup="listbox"
+                aria-expanded={languageMenuOpen}
+                onClick={() => setLanguageMenuOpen((open) => !open)}
+              >
+                <Globe2 size={14} aria-hidden="true" />
+                <span>{currentLanguage.label}</span>
+                <ChevronDown size={13} aria-hidden="true" />
+              </button>
+              {languageMenuOpen && (
+                <div className={styles.langDropdown} role="listbox" aria-label="Language">
+                  {languageOptions.map((option) => (
+                    <button
+                      key={option.code}
+                      type="button"
+                      className={`${styles.langOption} ${option.code === lang ? styles.langOptionActive : ''}`}
+                      role="option"
+                      aria-selected={option.code === lang}
+                      onClick={() => {
+                        setLang(option.code)
+                        setLanguageMenuOpen(false)
+                      }}
+                    >
+                      <span className={styles.langOptionCode}>{option.label}</span>
+                      <span>{option.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <p className={styles.subtitle}>{subtitle}</p>
           <h1 className={styles.title}>{title}</h1>
