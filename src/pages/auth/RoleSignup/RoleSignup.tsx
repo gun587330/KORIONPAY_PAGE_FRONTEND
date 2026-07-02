@@ -499,12 +499,9 @@ export default function RoleSignup() {
     setBusy(true)
     try {
       if (!form.walletAddress.trim()) throw new Error(t('auth.signup.wallet.required'))
-      if (!form.email.trim()) throw new Error(t('auth.signup.email.required'))
-      if (!isValidEmailAddress(form.email)) throw new Error(t('auth.signup.email.invalid'))
       const applicantType = role === 'merchant' ? 'MERCHANT' : 'PARTNER'
       const result = await validateWalletAddress(
         applicantType,
-        form.email.trim(),
         form.walletAddress.trim(),
         requestId,
         lang,
@@ -524,11 +521,7 @@ export default function RoleSignup() {
     } catch (error) {
       setChecks((current) => ({ ...current, walletAddress: false }))
       setWalletStatusMessage('')
-      const validationMessages = [
-        t('auth.signup.wallet.required'),
-        t('auth.signup.email.required'),
-        t('auth.signup.email.invalid'),
-      ]
+      const validationMessages = [t('auth.signup.wallet.required')]
       const message = error instanceof Error && validationMessages.includes(error.message)
         ? error.message
         : t('auth.signup.wallet.invalidAlert')
@@ -552,7 +545,6 @@ export default function RoleSignup() {
       const applicantType = role === 'merchant' ? 'MERCHANT' : 'PARTNER'
       const response = await confirmWalletAddress(
         applicantType,
-        form.email.trim(),
         form.walletAddress.trim(),
         form.walletCode.trim(),
         requestId,

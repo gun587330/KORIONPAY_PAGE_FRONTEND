@@ -350,14 +350,12 @@ export function verifyWalletLink(
 
 export function validateWalletAddress(
   applicantType: 'PARTNER' | 'MERCHANT',
-  email: string,
   walletAddress: string,
   requestId?: string,
   locale?: 'ko' | 'en',
 ) {
   return postJson<WalletAddressValidateApiResponse>('/api/auth/wallet-addresses/validate', {
     applicantType,
-    email,
     walletAddress,
     requestId,
     locale,
@@ -366,14 +364,12 @@ export function validateWalletAddress(
 
 export function confirmWalletAddress(
   applicantType: 'PARTNER' | 'MERCHANT',
-  email: string,
   walletAddress: string,
   code: string,
   requestId?: string,
 ) {
   return postJson<WalletAddressConfirmApiResponse>('/api/auth/wallet-addresses/confirm', {
     applicantType,
-    email,
     walletAddress,
     code,
     requestId,
