@@ -901,6 +901,7 @@
   "auth.signup.btn.codeCheck": "Verify Code",
   "auth.signup.codeConfirmed": "Verified",
   "auth.signup.hqReview": "HQ Review Required",
+  "auth.signup.hqReviewReasonRequiredAlert": "When selecting HQ review, you must enter the contract reason.",
   "auth.signup.requestFailed": "An error occurred while processing the request.",
   "auth.signup.sec.account": "A. Account Info",
   "auth.signup.sec.basic": "B. Basic / Affiliation Info",

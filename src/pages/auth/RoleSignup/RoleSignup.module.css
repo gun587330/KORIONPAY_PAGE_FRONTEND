@@ -135,11 +135,14 @@
 .codeCheckBtn {
   justify-content: center;
 }
-.modeCard:not(.modeCardActive) .referralCodeCheckButton,
-.modeCard:not(.modeCardActive) .hqReviewBadge {
+.modeCard:not(.modeCardActive) .referralCodeCheckButton {
   opacity: 0.72;
   filter: saturate(0.7);
   pointer-events: none;
+}
+.modeCard:not(.modeCardActive) .hqReviewBadge {
+  opacity: 0.72;
+  filter: saturate(0.7);
 }
 /* 확인 완료 — 청록 솔리드 상태 배지 (입력란 안 우측에 겹쳐 표시) */
 .referralCodeConfirmedBadge {
@@ -155,15 +158,21 @@
   background-color: color-mix(in srgb, #26e6b2 92%, transparent);
   pointer-events: none;        /* 입력 클릭을 가리지 않도록 */
 }
-/* 본사 검토확인 — 보라 상태 배지 */
+/* 본사 검토확인 — 코드 확인 버튼과 동일한 표시용 버튼 스타일 */
 .hqReviewBadge {
-  padding: 4px var(--space-3);
-  border-radius: var(--radius-pill);
-  font-size: var(--font-size-11);
-  font-weight: var(--font-weight-semibold);
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 var(--space-4);
+  border-radius: 13px;
+  border: 1px solid color-mix(in srgb, #24d8ff 34%, transparent);
+  background: linear-gradient(135deg, #7033ff, #1a9eff, #1fffb8);
   color: #ffffff;
-  background-color: color-mix(in srgb, #7b5cff 24%, transparent);
-  border: 1px solid color-mix(in srgb, #7b5cff 34%, transparent);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
 }
 
 .sectionTitle {

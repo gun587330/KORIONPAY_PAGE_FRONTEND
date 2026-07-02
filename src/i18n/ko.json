@@ -901,6 +901,7 @@
   "auth.signup.btn.codeCheck": "코드 확인",
   "auth.signup.codeConfirmed": "확인 완료",
   "auth.signup.hqReview": "본사 검토확인",
+  "auth.signup.hqReviewReasonRequiredAlert": "본사 확인 선택시 계약사유를 반드시 입력해야합니다.",
   "auth.signup.requestFailed": "요청 처리 중 오류가 발생했습니다.",
   "auth.signup.sec.account": "A. 계정 정보",
   "auth.signup.sec.basic": "B. 기본 / 소속 정보",

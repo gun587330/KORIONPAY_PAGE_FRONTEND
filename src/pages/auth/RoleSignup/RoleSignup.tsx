@@ -734,6 +734,22 @@ export default function RoleSignup() {
     return t('auth.signup.validation.referralRequired')
   }
 
+  const selectSignupMode = (modeKey: string) => {
+    if (modeKey !== mode) {
+      setForm((current) => ({ ...current, referralCode: '' }))
+      setChecks((current) => ({ ...current, referralCode: false }))
+      setVerifiedReferralCode(null)
+    }
+    setMode(modeKey)
+  }
+
+  const openHqReviewNotice = () => {
+    setAlertModal({
+      title: t('auth.signup.hqReview'),
+      message: t('auth.signup.hqReviewReasonRequiredAlert'),
+    })
+  }
+
   const openConfirmModal = () => {
     setSubmitAttempted(true)
     const error = validateBeforeConfirm()
@@ -859,14 +875,7 @@ export default function RoleSignup() {
                 type="button"
                 className={`${styles.modeCard} ${selected ? styles.modeCardActive : styles.modeCardInactive}`}
                 aria-pressed={selected}
-                onClick={() => {
-                  if (m.key !== mode) {
-                    setForm((current) => ({ ...current, referralCode: '' }))
-                    setChecks((current) => ({ ...current, referralCode: false }))
-                    setVerifiedReferralCode(null)
-                  }
-                  setMode(m.key)
-                }}
+                onClick={() => selectSignupMode(m.key)}
               >
                 <span className={styles.modeBadge}>{t(m.labelKey)}</span>
                 <span className={styles.modeDescription}>{t(m.descKey)}</span>
@@ -924,7 +933,26 @@ export default function RoleSignup() {
                   </>
                 ) : (
                   // 본사 직접 계약: 본사 검토 필요 배지
-                  <span className={styles.hqReviewBadge}>{t('auth.signup.hqReview')}</span>
+                  <span
+                    className={styles.hqReviewBadge}
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      selectSignupMode(m.key)
+                      openHqReviewNotice()
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        selectSignupMode(m.key)
+                        openHqReviewNotice()
+                      }
+                    }}
+                  >
+                    {t('auth.signup.hqReview')}
+                  </span>
                 )}
               </button>
             )
