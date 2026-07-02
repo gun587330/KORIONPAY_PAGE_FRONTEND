@@ -913,7 +913,6 @@
   "auth.signup.f.pw": "비밀번호 *",
   "auth.signup.f.pwConfirm": "비밀번호 재확인 *",
   "auth.signup.f.telegram": "Telegram ID *",
-  "auth.signup.f.telegramCode": "Telegram 인증번호 *",
   "auth.signup.f.phone": "휴대폰 / WhatsApp *",
   "auth.signup.f.twitter": "X / Twitter 프로필",
   "auth.signup.placeholder.loginId": "영문 + 숫자, 20자 이내",

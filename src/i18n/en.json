@@ -913,7 +913,6 @@
   "auth.signup.f.pw": "Password *",
   "auth.signup.f.pwConfirm": "Confirm Password *",
   "auth.signup.f.telegram": "Telegram ID *",
-  "auth.signup.f.telegramCode": "Telegram Verification Code *",
   "auth.signup.f.phone": "Phone / WhatsApp *",
   "auth.signup.f.twitter": "X / Twitter Profile",
   "auth.signup.placeholder.loginId": "Letters + numbers, within 20 characters",
