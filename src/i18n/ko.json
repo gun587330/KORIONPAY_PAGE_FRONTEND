@@ -997,6 +997,8 @@
   "auth.signup.email.verifyTitle": "이메일 인증 확인",
   "auth.signup.email.verifiedAlert": "인증이 완료되었습니다.",
   "auth.signup.email.invalidCodeAlert": "인증번호가 틀렸습니다. 재확인 혹은 재전송해주세요.",
+  "auth.signup.email.deliveryNotConfigured": "이메일 발송 설정이 완료되지 않았습니다. 관리자에게 문의해주세요.",
+  "auth.signup.email.deliveryFailed": "이메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.",
   "auth.signup.referral.required": "코드를 입력하세요. 예: {example}",
   "auth.signup.referral.invalidFormat": "코드 형식은 {example} 입니다.",
   "auth.signup.referral.valid": "유효한 소속 코드입니다.",

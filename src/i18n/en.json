@@ -997,6 +997,8 @@
   "auth.signup.email.verifyTitle": "Email verification",
   "auth.signup.email.verifiedAlert": "Verification is complete.",
   "auth.signup.email.invalidCodeAlert": "The verification code is incorrect. Please check it again or resend the code.",
+  "auth.signup.email.deliveryNotConfigured": "Email delivery is not configured yet. Please contact the administrator.",
+  "auth.signup.email.deliveryFailed": "Failed to send the email. Please try again later.",
   "auth.signup.referral.required": "Enter a code. Example: {example}",
   "auth.signup.referral.invalidFormat": "Code format must be {example}.",
   "auth.signup.referral.valid": "This affiliation code is valid.",

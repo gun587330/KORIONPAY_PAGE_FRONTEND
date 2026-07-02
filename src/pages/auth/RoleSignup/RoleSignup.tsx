@@ -85,8 +85,8 @@ const ACCOUNT_FIELDS: FieldDef[] = [
   // { name: 'emailCode', labelKey: 'auth.signup.f.emailCode', placeholderKey: 'auth.signup.placeholder.emailCode', buttonKey: 'auth.signup.btn.verify', action: 'confirmEmail' },
   { name: 'password', labelKey: 'auth.signup.f.pw', placeholderKey: 'auth.signup.placeholder.password', type: 'password' },
   { name: 'passwordConfirm', labelKey: 'auth.signup.f.pwConfirm', placeholderKey: 'auth.signup.placeholder.password', type: 'password' },
-  { name: 'telegram', labelKey: 'auth.signup.f.telegram', placeholderKey: 'auth.signup.placeholder.telegram', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'telegram' },
-  { name: 'whatsapp', labelKey: 'auth.signup.f.phone', placeholderKey: 'auth.signup.placeholder.phone', buttonKey: 'auth.signup.btn.dupCheck', action: 'availability', availabilityField: 'phone' },
+  { name: 'telegram', labelKey: 'auth.signup.f.telegram', placeholderKey: 'auth.signup.placeholder.telegram' },
+  { name: 'whatsapp', labelKey: 'auth.signup.f.phone', placeholderKey: 'auth.signup.placeholder.phone' },
   { name: 'twitter', labelKey: 'auth.signup.f.twitter', placeholderKey: 'auth.signup.placeholder.twitter' },
 ]
 const EMAIL_CODE_FIELD: FieldDef = {
@@ -164,7 +164,7 @@ const referralExampleForMode = (modeKey: string) => (
  * ------------------------------------------------------------------
  * 가입 방식 탭(리더 코드/파트너 코드/본사 직접) + A.계정 / B.기본·소속 / C.Wallet
  *  (+ 가맹점: D.매장 정보) + 동의 체크 + 가입 신청.
- * 중복 확인과 이메일 인증을 통과해야 확인 모달과 가입 신청 제출이 가능하다.
+ * 아이디 중복 확인과 이메일 인증을 통과해야 확인 모달과 가입 신청 제출이 가능하다.
  */
 export default function RoleSignup() {
   const { role } = useParams<{ role: string }>()
@@ -186,8 +186,6 @@ export default function RoleSignup() {
   const [checks, setChecks] = useState({
     loginId: false,
     emailVerified: false,
-    telegramVerified: false,
-    whatsapp: false,
     walletAddress: false,
     referralCode: false,
   })
@@ -271,8 +269,6 @@ export default function RoleSignup() {
       setEmailVerificationExpiresAtMs(null)
       setEmailVerificationRemainingSeconds(0)
     }
-    if (name === 'telegram') setChecks((current) => ({ ...current, telegramVerified: false }))
-    if (name === 'whatsapp') setChecks((current) => ({ ...current, whatsapp: false }))
     if (name === 'walletAddress') setChecks((current) => ({ ...current, walletAddress: false }))
     if (name === 'referralCode') {
       setChecks((current) => ({ ...current, referralCode: false }))
@@ -290,10 +286,6 @@ export default function RoleSignup() {
         if (field.availabilityField === 'loginId' && !LOGIN_ID_PATTERN.test(value.trim())) {
           throw new Error(t('auth.signup.validation.loginIdInvalid'))
         }
-        if ((field.availabilityField === 'phone' || field.availabilityField === 'whatsapp')
-          && !isValidPhoneNumber(value)) {
-          throw new Error(t('auth.signup.validation.phoneInvalid'))
-        }
         const result = await checkSignupAvailability(field.availabilityField, value.trim())
         if (field.availabilityField === 'loginId') {
           setChecks((current) => ({ ...current, loginId: result.available }))
@@ -302,33 +294,6 @@ export default function RoleSignup() {
             message: result.available
               ? t('auth.signup.availability.loginIdAvailable')
               : t('auth.signup.availability.loginIdDuplicate'),
-          })
-        }
-        if (field.availabilityField === 'telegram') {
-          setChecks((current) => ({ ...current, telegramVerified: result.available }))
-          setAlertModal({
-            title: t('auth.signup.availability.telegramTitle'),
-            message: result.available
-              ? t('auth.signup.availability.telegramAvailable')
-              : t('auth.signup.availability.telegramDuplicate'),
-          })
-        }
-        if (field.availabilityField === 'whatsapp') {
-          setChecks((current) => ({ ...current, whatsapp: result.available }))
-          setAlertModal({
-            title: t('auth.signup.availability.phoneTitle'),
-            message: result.available
-              ? t('auth.signup.availability.phoneAvailable')
-              : t('auth.signup.availability.phoneDuplicate'),
-          })
-        }
-        if (field.availabilityField === 'phone') {
-          setChecks((current) => ({ ...current, whatsapp: result.available }))
-          setAlertModal({
-            title: t('auth.signup.availability.phoneTitle'),
-            message: result.available
-              ? t('auth.signup.availability.phoneAvailable')
-              : t('auth.signup.availability.phoneDuplicate'),
           })
         }
         setStatusMessage(result.available
@@ -376,10 +341,13 @@ export default function RoleSignup() {
     } catch (error) {
       const message = error instanceof Error ? error.message : t('auth.signup.requestFailed')
       if (field.action === 'sendEmail') {
+        const displayMessage = emailVerificationErrorMessage(message)
         setAlertModal({
           title: t('auth.signup.email.verifyTitle'),
-          message,
+          message: displayMessage,
         })
+        setStatusMessage(displayMessage)
+        return
       }
       if (field.action === 'confirmEmail') {
         setChecks((current) => ({ ...current, emailVerified: false }))
@@ -390,25 +358,10 @@ export default function RoleSignup() {
             : t('auth.signup.email.invalidCodeAlert'),
         })
       }
-      if (field.action === 'availability'
-        && (field.availabilityField === 'phone' || field.availabilityField === 'whatsapp')) {
-        setChecks((current) => ({ ...current, whatsapp: false }))
-        setAlertModal({
-          title: t('auth.signup.availability.phoneTitle'),
-          message,
-        })
-      }
       if (field.action === 'availability' && field.availabilityField === 'loginId') {
         setChecks((current) => ({ ...current, loginId: false }))
         setAlertModal({
           title: t('auth.signup.availability.loginIdTitle'),
-          message,
-        })
-      }
-      if (field.action === 'availability' && field.availabilityField === 'telegram') {
-        setChecks((current) => ({ ...current, telegramVerified: false }))
-        setAlertModal({
-          title: t('auth.signup.availability.telegramTitle'),
           message,
         })
       }
@@ -603,18 +556,12 @@ export default function RoleSignup() {
     if (!form.telegram.trim()) {
       return t('auth.signup.validation.telegramRequired')
     }
-    if (!checks.telegramVerified) {
-      return t('auth.signup.availability.telegramRequired')
-    }
     const phoneValidationKey = textValidationMessageKey('whatsapp', form.whatsapp)
     if (!form.whatsapp.trim()) {
       return t('auth.signup.validation.phoneRequired')
     }
     if (phoneValidationKey) {
       return t(phoneValidationKey)
-    }
-    if (!checks.whatsapp) {
-      return t('auth.signup.availability.phoneRequired')
     }
     const twitterValidationKey = textValidationMessageKey('twitter', form.twitter)
     if (twitterValidationKey) {
@@ -689,12 +636,10 @@ export default function RoleSignup() {
     }
     if (name === 'telegram') {
       if (!form.telegram.trim()) return 'auth.signup.validation.telegramRequired'
-      if (!checks.telegramVerified) return 'auth.signup.availability.telegramRequired'
     }
     if (name === 'whatsapp') {
       if (!form.whatsapp.trim()) return 'auth.signup.validation.phoneRequired'
       if (!isValidPhoneNumber(form.whatsapp)) return 'auth.signup.validation.phoneInvalid'
-      if (!checks.whatsapp) return 'auth.signup.availability.phoneRequired'
     }
     if (name === 'companyName' && applicantType === 'PARTNER' && !form.companyName.trim()) {
       return 'auth.signup.validation.companyNameRequired'
@@ -732,6 +677,12 @@ export default function RoleSignup() {
   const referralValidationMessage = () => {
     if (!submitAttempted || mode === 'hq' || activeReferralCodeConfirmed) return ''
     return t('auth.signup.validation.referralRequired')
+  }
+
+  const emailVerificationErrorMessage = (message: string) => {
+    if (message === 'EMAIL_DELIVERY_NOT_CONFIGURED') return t('auth.signup.email.deliveryNotConfigured')
+    if (message === 'EMAIL_DELIVERY_FAILED') return t('auth.signup.email.deliveryFailed')
+    return message
   }
 
   const selectSignupMode = (modeKey: string) => {
