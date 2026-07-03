@@ -7,6 +7,7 @@ import {
   checkSignupAvailability,
   createSignupApplication,
   fetchSignupOptions,
+  KorionChongApiError,
   sendEmailVerification,
   validateReferralCode,
   confirmEmailVerification,
@@ -308,6 +309,7 @@ export default function RoleSignup() {
   if (!role || !CFG[role]) return <Navigate to="/login" replace />
   const cfg = CFG[role]
   const requestId = `signup-${role}-${form.loginId || form.email || 'draft'}`
+  const applicantType = role === 'merchant' ? 'MERCHANT' : 'PARTNER'
   const allAgreementsChecked = AGREEMENTS.every((key) => agreements[key])
   const isReferralCodeConfirmedForMode = (modeKey: string) => (
     checks.referralCode
@@ -383,7 +385,7 @@ export default function RoleSignup() {
         if (field.availabilityField === 'loginId' && !LOGIN_ID_PATTERN.test(value.trim())) {
           throw new Error(t('auth.signup.validation.loginIdInvalid'))
         }
-        const result = await checkSignupAvailability(field.availabilityField, value.trim())
+        const result = await checkSignupAvailability(applicantType, field.availabilityField, value.trim())
         if (field.availabilityField === 'loginId') {
           setChecks((current) => ({ ...current, loginId: result.available }))
           setAlertModal({
@@ -406,7 +408,7 @@ export default function RoleSignup() {
           return
         }
         setChecks((current) => ({ ...current, emailVerified: false }))
-        const response = await sendEmailVerification(form.email.trim(), requestId, lang)
+        const response = await sendEmailVerification(applicantType, form.email.trim(), requestId, lang)
         const parsedExpiresAt = Date.parse(response.expiresAt)
         const expiresAtMs = Number.isFinite(parsedExpiresAt)
           ? parsedExpiresAt
@@ -419,7 +421,7 @@ export default function RoleSignup() {
       }
       if (field.action === 'confirmEmail') {
         if (!form.email.trim() || !form.emailCode.trim()) throw new Error(t('auth.signup.email.codeRequired'))
-        const response = await confirmEmailVerification(form.email.trim(), form.emailCode.trim(), requestId)
+        const response = await confirmEmailVerification(applicantType, form.email.trim(), form.emailCode.trim(), requestId)
         setChecks((current) => ({ ...current, emailVerified: response.verified }))
         if (response.verified) {
           setEmailVerificationExpiresAtMs(null)
@@ -541,9 +543,7 @@ export default function RoleSignup() {
       setChecks((current) => ({ ...current, walletAddress: false }))
       setWalletStatusMessage('')
       const validationMessages = [t('auth.signup.wallet.required')]
-      const message = error instanceof Error && validationMessages.includes(error.message)
-        ? error.message
-        : t('auth.signup.wallet.invalidAlert')
+      const message = resolveWalletAddressErrorMessage(error, validationMessages)
       setAlertModal({
         title: t('auth.signup.wallet.verifyTitle'),
         message,
@@ -552,6 +552,28 @@ export default function RoleSignup() {
     } finally {
       setBusy(false)
     }
+  }
+
+  const resolveWalletAddressErrorMessage = (error: unknown, validationMessages: string[]) => {
+    if (error instanceof Error && validationMessages.includes(error.message)) {
+      return error.message
+    }
+    if (error instanceof KorionChongApiError) {
+      switch (error.code) {
+        case 'DUPLICATE_WALLET_ADDRESS':
+          return t('auth.signup.wallet.duplicateAlert')
+        case 'WALLET_ADDRESS_NOT_FOUND':
+        case 'INVALID_WALLET_ADDRESS':
+          return t('auth.signup.wallet.invalidAlert')
+        case 'WALLET_NOTIFICATION_NOT_CONFIGURED':
+        case 'WALLET_NOTIFICATION_DELIVERY_FAILED':
+        case 'WALLET_NOTIFICATION_PAYLOAD_INVALID':
+          return t('auth.signup.wallet.notificationFailedAlert')
+        default:
+          return t('auth.signup.wallet.requestFailedAlert')
+      }
+    }
+    return t('auth.signup.wallet.requestFailedAlert')
   }
 
   const confirmWalletCode = async () => {

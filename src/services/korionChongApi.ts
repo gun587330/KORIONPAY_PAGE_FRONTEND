@@ -1,6 +1,16 @@
 const API_BASE_URL = (import.meta.env.VITE_KORION_CHONG_API_URL ?? '').replace(/\/$/, '')
 type Headers = Record<string, string>
 
+export class KorionChongApiError extends Error {
+  code: string
+
+  constructor(code: string, message: string) {
+    super(message || code)
+    this.name = 'KorionChongApiError'
+    this.code = code
+  }
+}
+
 function buildUrl(path: string, query?: Record<string, string | number | undefined>) {
   const params = new URLSearchParams()
   Object.entries(query ?? {}).forEach(([key, value]) => {
@@ -83,14 +93,16 @@ async function postJson<T>(path: string, body: unknown) {
     body: JSON.stringify(body),
   })
   if (!response.ok) {
+    let code = ''
     let detail = ''
     try {
       const payload = (await response.json()) as { code?: string; message?: string }
-      detail = payload.code ?? payload.message ?? ''
+      code = payload.code ?? ''
+      detail = payload.message ?? payload.code ?? ''
     } catch {
       detail = ''
     }
-    throw new Error(detail || `KORION Chong API ${response.status}`)
+    throw new KorionChongApiError(code || `HTTP_${response.status}`, detail || `KORION Chong API ${response.status}`)
   }
   return response.json() as Promise<T>
 }
@@ -302,8 +314,12 @@ export function login(payload: Omit<LoginApiRequest, 'requestId'>) {
   })
 }
 
-export function checkSignupAvailability(field: SignupAvailabilityField, value: string) {
-  return getJson<AvailabilityApiResponse>('/api/auth/availability', { field, value })
+export function checkSignupAvailability(
+  applicantType: 'PARTNER' | 'MERCHANT',
+  field: SignupAvailabilityField,
+  value: string,
+) {
+  return getJson<AvailabilityApiResponse>('/api/auth/availability', { applicantType, field, value })
 }
 
 export function validateReferralCode(code: string) {
@@ -314,16 +330,28 @@ export function fetchSignupOptions() {
   return getJson<SignupOptionsApiResponse>('/api/auth/signup-options')
 }
 
-export function sendEmailVerification(email: string, requestId?: string, locale?: 'ko' | 'en') {
+export function sendEmailVerification(
+  applicantType: 'PARTNER' | 'MERCHANT',
+  email: string,
+  requestId?: string,
+  locale?: 'ko' | 'en',
+) {
   return postJson<EmailVerificationSendApiResponse>('/api/auth/email-verifications/send', {
+    applicantType,
     email,
     requestId,
     locale,
   })
 }
 
-export function confirmEmailVerification(email: string, code: string, requestId?: string) {
+export function confirmEmailVerification(
+  applicantType: 'PARTNER' | 'MERCHANT',
+  email: string,
+  code: string,
+  requestId?: string,
+) {
   return postJson<EmailVerificationConfirmApiResponse>('/api/auth/email-verifications/confirm', {
+    applicantType,
     email,
     code,
     requestId,
