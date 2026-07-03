@@ -23,43 +23,22 @@ function buildUrl(path: string, query?: Record<string, string | number | undefin
   return `${API_BASE_URL}${normalizedPath}${suffix}`
 }
 
+function authHeaders(): Headers {
+  const accessToken = window.localStorage.getItem('korion.accessToken')
+  const tokenType = window.localStorage.getItem('korion.tokenType') || 'Bearer'
+  return accessToken ? { Authorization: `${tokenType} ${accessToken}` } : {}
+}
+
 function leaderHeaders() {
-  return {
-    'X-Leader-Id':
-      window.localStorage.getItem('korion.leaderId') ??
-      import.meta.env.VITE_KORION_LEADER_ID ??
-      '1',
-    'X-Country-Scopes':
-      window.localStorage.getItem('korion.countryScopes') ??
-      import.meta.env.VITE_KORION_COUNTRY_SCOPES ??
-      'KR,JP',
-  }
+  return authHeaders()
 }
 
 function partnerHeaders() {
-  return {
-    'X-Partner-Id':
-      window.localStorage.getItem('korion.partnerId') ??
-      import.meta.env.VITE_KORION_PARTNER_ID ??
-      '',
-    'X-Country-Scopes':
-      window.localStorage.getItem('korion.countryScopes') ??
-      import.meta.env.VITE_KORION_COUNTRY_SCOPES ??
-      '',
-  }
+  return authHeaders()
 }
 
 function merchantHeaders() {
-  return {
-    'X-Merchant-Id':
-      window.localStorage.getItem('korion.merchantId') ??
-      import.meta.env.VITE_KORION_MERCHANT_ID ??
-      '',
-    'X-Country-Scopes':
-      window.localStorage.getItem('korion.countryScopes') ??
-      import.meta.env.VITE_KORION_COUNTRY_SCOPES ??
-      '',
-  }
+  return authHeaders()
 }
 
 export async function getJson<T>(path: string, query?: Record<string, string | number | undefined>, headers?: Headers) {
@@ -305,6 +284,8 @@ export interface LoginApiResponse {
   sessionExpiresAt?: string | null
   resultCode: 'LOGIN_SUCCESS'
   messageKey: string
+  accessToken?: string | null
+  tokenType?: 'Bearer' | string | null
 }
 
 export function login(payload: Omit<LoginApiRequest, 'requestId'>) {

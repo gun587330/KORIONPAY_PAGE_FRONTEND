@@ -67,5 +67,8 @@ export function clearAuthSession() {
     'korion.partnerId',
     'korion.merchantId',
     'korion.countryScopes',
+    'korion.accessToken',
+    'korion.tokenType',
+    'korion.sessionExpiresAt',
   ].forEach((key) => window.localStorage.removeItem(key))
 }

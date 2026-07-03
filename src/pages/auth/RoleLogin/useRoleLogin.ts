@@ -36,6 +36,18 @@ function persistLogin(response: LoginApiResponse) {
   if (response.countryScopes.length > 0) {
     window.localStorage.setItem('korion.countryScopes', response.countryScopes.join(','))
   }
+  if (response.accessToken) {
+    window.localStorage.setItem('korion.accessToken', response.accessToken)
+    window.localStorage.setItem('korion.tokenType', response.tokenType || 'Bearer')
+  } else {
+    window.localStorage.removeItem('korion.accessToken')
+    window.localStorage.removeItem('korion.tokenType')
+  }
+  if (response.sessionExpiresAt) {
+    window.localStorage.setItem('korion.sessionExpiresAt', response.sessionExpiresAt)
+  } else {
+    window.localStorage.removeItem('korion.sessionExpiresAt')
+  }
 }
 
 export function useRoleLogin() {
