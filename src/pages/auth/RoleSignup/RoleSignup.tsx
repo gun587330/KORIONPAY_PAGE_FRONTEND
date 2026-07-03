@@ -135,13 +135,24 @@ const LEADER_CODE_PATTERN = /^[A-Z]{2}-LEAD-[0-9]{3}$/
 const PARTNER_CODE_PATTERN = /^[A-Z]{2}-SP-[0-9]{3}$/
 const LOGIN_ID_PATTERN = /^[A-Za-z0-9]{1,20}$/
 const EMAIL_ADDRESS_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const BLOCKED_EMAIL_DOMAINS = new Set(['example.com', 'example.net', 'example.org', 'localhost'])
+const BLOCKED_EMAIL_TLDS = new Set(['example', 'invalid', 'localhost', 'local', 'test'])
 const PASSWORD_NUMBER_PATTERN = /\d/
 const PASSWORD_SPECIAL_PATTERN = /[^A-Za-z0-9]/
 const PHONE_NUMBER_PATTERN = /^\+?[0-9\s().-]{7,24}$/
 const TWITTER_PROFILE_PATTERN = /^@?[A-Za-z0-9_]{1,30}$/
 
 const normalizeReferralCode = (value: string) => value.trim().toUpperCase()
-const isValidEmailAddress = (value: string) => EMAIL_ADDRESS_PATTERN.test(value.trim())
+const isValidEmailAddress = (value: string) => {
+  const email = value.trim()
+  if (!EMAIL_ADDRESS_PATTERN.test(email)) return false
+  const domain = email.split('@').pop()?.toLowerCase() ?? ''
+  const labels = domain.split('.')
+  const tld = labels[labels.length - 1] ?? ''
+  if (BLOCKED_EMAIL_DOMAINS.has(domain) || BLOCKED_EMAIL_TLDS.has(tld)) return false
+  if (labels.length < 2 || tld.length < 2 || !/^[a-z]+$/.test(tld)) return false
+  return labels.every((label) => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label))
+}
 const hasPasswordNumberAndSpecial = (value: string) =>
   value.length >= 8 && PASSWORD_NUMBER_PATTERN.test(value) && PASSWORD_SPECIAL_PATTERN.test(value)
 const isValidPhoneNumber = (value: string) => {
@@ -305,6 +316,9 @@ export default function RoleSignup() {
   )
   const activeReferralCodeConfirmed = isReferralCodeConfirmedForMode(mode)
   const emailCodeVisible = emailVerificationModalOpen && emailVerificationSent && !checks.emailVerified
+  const emailVerificationResendLocked = emailVerificationSent
+    && emailVerificationRemainingSeconds > 0
+    && !checks.emailVerified
   const walletCodeVisible = walletVerificationModalOpen && walletVerificationSent && !checks.walletAddress
   const showFormStatusNotice = Boolean(walletStatusMessage)
 
@@ -386,6 +400,11 @@ export default function RoleSignup() {
       if (field.action === 'sendEmail') {
         if (!form.email.trim()) throw new Error(t('auth.signup.email.required'))
         if (!isValidEmailAddress(form.email)) throw new Error(t('auth.signup.email.invalid'))
+        if (emailVerificationResendLocked) {
+          setEmailVerificationModalOpen(true)
+          setStatusMessage('')
+          return
+        }
         setChecks((current) => ({ ...current, emailVerified: false }))
         const response = await sendEmailVerification(form.email.trim(), requestId, lang)
         const parsedExpiresAt = Date.parse(response.expiresAt)
@@ -890,6 +909,7 @@ export default function RoleSignup() {
     placeholder,
     remainingSeconds,
     onResend,
+    resendDisabled = false,
     onVerify,
   }: {
     visible: boolean
@@ -903,6 +923,7 @@ export default function RoleSignup() {
     placeholder: string
     remainingSeconds: number
     onResend: () => void
+    resendDisabled?: boolean
     onVerify: () => void
   }) => {
     if (!visible) return null
@@ -946,7 +967,7 @@ export default function RoleSignup() {
             <Button variant="secondary" className={styles.signupButton} onClick={onClose}>
               {t('auth.signup.cancel')}
             </Button>
-            <Button variant="secondary" className={styles.signupButton} disabled={busy} onClick={onResend}>
+            <Button variant="secondary" className={styles.signupButton} disabled={busy || resendDisabled} onClick={onResend}>
               {t('auth.signup.btn.resendCode')}
             </Button>
             <Button variant="primary" className={styles.signupButton} disabled={busy} onClick={onVerify}>
@@ -1311,6 +1332,7 @@ export default function RoleSignup() {
         placeholder: t('auth.signup.placeholder.emailCode'),
         remainingSeconds: emailVerificationRemainingSeconds,
         onResend: () => runAction(EMAIL_SEND_FIELD),
+        resendDisabled: emailVerificationResendLocked,
         onVerify: () => runAction(EMAIL_CODE_FIELD),
       })}
 
