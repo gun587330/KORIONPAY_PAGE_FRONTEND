@@ -73,6 +73,5 @@ export function useRequestsLeader() {
     statusMeta,
     approveLabel: t('hqRequestLeader.action.approve'),
     rejectLabel: t('hqRequestLeader.action.reject'),
-    footnote: t('hqRequestLeader.footnote'),
   }
 }

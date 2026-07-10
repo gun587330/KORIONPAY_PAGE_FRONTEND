@@ -51,6 +51,8 @@ interface DataTableProps {
    * 컬럼이 많아 가로폭은 컨테이너에 고정하되 긴 값은 잘리지 않고 끝까지 보여야 하는 표(예: 전체 결제 로그)용.
    */
   wrapCells?: boolean
+  /** true면 헤더 행에 채워진 둥근 바(배경)를 준다 — 신청서 관리 표처럼 컬럼 헤더가 하나의 바로 보이는 Figma 디자인용 */
+  headerBar?: boolean
 }
 
 /*
@@ -61,7 +63,7 @@ interface DataTableProps {
  * - 액션 버튼·상태 배지 등은 행 데이터의 셀에 React 노드로 직접 넣어 유연하게 표현.
  * - 정렬/검색/필터 등 동작은 작업 범위 밖(정적 표시).
  */
-export default function DataTable({ columns, rows, title, titleRight, toolbar, fill, bare, onRowClick, inlineToolbar, mutedText, largeText, navyZebra, zebra, fluid, wrapCells }: DataTableProps) {
+export default function DataTable({ columns, rows, title, titleRight, toolbar, fill, bare, onRowClick, inlineToolbar, mutedText, largeText, navyZebra, zebra, fluid, wrapCells, headerBar }: DataTableProps) {
   // 컬럼 폭을 모아 grid-template-columns 값을 만든다
   const cols = columns.map((c) => c.width ?? '1fr').join(' ')
   const gridStyle = { '--cols': cols } as CSSProperties
@@ -75,6 +77,7 @@ export default function DataTable({ columns, rows, title, titleRight, toolbar, f
     navyZebra && styles.navyZebra,
     fluid && styles.fluid,
     wrapCells && styles.wrapCells,
+    headerBar && styles.headerBar,
     // mutedText는 이미 자체 지브라를 포함하므로 중복 적용해도 색이 같아 영향 없음
     (zebra || mutedText) && styles.zebra,
   ]

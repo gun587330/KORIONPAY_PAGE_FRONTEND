@@ -67,43 +67,46 @@
   /* flex: 1 제거 → 내용 폭만큼만 차지해 justify-content: center가 동작하게 함 */
 }
 
+/*
+ * Figma 실측(80:418~80:428): 4단계 박스는 150×44 고정, radius 14, 흰 글씨(10px),
+ * 배경은 4박스 공통 남색(#0e1536 88%)이고 테두리색만 단계별 accent로 구분한다.
+ * (기존 accent 알약 형태가 아니라 남색 카드 + 컬러 테두리)
+ */
 .flowStepLabel {
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
-  font-size: var(--font-size-11);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 44px;
+  border-radius: var(--radius-lg); /* 14 */
+  font-size: var(--font-size-10);
   font-weight: var(--font-weight-bold);
   white-space: nowrap;
-  /* 기본값(fallback) — 개별 nth-child로 덮어씀 */
-  border: 1px solid color-mix(in srgb, var(--color-border-accent) 62%, transparent);
-  background: color-mix(in srgb, var(--color-bg-elevated) 84%, transparent);
+  color: var(--color-text); /* 4박스 모두 흰 글씨 */
+  /* Figma 실측 남색 배경 — 이 값에 대응하는 토큰이 없어 navyZebra와 동일하게 실측값 사용 */
+  background: rgba(14, 21, 54, 0.88);
+  /* 기본값(fallback) — 단계별 테두리색은 아래 nth-child로 덮어씀 */
+  border: 1px solid color-mix(in srgb, var(--color-border-accent) 75%, transparent);
 }
 
-/* 각 단계별 색상: 데이터 흐름 의미(생성→블록→검증→정산)에 맞춰 accent 색 구분 */
+/* 각 단계별 테두리색: 데이터 흐름 의미(생성→블록→검증→정산)에 맞춰 accent 색 구분(Figma 75%) */
 .flowStepper .flowStep:nth-child(1) .flowStepLabel {
-  border-color: color-mix(in srgb, var(--color-accent-cyan) 70%, transparent);
-  background: color-mix(in srgb, var(--color-accent-cyan) 15%, transparent);
-  color: var(--color-accent-cyan);
+  border-color: color-mix(in srgb, var(--color-accent-cyan) 75%, transparent);
 }
 .flowStepper .flowStep:nth-child(2) .flowStepLabel {
-  border-color: color-mix(in srgb, var(--color-accent-purple) 70%, transparent);
-  background: color-mix(in srgb, var(--color-accent-purple) 15%, transparent);
-  color: var(--color-accent-purple);
+  border-color: color-mix(in srgb, var(--color-accent-purple) 75%, transparent);
 }
 .flowStepper .flowStep:nth-child(3) .flowStepLabel {
-  border-color: color-mix(in srgb, var(--color-accent-amber) 70%, transparent);
-  background: color-mix(in srgb, var(--color-accent-amber) 15%, transparent);
-  color: var(--color-accent-amber);
+  border-color: color-mix(in srgb, var(--color-accent-amber) 75%, transparent);
 }
 .flowStepper .flowStep:nth-child(4) .flowStepLabel {
-  border-color: color-mix(in srgb, var(--color-accent-green) 70%, transparent);
-  background: color-mix(in srgb, var(--color-accent-green) 15%, transparent);
-  color: var(--color-accent-green);
+  border-color: color-mix(in srgb, var(--color-accent-green) 75%, transparent);
 }
 
 .flowConnector {
-  width: 40px; /* flex: 1 제거 후 고정 최소폭으로 화살표 라인 유지 */
+  width: 34px; /* Figma 실측: 34×2 시안 라인 */
   height: 2px;
-  background: color-mix(in srgb, var(--color-border-accent) 50%, transparent);
+  background: color-mix(in srgb, var(--color-accent-cyan) 80%, transparent);
 }
 
 /*
@@ -114,45 +117,92 @@
 .sideBySide {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
-  align-items: flex-start;
+  gap: 38px; /* Figma 실측 표↔비율박스 간격 */
+  /* 비율 박스 높이를 옆 표에 맞춤 → 박스 바닥이 표 마지막 행 라인에 걸침(Figma 비율).
+     고정 px 대신 표 높이를 따라가므로 행이 반응형으로 바뀌어도 항상 맞는다. */
+  align-items: stretch;
 }
 
+/* Figma 실측: 표 690 : 결제수단 비율 박스 292 비율 */
 .sideBySide > *:first-child {
-  flex: 2;
+  flex: 690 1 0;
   min-width: 280px;
+}
+.sideBySide > *:last-child {
+  flex: 292 1 0;
+  min-width: 240px;
 }
 
 /*
- * evenSplit — 좌우 1:1 배치(차트 박스 ↔ 상위 TOP5 박스).
- * Figma 실측 480:512 ≈ 1:1. 두 박스 높이도 같게(stretch).
+ * evenSplit — 좌우 배치(차트 박스 ↔ 상위 TOP5 박스).
+ * Figma 실측: 차트 480 : TOP5 512, 두 박스 높이 동일(stretch), 사이 간격 28.
  */
 .evenSplit {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
+  gap: 28px; /* Figma 실측 차트↔TOP5 간격 */
   align-items: stretch;
 }
 .evenSplit > * {
-  flex: 1 1 0;
   min-width: 280px;
+}
+.evenSplit > *:first-child {
+  flex: 480 1 0; /* Figma 차트 폭 480 비율 */
+}
+.evenSplit > *:last-child {
+  flex: 512 1 0; /* Figma TOP5 폭 512 비율 */
 }
 
 /*
- * countryOpsLayout — 국가별 운영 표(좌) + 히트맵(우, 고정폭).
- * 표는 fluid(min-width:0)로 남은 폭을 모두 채우며 줄어들어 가로 스크롤이 안 생긴다.
+ * networkGrowth — Figma(Group 3701)는 제목·설명·미니통계를 박스 밖에 두고
+ * 차트+TOP5만 박스로 감싼다(다른 섹션의 Panel=전체 박스와 구조가 다름).
+ */
+.networkGrowth {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.networkGrowthHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.networkGrowthTitle {
+  font-size: var(--font-size-18);
+  font-weight: var(--font-weight-bold);
+}
+.networkGrowthDesc {
+  font-size: var(--font-size-11);
+  color: var(--color-text-muted);
+}
+/* 차트+TOP5만 감싸는 바깥 박스 — 다른 섹션 카드(Panel)와 동일한 외형으로 통일 */
+.networkGrowthBox {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background-color: color-mix(in srgb, var(--color-bg-elevated) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border-accent) 62%, transparent);
+  box-shadow: var(--shadow-card);
+}
+
+/*
+ * countryOpsLayout — 국가별 운영 표(좌) + 히트맵(우).
+ * Figma 실측: 표 640 : 히트맵 342 (간격 38). 고정폭이 아니라 이 비율(flex-grow, basis 0)로
+ * 분배해 어느 화면 폭에서도 좌우 가로 비율이 Figma와 동일하게 유지되도록 한다.
+ * 표는 fluid(min-width:0)라 남은 폭에 맞춰 줄어들어 가로 스크롤이 안 생긴다.
  */
 .countryOpsLayout {
   display: flex;
-  gap: var(--space-4);
-  align-items: flex-start;
+  gap: 38px; /* Figma 실측 좌우 간격 */
+  /* Figma: 히트맵 박스(342×242)와 좌측 표 높이가 동일 → stretch로 두 박스 높이를 맞춘다
+     (flex-start면 히트맵이 내용 높이만큼만 짧아져 표보다 낮아 보임) */
+  align-items: stretch;
 }
 .countryOpsLayout > *:first-child {
-  flex: 1;
+  flex: 640 1 0; /* Figma 표 폭 640 비율 */
   min-width: 0; /* fluid 표가 컨테이너 폭에 맞춰 줄어들 수 있게 */
 }
 .countryOpsLayout > *:last-child {
-  flex: 0 0 320px; /* 히트맵 우측 고정폭(Figma 342) */
+  flex: 342 1 0; /* Figma 히트맵 폭 342 비율 */
 }
 /* 반응형: 좁은 화면(<900px)에선 히트맵을 표 아래로 내려 표가 전체 폭을 쓰게 한다 */
 @media (max-width: 900px) {
@@ -177,16 +227,41 @@
   border: 1px solid color-mix(in srgb, var(--color-border-accent) 45%, transparent);
 }
 
+/* 히트맵 박스는 세로로 stretch되므로, 제목 아래 그리드가 남은 높이를 채우도록 flex 컬럼으로 */
+.heatmapBox {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Figma 실측: 차트·TOP5 내부 박스 높이 226 동일. 차트는 flex 컬럼으로 막대를 하단에 붙인다. */
+.chartBox,
+.topListBox {
+  min-height: 226px;
+}
+.chartBox {
+  display: flex;
+  flex-direction: column;
+}
+
 .subBoxTitle {
   margin: 0 0 var(--space-3);
   font-size: var(--font-size-14);
   font-weight: var(--font-weight-bold);
 }
 
-/* 히트맵 원 4열 그리드 — Figma는 4×2(총 7개) 배치 */
+/*
+ * 히트맵 원 4열 그리드 — Figma는 4×2(총 7개) 배치.
+ * 콘텐츠 영역이 max-width 없이 넓어져 히트맵 박스도 커지므로, 원을 고정폭으로 좌측에
+ * 뭉치게 두지 않고 4열을 균등(1fr)으로 펼쳐 박스 가로를 꽉 채운다(각 원은 셀 중앙 정렬).
+ */
 .heatmapGrid {
   display: grid;
-  grid-template-columns: repeat(4, 44px);
+  grid-template-columns: repeat(4, 1fr);
+  justify-items: center;
+  /* 제목 아래 남은 높이를 모두 차지하고, 2개 행을 세로로 균등 분배해 박스를 꽉 채운다
+     (좌우는 1fr, 상하는 space-evenly → Figma처럼 원이 박스 전체에 퍼짐) */
+  flex: 1;
+  align-content: space-evenly;
   gap: var(--space-3);
 }
 
@@ -206,19 +281,21 @@
   font-weight: var(--font-weight-bold);
 }
 
-/* 증가 추이 — 동작 없는 정적 막대그래프(막대 높이는 Figma 실측 px) */
+/* 증가 추이 — 동작 없는 정적 막대그래프(막대 높이는 Figma 실측 px). margin-top:auto로 박스 하단에 붙임 */
 .barChart {
   display: flex;
   align-items: flex-end;
   gap: var(--space-2);
   height: 70px;
+  margin-top: auto;
 }
 
-/* Figma 실측: 막대는 시안색(82% 채움) + 라운드 8 */
+/* Figma 실측: 막대는 accent색(82% 채움) + accent 90% 테두리 + 네 모서리 라운드 8(≈10). 색은 인라인(accent별) */
 .bar {
   flex: 1;
   min-width: 24px;
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
   background: color-mix(in srgb, var(--color-accent-cyan) 82%, transparent);
 }
 
@@ -238,25 +315,42 @@
  * 범례 각 줄 = "라벨 %" 텍스트 + 비율만큼 길이가 다른 가로 막대(결제수단별 색).
  * 제목("결제수단 비율")은 박스 하단에 위치한다.
  */
-.donutBody {
+/* 높이는 옆 표에 맞춰 stretch(위 sideBySide). flex 컬럼으로 링+범례는 상단, 제목은 하단 고정 */
+.donutBox {
   display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  margin-bottom: var(--space-3);
+  flex-direction: column;
 }
 
-/* 시안 링 — 다크 네이비 중앙 + 시안 80% 테두리 */
+/*
+ * 링 + 범례를 박스 가운데(가로·세로 모두)에 배치.
+ * flex:1로 제목 위 남은 공간을 모두 차지하고, align/justify center로 링+범례를 그 안에서 정중앙에 둔다.
+ * (제목은 아래 margin-top:auto로 박스 하단 고정 → 링은 세로로도 가운데)
+ */
+.donutBody {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px; /* Figma 실측 링↔범례 간격 */
+}
+
+/*
+ * 결제수단 비율 링 — Figma 실측: 62px 원 + 시안 테두리(단색), 가운데는 다크 네이비.
+ * (색이 나뉜 도넛이 아니라 단색 링) 바깥의 옅은 86px 링은 box-shadow로 은은하게 표현.
+ */
 .donutRing {
   flex-shrink: 0;
   width: 62px;
   height: 62px;
   border-radius: 50%;
-  border: 2px solid color-mix(in srgb, var(--color-accent-cyan) 80%, transparent);
+  border: 2px solid color-mix(in srgb, var(--color-accent-cyan) 85%, transparent);
   background: color-mix(in srgb, var(--color-bg) 55%, transparent);
+  box-shadow: 0 0 0 12px color-mix(in srgb, var(--color-accent-cyan) 8%, transparent);
 }
 
+/* flex:1을 주지 않는다 — 남은 폭을 다 먹으면 링이 왼쪽에 고정돼 가운데 정렬(donutBody)이 안 됨 */
 .donutLegend {
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -279,9 +373,9 @@
   border-radius: 4px;
 }
 
-/* 제목을 하단에 두기 위한 변형(기본 subBoxTitle은 상단 여백) */
+/* 제목을 박스 하단에 고정(margin-top:auto로 위 공간을 모두 밀어냄) */
 .donutTitleBottom {
-  margin: 0;
+  margin: auto 0 0;
 }
 
 /* KORION AI Operation Insight — 2열 카드 그리드 */

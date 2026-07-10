@@ -17,7 +17,7 @@
       "monthVolume": "250 KORI",
       "monthTxCount": "150",
       "unsettledFee": "100,000",
-      "actions": ["승인", "정지", "상세"]
+      "status": "approved"
     },
     {
       "no": "APP-2399",
@@ -30,7 +30,7 @@
       "monthVolume": "250 KORI",
       "monthTxCount": "150",
       "unsettledFee": "100,000",
-      "actions": ["승인", "정지", "상세"]
+      "status": "approved"
     },
     {
       "no": "APP-2398",
@@ -43,7 +43,7 @@
       "monthVolume": "250 KORI",
       "monthTxCount": "150",
       "unsettledFee": "100,000",
-      "actions": ["거절", "상세"]
+      "status": "approved"
     },
     {
       "no": "APP-2397",
@@ -56,7 +56,7 @@
       "monthVolume": "250 KORI",
       "monthTxCount": "150",
       "unsettledFee": "100,000",
-      "actions": ["승인", "정지", "상세"]
+      "status": "suspended"
     },
     {
       "no": "APP-2396",
@@ -69,7 +69,7 @@
       "monthVolume": "250 KORI",
       "monthTxCount": "150",
       "unsettledFee": "100,000",
-      "actions": ["승인", "정지", "상세"]
+      "status": "approved"
     }
   ]
 }

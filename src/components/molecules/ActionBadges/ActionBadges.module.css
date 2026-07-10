@@ -5,3 +5,13 @@
   flex-wrap: nowrap;   /* 항상 한 줄 유지 */
   min-width: 0;
 }
+
+/*
+ * equalWidth 변형 — 신청서 관리 액션처럼 상태 토글 배지(확인/검토/위험/삭제)를
+ * 모두 같은 폭·가운데 정렬로 통일한다(Figma 실측 폭 37px). 배지끼리 정렬이 맞아
+ * "한 자리의 상태 토글"처럼 보이게 하는 화면용.
+ */
+.equalWidth > * {
+  width: 37px;
+  justify-content: center;
+}

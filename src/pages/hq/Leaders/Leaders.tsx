@@ -1,6 +1,7 @@
 import RequestListPage from '../../../components/templates/RequestListPage'
 import ActionBadges from '../../../components/molecules/ActionBadges'
 import type { TableRow } from '../../../components/organisms/DataTable'
+import type { AccentKey } from '../../../types'
 import { useTranslation } from '../../../i18n'
 import { useLeaders } from './useLeaders'
 
@@ -12,25 +13,37 @@ import { useLeaders } from './useLeaders'
  */
 export default function Leaders() {
   const { t } = useTranslation()
-  const { stats, columns, rows: rawRows } = useLeaders()
+  const { stats, columns, rows: rawRows, statusMeta, detailLabel } = useLeaders()
 
-  // 액션은 행마다 다름(승인/정지/상세 또는 거절/상세)
-  const rows: TableRow[] = rawRows.map((r) => ({
-    id: r.no,
-    cells: {
-      no: r.no,
-      appliedAt: r.appliedAt,
-      leaderCode: r.leaderCode,
-      country: r.country,
-      partnerName: r.partnerName,
-      subPartnerCount: r.subPartnerCount,
-      subMerchantCount: r.subMerchantCount,
-      monthVolume: r.monthVolume,
-      monthTxCount: r.monthTxCount,
-      unsettledFee: r.unsettledFee,
-      action: <ActionBadges labels={r.actions} accentByLabel={{ 승인: 'green', 거절: 'red', 정지: 'red' }} />,
-    },
-  }))
+  /*
+   * 액션 컬럼은 [승인/정지/상세] 토글 배지 고정. 행의 status로 활성 배지 하나만 색이 켜지고
+   * (활성 승인=녹색 틴트, 활성 정지=빨강 솔리드) 나머지·상세는 항상 solid 회색(Figma 기준).
+   */
+  const rows: TableRow[] = rawRows.map((r) => {
+    const labels = [statusMeta.approved.label, statusMeta.suspended.label, detailLabel]
+    const active = statusMeta[r.status]
+    const accentByLabel: Record<string, AccentKey> = { [active.label]: active.accent }
+    const solidByLabel: Record<string, boolean> = Object.fromEntries(
+      labels.map((label) => [label, label === active.label ? active.solid : true]),
+    )
+
+    return {
+      id: r.no,
+      cells: {
+        no: r.no,
+        appliedAt: r.appliedAt,
+        leaderCode: r.leaderCode,
+        country: r.country,
+        partnerName: r.partnerName,
+        subPartnerCount: r.subPartnerCount,
+        subMerchantCount: r.subMerchantCount,
+        monthVolume: r.monthVolume,
+        monthTxCount: r.monthTxCount,
+        unsettledFee: r.unsettledFee,
+        action: <ActionBadges labels={labels} accentByLabel={accentByLabel} solidByLabel={solidByLabel} equalWidth />,
+      },
+    }
+  })
 
   return (
     <RequestListPage
@@ -43,6 +56,7 @@ export default function Leaders() {
       toolbar={[t('common.search'), t('common.filter'), t('common.excel')]}
       toolbarInline
       tableMutedText
+      tableHeaderBar
     />
   )
 }

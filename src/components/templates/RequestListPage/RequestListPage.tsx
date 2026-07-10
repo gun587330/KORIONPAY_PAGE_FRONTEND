@@ -33,6 +33,8 @@ interface RequestListPageProps {
   tableFluid?: boolean
   /** true면 긴 셀 내용을 말줄임 대신 다음 줄로 줄바꿈 */
   tableWrapCells?: boolean
+  /** true면 테이블 컬럼 헤더를 채워진 둥근 바로 표시(신청서 관리 Figma 디자인) */
+  tableHeaderBar?: boolean
 }
 
 /*
@@ -57,6 +59,7 @@ export default function RequestListPage({
   tableMutedText,
   tableFluid,
   tableWrapCells,
+  tableHeaderBar,
 }: RequestListPageProps) {
   return (
     <div className={styles.page}>
@@ -73,6 +76,7 @@ export default function RequestListPage({
         mutedText={tableMutedText}
         fluid={tableFluid}
         wrapCells={tableWrapCells}
+        headerBar={tableHeaderBar}
       />
     </div>
   )

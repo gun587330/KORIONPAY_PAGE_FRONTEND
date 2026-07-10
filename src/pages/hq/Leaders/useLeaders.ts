@@ -10,6 +10,9 @@ interface StatRaw {
   deltaKey?: string
 }
 
+/** 리더 상태 — 승인/정지 중 하나만 활성(Figma 액션 토글 배지 기준) */
+export type LeaderStatus = 'approved' | 'suspended'
+
 /** 국가 리더 전체 목록 행 원본 데이터 형태 (Figma 샘플값 하드코딩) */
 export interface LeaderListRow {
   no: string
@@ -22,7 +25,7 @@ export interface LeaderListRow {
   monthVolume: string
   monthTxCount: string
   unsettledFee: string
-  actions: string[]
+  status: LeaderStatus
 }
 
 /*
@@ -56,5 +59,16 @@ export function useLeaders() {
     { key: 'action', label: t('hqLeaderList.col.action'), width: '1.3fr' },
   ]
 
-  return { stats, columns, rows: data.rows as LeaderListRow[] }
+  /*
+   * 상태 키 → 표시 라벨 + 액션 배지 강조색 + solid 여부.
+   * Figma 기준: 활성 "승인"은 녹색 65% 틴트(size sm, solid=false),
+   * 활성 "정지"는 빨강 솔리드(solid=true). 비활성·상세 배지는 호출부에서 항상 solid 회색.
+   * (상태/액션 라벨은 데이터 값이라 번역하지 않는다 — CLAUDE.md 규칙 11)
+   */
+  const statusMeta: Record<LeaderStatus, { label: string; accent: 'green' | 'red'; solid: boolean }> = {
+    approved: { label: '승인', accent: 'green', solid: false },
+    suspended: { label: '정지', accent: 'red', solid: true },
+  }
+
+  return { stats, columns, rows: data.rows as LeaderListRow[], statusMeta, detailLabel: '상세' }
 }

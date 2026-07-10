@@ -5,15 +5,3 @@
   gap: 18px; /* Figma 콘텐츠 세로 간격 18 (RequestListPage 템플릿과 동일 값) */
   flex: 1;
 }
-
-/*
- * 리더 승인 시 코드 승계 규칙을 설명하는 캡션. Figma 원본엔 테이블 아래 고정 텍스트로 있음.
- * 18px는 tokens.css에 없는 값이라 리터럴로 직접 지정(기존 컨벤션과 동일 — KpiCard 등 참고).
- */
-.footnote {
-  font-size: 18px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text);
-  line-height: 24px;
-  white-space: pre-line; /* 줄바꿈(\n) 3줄 구성을 Figma와 동일하게 유지 */
-}
