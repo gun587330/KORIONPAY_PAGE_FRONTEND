@@ -18,6 +18,14 @@ interface ActionBadgesProps {
    * 나머지는 중립으로 진하게 깔리는 화면용). 안 주면 기존처럼 옅은 틴트.
    */
   solid?: boolean
+  /**
+   * 라벨별 solid 지정. 주면 solid prop 대신 라벨마다 개별로 채움/틴트를 정한다.
+   * (신청서 관리 액션처럼 활성 "위험"은 solid, 활성 "확인/검토"는 틴트, 나머지는 solid 회색으로
+   *  한 셀 안에서 배지마다 채움 방식이 달라야 하는 화면용.)
+   */
+  solidByLabel?: Record<string, boolean>
+  /** true면 배지들을 같은 폭(37px)·가운데 정렬로 통일한다(Figma 상태 토글 배지 기준) */
+  equalWidth?: boolean
 }
 
 /*
@@ -25,11 +33,17 @@ interface ActionBadgesProps {
  * ------------------------------------------------------------------
  * 테이블 액션 컬럼에 들어가는 작은 배지 묶음. 동작 없는 UI(표시 전용).
  */
-export default function ActionBadges({ labels, accentByLabel, size = 'sm', solid }: ActionBadgesProps) {
+export default function ActionBadges({ labels, accentByLabel, size = 'sm', solid, solidByLabel, equalWidth }: ActionBadgesProps) {
+  const className = equalWidth ? `${styles.actions} ${styles.equalWidth}` : styles.actions
   return (
-    <div className={styles.actions}>
+    <div className={className}>
       {labels.map((label) => (
-        <Badge key={label} accent={accentByLabel ? accentByLabel[label] : 'cyan'} size={size} solid={solid}>
+        <Badge
+          key={label}
+          accent={accentByLabel ? accentByLabel[label] : 'cyan'}
+          size={size}
+          solid={solidByLabel ? solidByLabel[label] : solid}
+        >
           {label}
         </Badge>
       ))}

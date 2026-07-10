@@ -21,8 +21,12 @@ export default function Applications() {
 
   const rows: TableRow[] = rawRows.map((r, index) => {
     const labels = [statusMeta.confirmed.label, statusMeta.review.label, statusMeta.risk.label, deleteLabel]
-    const activeLabel = statusMeta[r.status].label
-    const accentByLabel: Record<string, AccentKey> = { [activeLabel]: statusMeta[r.status].accent }
+    const active = statusMeta[r.status]
+    const accentByLabel: Record<string, AccentKey> = { [active.label]: active.accent }
+    // 활성 배지만 상태별 solid 규칙을 따르고, 비활성·삭제 배지는 항상 solid 회색(Figma 기준)
+    const solidByLabel: Record<string, boolean> = Object.fromEntries(
+      labels.map((label) => [label, label === active.label ? active.solid : true]),
+    )
 
     return {
       id: `${r.no}-${index}`,
@@ -35,7 +39,7 @@ export default function Applications() {
         company: r.company,
         email: r.email,
         interest: r.interest,
-        action: <ActionBadges labels={labels} accentByLabel={accentByLabel} size="xs" solid />,
+        action: <ActionBadges labels={labels} accentByLabel={accentByLabel} solidByLabel={solidByLabel} size="xs" equalWidth />,
       },
     }
   })
@@ -52,6 +56,7 @@ export default function Applications() {
         toolbar={[t('common.search'), t('common.filter'), t('common.excel')]}
         toolbarInline
         tableMutedText
+        tableHeaderBar
         onRowClick={() => setShowDetail(true)}
       />
       <ApplicationDetailOverlay open={showDetail} onClose={() => setShowDetail(false)} />

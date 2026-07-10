@@ -17,11 +17,14 @@ import styles from './RequestsLeader.module.css'
  */
 export default function RequestsLeader() {
   const { t } = useTranslation()
-  const { stats, columns, rows: rawRows, statusMeta, approveLabel, rejectLabel, footnote } = useRequestsLeader()
+  const { stats, columns, rows: rawRows, statusMeta, approveLabel, rejectLabel } = useRequestsLeader()
 
   const rows: TableRow[] = rawRows.map((r, index) => {
     const labels = [approveLabel, rejectLabel, statusMeta.review.label, statusMeta.waiting.label, statusMeta.infoRequested.label]
-    const accentByLabel: Record<string, AccentKey> = r.status ? { [statusMeta[r.status].label]: statusMeta[r.status].accent } : {}
+    const activeLabel = r.status ? statusMeta[r.status].label : null
+    const accentByLabel: Record<string, AccentKey> = activeLabel ? { [activeLabel]: statusMeta[r.status!].accent } : {}
+    // Figma 액션 토글: 현재 상태 하나만 시안 틴트로 "켜지고"(solid=false), 나머지는 회색으로 꽉 채운다(solid=true)
+    const solidByLabel: Record<string, boolean> = Object.fromEntries(labels.map((label) => [label, label !== activeLabel]))
 
     return {
       // no 값이 Figma 샘플 데이터상 중복돼 있어(복붙 흔적) index를 더해 key를 구분
@@ -36,7 +39,7 @@ export default function RequestsLeader() {
         subMerchantCount: r.subMerchantCount,
         monthVolume: r.monthVolume,
         monthTxCount: r.monthTxCount,
-        action: <ActionBadges labels={labels} accentByLabel={accentByLabel} size="xs" solid />,
+        action: <ActionBadges labels={labels} accentByLabel={accentByLabel} size="xs" solidByLabel={solidByLabel} equalWidth />,
       },
     }
   })
@@ -53,8 +56,8 @@ export default function RequestsLeader() {
         fill
         inlineToolbar
         mutedText
+        headerBar
       />
-      <p className={styles.footnote}>{footnote}</p>
     </div>
   )
 }

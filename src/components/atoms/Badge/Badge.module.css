@@ -49,11 +49,13 @@
  * (긴 라벨은 자연스럽게 늘어나도록 고정폭이 아니라 min-width 사용)
  */
 .cell {
-  min-width: 84px;
-  padding: 3px var(--space-3);
+  /* 반응형: HQ 대시보드 표(컨테이너 쿼리) 안에서만 쓰이므로, 표가 좁아지면 배지 최소폭·좌우여백·
+     글씨가 표 폭(cqi)에 비례해 함께 줄어들어 셀에서 잘리지 않는다(상·하한은 clamp로 고정). */
+  min-width: clamp(40px, 6cqi, 84px);
+  padding: 3px clamp(4px, 0.9cqi, 12px);
   justify-content: center;
   border-radius: var(--radius-md); /* 12px */
-  font-size: var(--font-size-12);
+  font-size: clamp(8px, 1cqi, 12px);
 }
 
 /*

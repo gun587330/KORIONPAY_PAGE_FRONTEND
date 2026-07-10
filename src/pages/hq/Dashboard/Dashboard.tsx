@@ -267,48 +267,60 @@ export default function Dashboard() {
         <DataTable columns={approvalQueue.columns} rows={approvalQueueRows} largeText navyZebra bare />
       </Panel>
 
-      <Panel title={t('hqDashboard.networkGrowth.title')} subtitle={t('hqDashboard.networkGrowth.desc')}>
+      {/*
+       * 네트워크 성장 — Figma(Group 3701): 제목·설명·미니통계는 박스 밖(페이지 배경 위)에 놓이고
+       * 차트+TOP5만 하나의 박스로 감싼다. 다른 섹션(Panel=전체를 박스로)과 구조가 달라 커스텀 마크업.
+       */}
+      <section className={styles.networkGrowth}>
+        <div className={styles.networkGrowthHead}>
+          <h2 className={styles.networkGrowthTitle}>{t('hqDashboard.networkGrowth.title')}</h2>
+          <p className={styles.networkGrowthDesc}>{t('hqDashboard.networkGrowth.desc')}</p>
+        </div>
         <div className={styles.miniStatGrid}>
           {networkGrowth.stats.map((s) => (
             <MiniStatCard key={s.id} {...s} />
           ))}
         </div>
-        {/* 차트 박스와 TOP5 박스를 좌우 1:1로 (Figma 실측 480:512 ≈ 1:1) */}
-        <div className={styles.evenSplit}>
-          <div className={styles.chartBox}>
-            <h4 className={styles.subBoxTitle}>{t('hqDashboard.networkGrowth.chartTitle')}</h4>
-            {/* 증가 추이 — 동작 없는 정적 막대그래프(Figma 실측: 막대 높이 + 시안/보라/초록 순환색) */}
-            <div className={styles.barChart}>
-              {networkGrowth.trendBars.map((b, i) => (
-                <span
-                  key={i}
-                  className={styles.bar}
-                  style={{
-                    height: `${b.height}px`,
-                    background: `color-mix(in srgb, var(--color-accent-${b.accent}) 82%, transparent)`,
-                  }}
-                />
-              ))}
+        {/* 차트+TOP5만 감싸는 바깥 박스 */}
+        <div className={styles.networkGrowthBox}>
+          {/* 차트 박스 : TOP5 박스 = Figma 실측 480:512, 두 박스 높이 226 동일(stretch) */}
+          <div className={styles.evenSplit}>
+            <div className={styles.chartBox}>
+              <h4 className={styles.subBoxTitle}>{t('hqDashboard.networkGrowth.chartTitle')}</h4>
+              {/* 증가 추이 — 동작 없는 정적 막대그래프. 막대는 박스 하단 정렬, 높이는 Figma 실측 px, 색은 시안/보라/초록 순환 */}
+              <div className={styles.barChart}>
+                {networkGrowth.trendBars.map((b, i) => (
+                  <span
+                    key={i}
+                    className={styles.bar}
+                    style={{
+                      height: `${b.height}px`,
+                      background: `color-mix(in srgb, var(--color-accent-${b.accent}) 82%, transparent)`,
+                      borderColor: `color-mix(in srgb, var(--color-accent-${b.accent}) 90%, transparent)`,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className={styles.topListBox}>
+              <h4 className={styles.subBoxTitle}>{t('hqDashboard.networkGrowth.topPartnersTitle')}</h4>
+              <ul className={styles.topList}>
+                {networkGrowth.topPartners.map((p) => (
+                  <li key={p.id}>
+                    {p.name} · {p.amount}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-          <div className={styles.topListBox}>
-            <h4 className={styles.subBoxTitle}>{t('hqDashboard.networkGrowth.topPartnersTitle')}</h4>
-            <ul className={styles.topList}>
-              {networkGrowth.topPartners.map((p) => (
-                <li key={p.id}>
-                  {p.name} · {p.amount}
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
-      </Panel>
+      </section>
 
       <Panel title={t('hqDashboard.paymentMethod.title')} subtitle={t('hqDashboard.paymentMethod.desc')}>
         <div className={styles.sideBySide}>
           <DataTable columns={paymentMethod.columns} rows={paymentMethodRows} largeText navyZebra bare fluid />
           <div className={styles.donutBox}>
-            {/* 결제수단 비율 — Figma: 시안 링 + 결제수단별 비율 막대 범례. 제목은 하단. */}
+            {/* 결제수단 비율 — Figma: 단색 시안 링(가운데) + 결제수단별 비율 막대 범례(오른쪽). 제목은 하단. */}
             <div className={styles.donutBody}>
               <div className={styles.donutRing} aria-hidden="true" />
               <ul className={styles.donutLegend}>

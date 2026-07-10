@@ -12,7 +12,19 @@
   border: 1px solid color-mix(in srgb, var(--color-border-accent) 62%, transparent);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  overflow-x: auto;          /* 컬럼이 많아 좁은 화면에서 가로 스크롤 허용 */
+  overflow-x: auto;          /* 만일을 위한 폴백(아래 상대 크기로 대개 넘치지 않음) */
+  /*
+   * 반응형: 표가 항상 컨테이너 폭에 맞춰 줄어들도록(가로 스크롤/잘림 방지) 컬럼은 상대폭(fr),
+   * 글씨·여백은 표 폭(cqi) 기준 상대 크기로 정의한다. container-type으로 이 표를 크기 기준으로 삼는다.
+   * --cell-fs: 셀/헤더 글씨 크기(표가 좁아지면 함께 줄어듦, 상·하한 clamp).
+   */
+  container-type: inline-size;
+  --cell-fs: clamp(8px, 0.95cqi, 10px);
+}
+/* largeText·mutedText 표는 기본 글씨가 11px이므로 상한만 11로 올림 */
+.largeText,
+.mutedText {
+  --cell-fs: clamp(8px, 1.05cqi, 11px);
 }
 
 /* fill: flex 컬럼 부모 안에서 남은 세로 높이를 채움 (단일 테이블 목록 화면용) */
@@ -61,11 +73,7 @@
   line-height: 1.2;
   border-color: color-mix(in srgb, var(--color-border-accent) 55%, transparent);
 }
-.mutedText .headerCell {
-  font-size: var(--font-size-11);
-}
 .mutedText .cell {
-  font-size: var(--font-size-11);
   color: var(--color-text-muted);
 }
 /* Figma 실측: 전체 간격 10px(기존 9px) */
@@ -89,12 +97,6 @@
 /* largeText 변형 — 거래 로그 표(흰 글씨·줄무늬 없음 유지, 크기만 한 단계 키움) */
 .largeText .tableTitle {
   font-size: 16px;
-}
-.largeText .headerCell {
-  font-size: var(--font-size-11);
-}
-.largeText .cell {
-  font-size: var(--font-size-11);
 }
 
 /*
@@ -163,8 +165,10 @@
   display: grid;
   grid-template-columns: var(--cols);
   align-items: center;
-  gap: var(--space-2);
-  min-width: 880px;          /* 컬럼이 많아 너무 좁아지면 가로 스크롤 */
+  /* 반응형: 컬럼 간격도 표 폭에 비례(좁아지면 좁아짐) */
+  gap: clamp(4px, 0.6cqi, 8px);
+  /* 고정 최소폭 제거 → 표가 항상 컨테이너 폭에 맞춰 줄어든다(가로 스크롤/잘림 방지) */
+  min-width: 0;
 }
 
 /*
@@ -181,18 +185,34 @@
 }
 
 .headerRow {
-  padding: 0 var(--space-3);
+  padding: 0 clamp(6px, 1cqi, 12px);
+}
+
+/*
+ * headerBar 변형 — 신청서 관리 표처럼 컬럼 헤더가 채워진 둥근 바로 보이는 Figma 디자인.
+ * 헤더 행에 세로 패딩·배경·라운드를 줘 데이터 행과 같은 "바" 형태로 만든다.
+ * (배경색은 이 파일의 지브라 색과 같은 계열의 보라 남색 실측값)
+ */
+.headerBar .headerRow {
+  padding: var(--space-3) clamp(6px, 1cqi, 12px);
+  border-radius: var(--radius-sm);
+  background-color: rgba(26, 18, 42, 0.76);
 }
 
 .headerCell {
-  font-size: var(--font-size-10);
+  font-size: var(--cell-fs);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-muted);
+  /* 헤더도 컬럼 폭에 맞춰 줄어들도록(트랙이 헤더 글자폭에 끌려 벌어지지 않게) */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* 데이터 행 — 둥근 반투명 바 */
+/* 데이터 행 — 둥근 반투명 바. 좌우 패딩도 표 폭에 비례(좁아지면 글자 공간 확보) */
 .row {
-  padding: var(--space-3);
+  padding: var(--space-3) clamp(6px, 1cqi, 12px);
   border-radius: var(--radius-sm); /* Figma 행 radius 8 ≈ 10 */
   background-color: color-mix(in srgb, var(--color-surface) 42%, transparent);
 }
@@ -207,7 +227,7 @@
 }
 
 .cell {
-  font-size: var(--font-size-10);
+  font-size: var(--cell-fs);
   color: var(--color-text);
   /* min-width:0 → 그리드 트랙이 내용 폭(min-content)에 끌려 벌어지지 않고
      지정한 fr(상대폭)을 지키게 한다 → 표 전체가 컨테이너 가로에 맞춰짐. */

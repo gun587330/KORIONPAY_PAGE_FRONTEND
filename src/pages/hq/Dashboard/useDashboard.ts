@@ -138,17 +138,19 @@ export function useDashboard() {
 
   const rankingPanels = data.rankingPanels.map((p) => ({ id: p.id, title: t(p.titleKey) }))
 
+  // Figma 실측(80:310 그룹): 헤더 10개 컬럼이 x=64부터 99.2px 등간격으로 균등 배치된다.
+  // → 컬럼 폭을 전부 동일(1fr)로 둬 피그마 비율을 그대로 재현한다(좁은 화면은 DataTable이 가로 스크롤 처리).
   const realtimePaymentColumns: Column[] = [
-    { key: 'id', label: t('hqDashboard.realtimePayments.col.id'), width: '1.3fr' },
+    { key: 'id', label: t('hqDashboard.realtimePayments.col.id'), width: '1fr' },
     { key: 'country', label: t('hqDashboard.realtimePayments.col.country'), width: '1fr' },
-    { key: 'merchant', label: t('hqDashboard.realtimePayments.col.merchant'), width: '1.1fr' },
-    { key: 'method', label: t('hqDashboard.realtimePayments.col.method'), width: '0.7fr' },
-    { key: 'connection', label: t('hqDashboard.realtimePayments.col.connection'), width: '0.9fr' },
+    { key: 'merchant', label: t('hqDashboard.realtimePayments.col.merchant'), width: '1fr' },
+    { key: 'method', label: t('hqDashboard.realtimePayments.col.method'), width: '1fr' },
+    { key: 'connection', label: t('hqDashboard.realtimePayments.col.connection'), width: '1fr' },
     { key: 'amount', label: t('hqDashboard.realtimePayments.col.amount'), width: '1fr' },
     { key: 'status', label: t('hqDashboard.realtimePayments.col.status'), width: '1fr' },
     { key: 'sync', label: t('hqDashboard.realtimePayments.col.sync'), width: '1fr' },
     { key: 'verify', label: t('hqDashboard.realtimePayments.col.verify'), width: '1fr' },
-    { key: 'detail', label: t('hqDashboard.realtimePayments.col.detail'), width: '0.8fr' },
+    { key: 'detail', label: t('hqDashboard.realtimePayments.col.detail'), width: '1fr' },
   ]
 
   const offlinePayMiniStats: MiniStatCardData[] = (data.offlinePay.miniStats as MiniStatRaw[]).map((s) => ({
@@ -165,15 +167,16 @@ export function useDashboard() {
     value: s.value,
     accent: s.accent,
   }))
+  // Figma 실측(80:444~): 8개 컬럼이 x=64부터 124px 등간격으로 균등 배치 → 전부 동일 폭(1fr)
   const settlementColumns: Column[] = [
-    { key: 'type', label: t('hqDashboard.settlement.col.type'), width: '0.8fr' },
-    { key: 'name', label: t('hqDashboard.settlement.col.name'), width: '1.1fr' },
-    { key: 'country', label: t('hqDashboard.settlement.col.country'), width: '0.9fr' },
-    { key: 'requested', label: t('hqDashboard.settlement.col.requested'), width: '1.1fr' },
+    { key: 'type', label: t('hqDashboard.settlement.col.type'), width: '1fr' },
+    { key: 'name', label: t('hqDashboard.settlement.col.name'), width: '1fr' },
+    { key: 'country', label: t('hqDashboard.settlement.col.country'), width: '1fr' },
+    { key: 'requested', label: t('hqDashboard.settlement.col.requested'), width: '1fr' },
     { key: 'held', label: t('hqDashboard.settlement.col.held'), width: '1fr' },
-    { key: 'payable', label: t('hqDashboard.settlement.col.payable'), width: '1.1fr' },
+    { key: 'payable', label: t('hqDashboard.settlement.col.payable'), width: '1fr' },
     { key: 'status', label: t('hqDashboard.settlement.col.status'), width: '1fr' },
-    { key: 'action', label: t('hqDashboard.settlement.col.action'), width: '0.8fr' },
+    { key: 'action', label: t('hqDashboard.settlement.col.action'), width: '1fr' },
   ]
 
   const riskStats: MiniStatCardData[] = (data.risk.stats as MiniStatRaw[]).map((s) => ({
@@ -182,27 +185,28 @@ export function useDashboard() {
     value: s.value,
     accent: s.accent,
   }))
+  // Figma 실측(80:511~): 8개 컬럼이 x=64부터 124px 등간격으로 균등 배치 → 전부 동일 폭(1fr)
   const riskColumns: Column[] = [
-    { key: 'type', label: t('hqDashboard.risk.col.type'), width: '1.1fr' },
-    { key: 'targetId', label: t('hqDashboard.risk.col.targetId'), width: '0.9fr' },
+    { key: 'type', label: t('hqDashboard.risk.col.type'), width: '1fr' },
+    { key: 'targetId', label: t('hqDashboard.risk.col.targetId'), width: '1fr' },
     { key: 'wallet', label: t('hqDashboard.risk.col.wallet'), width: '1fr' },
-    { key: 'country', label: t('hqDashboard.risk.col.country'), width: '0.9fr' },
-    { key: 'relatedTx', label: t('hqDashboard.risk.col.relatedTx'), width: '0.8fr' },
-    { key: 'score', label: t('hqDashboard.risk.col.score'), width: '0.9fr' },
+    { key: 'country', label: t('hqDashboard.risk.col.country'), width: '1fr' },
+    { key: 'relatedTx', label: t('hqDashboard.risk.col.relatedTx'), width: '1fr' },
+    { key: 'score', label: t('hqDashboard.risk.col.score'), width: '1fr' },
     { key: 'held', label: t('hqDashboard.risk.col.held'), width: '1fr' },
-    { key: 'action', label: t('hqDashboard.risk.col.action'), width: '0.8fr' },
+    { key: 'action', label: t('hqDashboard.risk.col.action'), width: '1fr' },
   ]
 
+  // Figma 실측(80:566~): 8개 컬럼이 x=64부터 76.5px 등간격으로 균등 배치 → 전부 동일 폭(1fr)
   const countryOpsColumns: Column[] = [
-    { key: 'id', label: t('hqDashboard.countryOps.col.country'), width: '1.1fr' },
-    { key: 'leaders', label: t('hqDashboard.countryOps.col.leaders'), width: '0.8fr' },
-    { key: 'partners', label: t('hqDashboard.countryOps.col.partners'), width: '0.8fr' },
-    { key: 'merchants', label: t('hqDashboard.countryOps.col.merchants'), width: '0.8fr' },
-    { key: 'members', label: t('hqDashboard.countryOps.col.members'), width: '0.9fr' },
-    { key: 'amount', label: t('hqDashboard.countryOps.col.amount'), width: '0.9fr' },
-    { key: 'syncFail', label: t('hqDashboard.countryOps.col.syncFail'), width: '0.9fr' },
-    // 성장률 칸은 알약(배지)이라 좁아지면 잘려서, 최소 폭을 px로 보장(minmax)
-    { key: 'growth', label: t('hqDashboard.countryOps.col.growth'), width: 'minmax(92px, 0.9fr)' },
+    { key: 'id', label: t('hqDashboard.countryOps.col.country'), width: '1fr' },
+    { key: 'leaders', label: t('hqDashboard.countryOps.col.leaders'), width: '1fr' },
+    { key: 'partners', label: t('hqDashboard.countryOps.col.partners'), width: '1fr' },
+    { key: 'merchants', label: t('hqDashboard.countryOps.col.merchants'), width: '1fr' },
+    { key: 'members', label: t('hqDashboard.countryOps.col.members'), width: '1fr' },
+    { key: 'amount', label: t('hqDashboard.countryOps.col.amount'), width: '1fr' },
+    { key: 'syncFail', label: t('hqDashboard.countryOps.col.syncFail'), width: '1fr' },
+    { key: 'growth', label: t('hqDashboard.countryOps.col.growth'), width: '1fr' },
   ]
 
   const approvalQueueStats: MiniStatCardData[] = (data.approvalQueue.stats as MiniStatRaw[]).map((s) => ({
@@ -211,15 +215,16 @@ export function useDashboard() {
     value: s.value,
     accent: s.accent,
   }))
+  // Figma 실측(80:657~): 8개 컬럼이 x=64부터 124px 등간격으로 균등 배치 → 전부 동일 폭(1fr)
   const approvalQueueColumns: Column[] = [
-    { key: 'type', label: t('hqDashboard.approvalQueue.col.type'), width: '0.8fr' },
-    { key: 'name', label: t('hqDashboard.approvalQueue.col.name'), width: '1.1fr' },
-    { key: 'country', label: t('hqDashboard.approvalQueue.col.country'), width: '0.9fr' },
+    { key: 'type', label: t('hqDashboard.approvalQueue.col.type'), width: '1fr' },
+    { key: 'name', label: t('hqDashboard.approvalQueue.col.name'), width: '1fr' },
+    { key: 'country', label: t('hqDashboard.approvalQueue.col.country'), width: '1fr' },
     { key: 'contact', label: t('hqDashboard.approvalQueue.col.contact'), width: '1fr' },
-    { key: 'wallet', label: t('hqDashboard.approvalQueue.col.wallet'), width: '0.9fr' },
-    { key: 'time', label: t('hqDashboard.approvalQueue.col.time'), width: '0.7fr' },
-    { key: 'risk', label: t('hqDashboard.approvalQueue.col.risk'), width: '0.8fr' },
-    { key: 'status', label: t('hqDashboard.approvalQueue.col.status'), width: '0.9fr' },
+    { key: 'wallet', label: t('hqDashboard.approvalQueue.col.wallet'), width: '1fr' },
+    { key: 'time', label: t('hqDashboard.approvalQueue.col.time'), width: '1fr' },
+    { key: 'risk', label: t('hqDashboard.approvalQueue.col.risk'), width: '1fr' },
+    { key: 'status', label: t('hqDashboard.approvalQueue.col.status'), width: '1fr' },
   ]
 
   const networkGrowthStats: MiniStatCardData[] = (data.networkGrowth.stats as MiniStatRaw[]).map((s) => ({
