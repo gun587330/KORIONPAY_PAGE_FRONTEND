@@ -18,6 +18,17 @@
   border: 1px solid color-mix(in srgb, var(--accent, var(--color-text-subtle)) 72%, transparent);
 }
 
+.medium {
+  min-height: 24px;
+  padding: 4px 10px;
+  font-size: var(--font-size-11);
+  font-weight: var(--font-weight-bold);
+}
+
+.rect {
+  border-radius: var(--radius-sm);
+}
+
 /*
  * 초소형 변형 — 테이블 액션 배지 등 (7px).
  * Figma 기준 패딩 4/9, 배경·테두리도 기본 배지(17%/72% 틴트)보다 훨씬 진한 65%/65% 채움.

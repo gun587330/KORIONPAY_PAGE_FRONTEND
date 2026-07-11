@@ -1,96 +1,123 @@
-import { useEffect, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
-import { ChevronDown, Globe2, LogOut } from 'lucide-react'
+import { Bell, CheckCircle2, Globe2, LogOut, X } from 'lucide-react'
 import { useTranslation } from '../../../i18n'
 import { clearAuthSession } from '../../../services/authSession'
 import styles from './TopControls.module.css'
 
-/*
- * TopControls (molecule)
- * ------------------------------------------------------------------
- * 모든 화면 우측 상단 컨트롤: 언어 전환 + 로그아웃.
- * - 언어 버튼: 현재 언어를 표시하고, 클릭하면 한↔영을 전환한다(toggleLang).
- * - 로그아웃: 로그인/회원가입 허브(/login)로 이동(실제 세션 로직은 범위 밖).
- */
+type NotificationItem = {
+  id: string
+  title: string
+  description: string
+  time: string
+  read?: boolean
+}
+
+const DEFAULT_NOTIFICATIONS: NotificationItem[] = []
+
 export default function TopControls() {
-  const { lang, setLang, t } = useTranslation()
+  const { lang, toggleLang, t } = useTranslation()
   const navigate = useNavigate()
-  const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
-  const languageMenuRef = useRef<HTMLDivElement | null>(null)
-  const languageOptions = [
-    { code: 'ko' as const, label: 'KR', name: '한국어' },
-    { code: 'en' as const, label: 'EN', name: 'English' },
-  ]
-  const currentLanguage = languageOptions.find((option) => option.code === lang) ?? languageOptions[0]
+  const [logoutOpen, setLogoutOpen] = useState(false)
+  const [notificationOpen, setNotificationOpen] = useState(false)
+  const [notifications, setNotifications] = useState(DEFAULT_NOTIFICATIONS)
+  const langLabel = lang === 'ko' ? 'KR · 한국어' : 'EN · English'
+  const unreadCount = useMemo(() => notifications.filter((item) => !item.read).length, [notifications])
 
-  useEffect(() => {
-    if (!languageMenuOpen) return
-    const closeOnOutsideClick = (event: MouseEvent) => {
-      if (!languageMenuRef.current?.contains(event.target as Node)) {
-        setLanguageMenuOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', closeOnOutsideClick)
-    return () => document.removeEventListener('mousedown', closeOnOutsideClick)
-  }, [languageMenuOpen])
-
-  const logout = () => {
+  const confirmLogout = () => {
     clearAuthSession()
+    setLogoutOpen(false)
     navigate('/login')
+  }
+
+  const markRead = (id: string) => {
+    setNotifications((items) => items.map((item) => (item.id === id ? { ...item, read: true } : item)))
   }
 
   return (
     <div className={styles.controls}>
-      <div
-        className={styles.langMenu}
-        ref={languageMenuRef}
-        onKeyDown={(event) => {
-          if (event.key === 'Escape') {
-            setLanguageMenuOpen(false)
-          }
-        }}
-      >
+      <div className={styles.notificationShell}>
         <button
           type="button"
-          className={`${styles.button} ${styles.langButton}`}
-          aria-haspopup="listbox"
-          aria-expanded={languageMenuOpen}
-          onClick={() => setLanguageMenuOpen((open) => !open)}
+          className={`${styles.button} ${styles.iconButton}`}
+          aria-label={t('common.notifications')}
+          aria-expanded={notificationOpen}
+          aria-haspopup="dialog"
+          onClick={() => setNotificationOpen((open) => !open)}
         >
-          <Globe2 size={14} aria-hidden="true" />
-          <span>{currentLanguage.label}</span>
-          <ChevronDown size={13} aria-hidden="true" />
+          <Bell size={16} aria-hidden="true" />
+          {unreadCount > 0 && (
+            <span className={styles.badge} aria-label={t('common.notifications.count')}>
+              {unreadCount}
+            </span>
+          )}
         </button>
-        {languageMenuOpen && (
-          <div className={styles.langDropdown} role="listbox" aria-label="Language">
-            {languageOptions.map((option) => (
+        {notificationOpen && (
+          <div className={styles.notificationPanel} role="dialog" aria-label={t('common.notifications.title')}>
+            <div className={styles.notificationHead}>
+              <div>
+                <strong>{t('common.notifications.title')}</strong>
+                <span>{t('common.notifications.summary')}</span>
+              </div>
               <button
-                key={option.code}
                 type="button"
-                className={`${styles.langOption} ${option.code === lang ? styles.langOptionActive : ''}`}
-                role="option"
-                aria-selected={option.code === lang}
-                onClick={() => {
-                  setLang(option.code)
-                  setLanguageMenuOpen(false)
-                }}
+                className={styles.panelIconButton}
+                aria-label={t('common.close')}
+                onClick={() => setNotificationOpen(false)}
               >
-                <span className={styles.langOptionCode}>{option.label}</span>
-                <span>{option.name}</span>
+                <X size={15} aria-hidden="true" />
               </button>
-            ))}
+            </div>
+            <div className={styles.notificationList}>
+              {notifications.length === 0 ? (
+                <div className={styles.emptyNotice}>{t('common.notifications.empty')}</div>
+              ) : (
+                notifications.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={[styles.notificationItem, item.read && styles.notificationItemRead].filter(Boolean).join(' ')}
+                    onClick={() => markRead(item.id)}
+                  >
+                    <span className={styles.notificationTitle}>{item.title}</span>
+                    <span className={styles.notificationDesc}>{item.description}</span>
+                    <span className={styles.notificationMeta}>
+                      <time>{item.time}</time>
+                      <span>{item.read ? t('common.notifications.confirmed') : t('common.notifications.confirm')}</span>
+                    </span>
+                  </button>
+                ))
+              )}
+            </div>
           </div>
         )}
       </div>
-      <button
-        type="button"
-        className={`${styles.button} ${styles.iconButton}`}
-        onClick={logout}
-        aria-label={t('common.logout')}
-        title={t('common.logout')}
-      >
-        <LogOut size={16} aria-hidden="true" />
+
+      <button type="button" className={styles.button} onClick={toggleLang}>
+        <Globe2 size={16} aria-hidden="true" />
+        <span>{langLabel}</span>
       </button>
+
+      <button type="button" className={styles.button} onClick={() => setLogoutOpen(true)}>
+        <LogOut size={16} aria-hidden="true" />
+        <span>{t('common.logout')}</span>
+      </button>
+
+      {logoutOpen &&
+        createPortal(
+          <div className={styles.logoutOverlay} role="dialog" aria-modal="true" aria-label={t('common.logout.completeTitle')}>
+            <section className={styles.logoutDialog}>
+              <CheckCircle2 size={34} aria-hidden="true" />
+              <h2>{t('common.logout.completeTitle')}</h2>
+              <p>{t('common.logout.completeMessage')}</p>
+              <button type="button" className={styles.logoutConfirmButton} onClick={confirmLogout}>
+                {t('common.logout.goHome')}
+              </button>
+            </section>
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }

@@ -1,104 +1,230 @@
+import { useEffect, useMemo, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
+import {
+  AlertTriangle,
+  BarChart3,
+  ChevronDown,
+  ClipboardList,
+  FileText,
+  Handshake,
+  LayoutDashboard,
+  Map,
+  Megaphone,
+  PanelLeftClose,
+  PanelLeftOpen,
+  ReceiptText,
+  Settings,
+  ShieldCheck,
+  Store,
+  Users,
+  WalletCards,
+  X,
+  type LucideIcon,
+} from 'lucide-react'
 import { useTranslation } from '../../../i18n'
 import type { NavGroup } from '../../../types'
 import type { ProfileLine } from '../../../roles/types'
 import styles from './Sidebar.module.css'
 
 interface SidebarProps {
-  /** 라우트 prefix (예: '/leader', '/partner') — 메뉴 경로 결합에 사용 */
   basePath: string
-  /** 역할 라벨 i18n 키 (예: 'common.role.leader') */
   roleLabelKey: string
-  /** 프로필 카드 줄 (Figma 샘플 값) */
   profileLines: ProfileLine[]
-  /** 메뉴 구조 (항목 path는 basePath 기준 상대 경로) */
   nav: NavGroup[]
+  mobileOpen?: boolean
+  onMobileClose?: () => void
 }
 
-/*
- * Sidebar (organism)
- * ------------------------------------------------------------------
- * 어드민 화면이 공유하는 좌측 고정 내비게이션. 역할별 메뉴/프로필/라벨은
- * 모두 props로 주입받아(리더/파트너 공용), 컴포넌트 자체는 역할을 모른다.
- * - 활성 표시: 현재 화면이 속한 "그룹 카드"가 보라로, 그 안의 해당 "항목"이 시안으로 강조.
- * - 활성 판정은 "가장 긴 접두 경로" 한 개만 선택(상세 등 하위 경로도 부모 메뉴 유지 +
- *   접두 중복 강조 방지).
- */
-export default function Sidebar({ basePath, roleLabelKey, profileLines, nav }: SidebarProps) {
+const GROUP_ICONS: Record<string, LucideIcon> = {
+  'nav.group.dashboard': LayoutDashboard,
+  'nav.group.requests': ClipboardList,
+  'nav.group.partners': Handshake,
+  'nav.group.merchants': Store,
+  'nav.group.transactions': ReceiptText,
+  'nav.group.settlement': WalletCards,
+  'nav.group.hqNotices': Megaphone,
+  'nav.group.leaderNotices': Megaphone,
+  'nav.group.partnerNotices': Megaphone,
+  'nav.group.notices': Megaphone,
+  'nav.group.settings': Settings,
+  'nav.group.hqDashboard': LayoutDashboard,
+  'nav.group.hqApplications': FileText,
+  'nav.group.hqPartnerRequests': ClipboardList,
+  'nav.group.hqLeaders': Users,
+  'nav.group.hqPartners': Handshake,
+  'nav.group.hqMerchants': Store,
+  'nav.group.hqPaymentMonitoring': ReceiptText,
+  'nav.group.hqSettlement': WalletCards,
+  'nav.group.hqCollateral': WalletCards,
+  'nav.group.hqRisk': AlertTriangle,
+  'nav.group.hqStats': BarChart3,
+  'nav.group.hqAnnouncements': Megaphone,
+  'nav.group.hqAdmin': ShieldCheck,
+  'nav.group.hqSystem': Settings,
+  'nav.group.hqLogs': ClipboardList,
+}
+
+function normalizeCode(text: string) {
+  return text.replace(/^(코드|Code)\s*:\s*/i, '').trim()
+}
+
+function splitParentLine(text: string) {
+  const separatorIndex = text.indexOf(':')
+  if (separatorIndex < 0) {
+    return { label: null, value: text }
+  }
+  return {
+    label: text.slice(0, separatorIndex).trim(),
+    value: text.slice(separatorIndex + 1).trim(),
+  }
+}
+
+export default function Sidebar({
+  basePath,
+  roleLabelKey,
+  profileLines,
+  nav,
+  mobileOpen = false,
+  onMobileClose,
+}: SidebarProps) {
   const { pathname } = useLocation()
   const { t } = useTranslation()
+  const [collapsed, setCollapsed] = useState(false)
 
-  // 메뉴 항목의 풀경로 = basePath + '/' + 상대 path
   const fullPath = (itemPath: string) => `${basePath}/${itemPath}`
-
-  // 현재 경로에 매칭되는 풀경로 중 가장 긴(가장 구체적인) 것 하나만 활성
-  const allPaths = nav.flatMap((g) => g.items.map((i) => fullPath(i.path)))
+  const allPaths = useMemo(() => nav.flatMap((group) => group.items.map((item) => fullPath(item.path))), [basePath, nav])
   const activePath = allPaths
-    .filter((p) => pathname === p || pathname.startsWith(p + '/'))
+    .filter((path) => pathname === path || pathname.startsWith(path + '/'))
     .sort((a, b) => b.length - a.length)[0]
+  const activeGroupKey = nav.find((group) => group.items.some((item) => fullPath(item.path) === activePath))?.titleKey
+  const [openGroups, setOpenGroups] = useState<Set<string>>(() => new Set(activeGroupKey ? [activeGroupKey] : []))
+
+  useEffect(() => {
+    if (!activeGroupKey) return
+    setOpenGroups((current) => {
+      if (current.has(activeGroupKey)) return current
+      const next = new Set(current)
+      next.add(activeGroupKey)
+      return next
+    })
+  }, [activeGroupKey])
+
+  const parentLine = profileLines.find((line) => line.variant === 'parent')
+  const titleLine = profileLines.find((line) => line.variant === 'title')
+  const codeLine = profileLines.find((line) => line.variant === 'muted')
+  const parent = parentLine ? splitParentLine(parentLine.text) : null
 
   return (
-    <aside className={styles.sidebar}>
-      {/* 상단 브랜드 + 역할 + 프로필 카드 (Figma상 모두 동일 간격 8의 형제 요소) */}
-      <div className={styles.brand}>{t('common.brand')}</div>
-      <div className={styles.role}>{t(roleLabelKey)}</div>
-
-      <div className={styles.profileCard}>
-        {profileLines.map((line) => (
-          <div
-            key={line.text}
-            className={
-              line.variant === 'title'
-                ? styles.profileCountry
-                : line.variant === 'parent'
-                  ? styles.profileParent
-                  : styles.profileCode
-            }
-          >
-            {line.text}
-          </div>
-        ))}
-      </div>
-
-      {/* "전체 목록" — 동작 미확정이라 우선 비클릭 라벨 */}
-      <div className={styles.allLabel}>{t('common.allList')}</div>
-
-      {/* 메뉴 그룹 목록 */}
-      <nav className={styles.nav}>
-        {nav.map((group) => {
-          const isGroupActive = group.items.some((item) => fullPath(item.path) === activePath)
-
-          return (
-            <div
-              key={group.titleKey}
-              className={isGroupActive ? `${styles.group} ${styles.groupActive}` : styles.group}
-            >
-              <div
-                className={
-                  isGroupActive ? `${styles.groupTitle} ${styles.groupTitleActive}` : styles.groupTitle
-                }
-              >
-                {t(group.titleKey)}
+    <>
+      {mobileOpen && <button type="button" className={styles.scrim} aria-label={t('common.sidebar.closeMenu')} onClick={onMobileClose} />}
+      <aside className={[styles.sidebar, collapsed && styles.collapsed, mobileOpen && styles.mobileOpen].filter(Boolean).join(' ')}>
+        <div className={styles.brandRow}>
+          <div className={styles.brandGroup}>
+            <span className={styles.logoMark} aria-hidden="true">
+              <img alt="KORION" className={styles.logoImage} src="/images/korion_b.png" />
+            </span>
+            {!collapsed && (
+              <div className={styles.brandText}>
+                <strong>{t('common.brand')}</strong>
+                <span>{t(roleLabelKey)}</span>
               </div>
+            )}
+          </div>
+          <button
+            type="button"
+            className={styles.collapseButton}
+            aria-label={collapsed ? t('common.sidebar.expand') : t('common.sidebar.collapse')}
+            onClick={() => setCollapsed((value) => !value)}
+          >
+            {collapsed ? <PanelLeftOpen size={16} aria-hidden="true" /> : <PanelLeftClose size={16} aria-hidden="true" />}
+          </button>
+          <button type="button" className={styles.mobileCloseButton} aria-label={t('common.sidebar.closeMenu')} onClick={onMobileClose}>
+            <X size={16} aria-hidden="true" />
+          </button>
+        </div>
 
-              {group.items.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={fullPath(item.path)}
-                  // 활성 판정은 NavLink 내장 isActive 대신 위에서 계산한 activePath로 한다.
-                  className={
-                    fullPath(item.path) === activePath
-                      ? `${styles.item} ${styles.itemActive}`
-                      : styles.item
-                  }
-                >
-                  {t(item.labelKey)}
-                </NavLink>
-              ))}
+        {parent && !collapsed && (
+          <div className={styles.profileParentSummary}>
+            <span>{parent.label || t('sidebar.profile.parent')}</span>
+            <strong>{parent.value}</strong>
+          </div>
+        )}
+
+        {!collapsed && (
+          <section className={styles.profileCard} aria-label={t('sidebar.profile.title')}>
+            <div className={styles.profileHeader}>
+              <div className={styles.profileTitleBlock}>
+                <span className={styles.profileEyebrow}>{t('sidebar.profile.title')}</span>
+                <strong className={styles.profilePrimary}>{titleLine?.text ?? t(roleLabelKey)}</strong>
+              </div>
             </div>
-          )
-        })}
-      </nav>
-    </aside>
+            <dl className={styles.profileMeta}>
+              <div className={styles.profileMetaRow}>
+                <dt className={styles.profileMetaLabel}>{t('sidebar.profile.code')}</dt>
+                <dd className={styles.profileMetaCode}>{normalizeCode(codeLine?.text ?? 'HQ-ADMIN-001')}</dd>
+              </div>
+            </dl>
+          </section>
+        )}
+
+        {!collapsed && <div className={styles.allLabel}>{t('common.allList')}</div>}
+
+        <nav className={styles.nav} aria-label={t('common.allList')}>
+          {nav.map((group) => {
+            const isGroupActive = group.titleKey === activeGroupKey
+            const isOpen = openGroups.has(group.titleKey)
+            const Icon = GROUP_ICONS[group.titleKey] ?? Map
+
+            return (
+              <div
+                key={group.titleKey}
+                className={[styles.group, isGroupActive && styles.groupActive, isOpen && styles.groupOpen].filter(Boolean).join(' ')}
+              >
+                <button
+                  type="button"
+                  className={[styles.groupButton, isGroupActive && styles.groupButtonActive].filter(Boolean).join(' ')}
+                  aria-expanded={isOpen}
+                  title={collapsed ? t(group.titleKey) : undefined}
+                  onClick={() => {
+                    setOpenGroups((current) => {
+                      const next = new Set(current)
+                      if (next.has(group.titleKey)) {
+                        next.delete(group.titleKey)
+                      } else {
+                        next.add(group.titleKey)
+                      }
+                      return next
+                    })
+                  }}
+                >
+                  <Icon className={styles.groupIcon} size={18} aria-hidden="true" />
+                  {!collapsed && <span className={styles.groupLabel}>{t(group.titleKey)}</span>}
+                  {!collapsed && <ChevronDown className={styles.chevron} size={16} aria-hidden="true" />}
+                </button>
+
+                {!collapsed && isOpen && (
+                  <div className={styles.subNav}>
+                    {group.items.map((item) => {
+                      const itemPath = fullPath(item.path)
+                      return (
+                        <NavLink
+                          key={item.path}
+                          to={itemPath}
+                          aria-current={itemPath === activePath ? 'page' : undefined}
+                          className={[styles.item, itemPath === activePath && styles.itemActive].filter(Boolean).join(' ')}
+                          onClick={onMobileClose}
+                        >
+                          {t(item.labelKey)}
+                        </NavLink>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </nav>
+      </aside>
+    </>
   )
 }
