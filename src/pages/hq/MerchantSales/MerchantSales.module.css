@@ -4,33 +4,191 @@
   gap: 18px;
 }
 
-.profilePanel {
+/* 전체를 감싸는 하나의 패널 — Figma "상세 패널"(1105px 박스) */
+.panel {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: 20px;
   padding: var(--space-6);
 }
 
-.profileHead {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
-  flex-wrap: wrap;
-}
-
-.profileCode {
-  font-size: 20px;
+.entityTitle {
+  font-size: 28px;
   font-weight: var(--font-weight-bold);
 }
 
-.profileMeta {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-12);
+/*
+ * 코드 미리보기 패널 — 왼쪽(캡션+상위 리더/국가 배지) / 오른쪽(코드 라벨+큰 값, 우측 정렬)
+ * 2열 구성. Figma: 오른쪽 블록이 items-end로 패널 우측에 붙어있음("파트너 코드"가 우측).
+ */
+.codePanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: 18px;
+  background-color: rgba(15, 11, 29, 0.88);
+  border: 1px solid rgba(107, 61, 229, 0.72);
 }
 
+.codePanelLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.codePanelRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.codePanelLabel {
+  font-size: var(--font-size-15);
+  font-weight: var(--font-weight-bold);
+}
+
+.codeBadges {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* 상위 리더 코드 배지 — Figma 고정 폭 94px(공용 Badge는 글자 폭만큼만 좁게 나와서 별도 클래스로) */
+.parentBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 94px;
+  height: 30px;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-10);
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+  background-color: rgba(143, 71, 255, 0.17);
+  border: 1px solid rgba(143, 71, 255, 0.76);
+}
+
+/* 국가 배지 — 기본 Badge(17%/72%)와 다른 24%/32% 톤 + 12px(Figma 실측) */
+.countryBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 94px;
+  height: 30px;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  color: #ffffff;
+  background-color: rgba(124, 92, 255, 0.24);
+  border: 1px solid rgba(124, 92, 255, 0.32);
+}
+
+.codeKeyLabel {
+  font-size: var(--font-size-15);
+  font-weight: var(--font-weight-bold);
+}
+
+.codeValue {
+  font-size: 30px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-cyan);
+}
+
+/* KPI 줄 — 상단 4개(코드 패널 아래, 238px) / 거래내역 탭 안 4개(표 위, 188px). Figma 폭 그대로 */
+.kpiRow4 {
+  display: grid;
+  grid-template-columns: repeat(4, 238px);
+  gap: 14px 20px;
+  overflow-x: auto;
+}
+.kpiRowPay {
+  display: grid;
+  grid-template-columns: repeat(4, 188px);
+  gap: 14px 20px;
+  overflow-x: auto;
+}
+
+/* A/B/C 섹션 박스 — 보라 테두리 18px 라운드 */
+.sectionBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background-color: color-mix(in srgb, #1c1637 72%, transparent);
+  border: 1px solid color-mix(in srgb, #7c5cff 32%, transparent);
+  border-radius: 18px;
+}
+
+/* 18px 토큰이 없어 직접 지정(Figma 실측, KpiCard 등과 동일 컨벤션) */
+.sectionTitle {
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+/* ===== C. 매장 기본 정보 — 매장 이미지/로고 업로드 슬롯 ===== */
+.photoField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.photoLabel {
+  font-size: var(--font-size-11);
+  font-weight: var(--font-weight-semibold);
+  color: #8c86b5;
+}
+.photoRow {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+/* 사진 슬롯 — Figma: 시안 테두리 어두운 박스 98x82 */
+.photoBtn {
+  width: 98px;
+  height: 82px;
+  border-radius: 10px;
+  border: 1px solid var(--color-accent-cyan);
+  background-color: color-mix(in srgb, #1a122a 82%, transparent);
+  color: #f2f0ff;
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+/* 탭 클릭은 되지만 "거래내역" 외 내용을 아직 다 못 만든 탭에 표시 */
 .tabPlaceholder {
   padding: var(--space-5);
   color: var(--color-text-muted);
   font-size: var(--font-size-12);
   text-align: center;
+}
+
+.actionRow {
+  display: flex;
+  justify-content: center;
+}
+
+/* "확인" 버튼 — Figma 그라디언트(보라→시안→민트), 가운데 정렬 + 고정폭(107px 실측) */
+.confirmButton {
+  width: 130px;
+  height: 46px;
+  border-radius: 13px;
+  border: 1px solid rgba(34, 217, 255, 0.32);
+  background: linear-gradient(to right, #7033ff, #1a9eff 52%, #1fffb8);
+  color: #ffffff;
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+/* 반응형: 좁은 화면에서 코드 패널 세로 전환 */
+@media (max-width: 768px) {
+  .codePanel {
+    flex-direction: column;
+  }
+  .codePanelRight {
+    align-items: flex-start;
+  }
 }
