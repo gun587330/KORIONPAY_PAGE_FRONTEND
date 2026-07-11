@@ -206,7 +206,9 @@ export function useDashboard() {
     { key: 'members', label: t('hqDashboard.countryOps.col.members'), width: '1fr' },
     { key: 'amount', label: t('hqDashboard.countryOps.col.amount'), width: '1fr' },
     { key: 'syncFail', label: t('hqDashboard.countryOps.col.syncFail'), width: '1fr' },
-    { key: 'growth', label: t('hqDashboard.countryOps.col.growth'), width: '1fr' },
+    // 성장률 칸은 고정폭 배지(86px)라 1fr이 그보다 좁아지면 배지가 셀 밖으로 삐져나온다.
+    // 배지+여백이 확실히 들어갈 최소폭(96px)을 px로 보장(minmax)해 어느 화면 폭에서도 안 삐져나옴.
+    { key: 'growth', label: t('hqDashboard.countryOps.col.growth'), width: 'minmax(96px, 1fr)' },
   ]
 
   const approvalQueueStats: MiniStatCardData[] = (data.approvalQueue.stats as MiniStatRaw[]).map((s) => ({
