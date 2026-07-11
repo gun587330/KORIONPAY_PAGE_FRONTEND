@@ -29,6 +29,8 @@ export const HQ_NAV: NavGroup[] = [
       { labelKey: 'nav.item.hqRequestPartnerByLeader', path: 'requests/partner-by-leader' },
       { labelKey: 'nav.item.hqRequestPartnerDirect', path: 'requests/partner-direct' },
       { labelKey: 'nav.item.hqRequestMerchantDirect', path: 'requests/merchant-direct' },
+      // 2026-07-12 Figma(81-28010) 사이드바에 추가로 확인된 5번째 항목
+      { labelKey: 'nav.item.hqRequestResultLog', path: 'requests/result-log' },
     ],
   },
   {

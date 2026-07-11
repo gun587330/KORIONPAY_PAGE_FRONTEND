@@ -506,3 +506,32 @@ Figma `node-id 1:25387`(전체 결제 로그 · 상세 Drawer)를 구현. 해당
 - 기존 화면/라우트 변경 없음.
 
 ---
+
+## 2026-07-12 — 파트너 요청 관리 · 파트너 승인 요청 (리더요청)
+
+**한 일** — Figma node 81-27496 구현.
+
+- `src/pages/hq/RequestsPartnerByLeader/`(신규): 기존 `RequestsLeader`(리더 승인 요청)와 동일 레이아웃/패턴 — KPI 3(신규 신청/검토중/대기자) + 표 10컬럼 + 액션 배지 5개(승인/거절/검토중/대기/자료요청, 행의 현재 상태만 시안으로 켜짐). Figma상 데이터·구조가 리더 승인 요청과 동일하고 타이틀/일부 컬럼명만 다름.
+- 컬럼명은 이 노드의 Figma 텍스트 그대로: **신청번호**(리더 승인 요청은 "번호") / **상위 코드**(〃 "상위 리더 코드") / **이번달 결제 금액**(〃 "이번달 거래 금액").
+- `src/App.tsx`: `HQ_PAGES`에 `requests/partner-by-leader` 매핑 추가(경로는 hqNav.ts에 이미 정의돼 있었음).
+- `src/i18n/ko.json` / `en.json`: `hqRequestPartnerByLeader.*` 키 23개 추가.
+
+**검증**
+
+- `npm run build`(tsc+vite) 통과.
+- Playwright(헤드리스, 스크래치 임시 설치)로 `localStorage.korion.role='HQ'` 설정 후 `/hq/requests/partner-by-leader` 풀페이지 스크린샷 → Figma와 타이틀/KPI/컬럼/6행 데이터/활성 배지 위치(3행 검토중·4행 대기·5행 자료요청) 1:1 대조 일치, 콘솔 에러 없음. EN 전환 시 UI 텍스트만 번역되고 데이터 값(코드·날짜·국가·금액) 불변 확인.
+- 기존 화면/라우트 변경 없음.
+
+## 2026-07-12 — 파트너 요청 관리 · 파트너 승인 요청 (다이렉트)
+
+**한 일** — Figma node 81-27824 구현.
+
+- `src/pages/hq/RequestsPartnerDirect/`(신규): 직전에 만든 `RequestsPartnerByLeader`(리더요청)와 Figma상 KPI/컬럼/데이터/활성 배지 위치까지 완전히 동일한 화면 — 타이틀·섹션명만 "(다이렉트)". 같은 패턴(PageHeader + StatSection + DataTable + ActionBadges)으로 별도 페이지로 작성.
+- `src/App.tsx`: `HQ_PAGES`에 `requests/partner-direct` 매핑 추가.
+- `src/i18n/ko.json` / `en.json`: `hqRequestPartnerDirect.*` 키 22개 추가.
+
+**검증**
+
+- `npm run build`(tsc+vite) 통과.
+- Playwright로 `localStorage.korion.role='HQ'` 설정 후 `/hq/requests/partner-direct` 스크린샷 → Figma와 타이틀/KPI/컬럼/6행/활성 배지(3행 검토중·4행 대기·5행 자료요청) 일치, 콘솔 에러 없음. EN 전환 시 UI 텍스트만 번역 확인.
+- 기존 화면/라우트 변경 없음.
