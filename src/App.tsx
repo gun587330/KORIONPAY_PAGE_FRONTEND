@@ -158,7 +158,8 @@ export default function App() {
       <Route index element={<Navigate to="/login" replace />} />
 
       {/* 공개(사이드바 없는) 인증 화면 */}
-      <Route path="/login" element={<AuthMain />} />
+      <Route path="/login" element={<RoleLogin fixedRole="hq" />} />
+      <Route path="/auth" element={<AuthMain />} />
       <Route path="/login/:role" element={<RoleLogin />} />
       <Route path="/signup/:role" element={<RoleSignup />} />
 

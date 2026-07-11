@@ -4,7 +4,7 @@ import { login, type LoginApiResponse } from '../../../services/korionChongApi'
 import { apiRoleFor } from '../../../services/authSession'
 import data from './roleLoginData.json'
 
-export type RoleKey = 'leader' | 'partner' | 'merchant'
+export type RoleKey = 'hq' | 'leader' | 'partner' | 'merchant'
 
 type RoleConfig = {
   titleKey: string
@@ -50,10 +50,11 @@ function persistLogin(response: LoginApiResponse) {
   }
 }
 
-export function useRoleLogin() {
+export function useRoleLogin(fixedRole?: RoleKey) {
   const { role } = useParams<{ role: string }>()
   const navigate = useNavigate()
-  const roleKey = role && role in ROLE_CFG ? (role as RoleKey) : null
+  const routeRole = role && role in ROLE_CFG ? (role as RoleKey) : null
+  const roleKey = fixedRole ?? routeRole
   const cfg = roleKey ? ROLE_CFG[roleKey] : null
   const [form, setForm] = useState<LoginForm>({
     loginId: '',

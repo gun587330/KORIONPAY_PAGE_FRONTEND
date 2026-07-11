@@ -3,9 +3,14 @@ import { Navigate } from 'react-router-dom'
 import AuthShell from '../AuthShell'
 import { useTranslation } from '../../../i18n'
 import { useRoleLogin } from './useRoleLogin'
+import type { RoleKey } from './useRoleLogin'
 import styles from './RoleLogin.module.css'
 
-export default function RoleLogin() {
+interface RoleLoginProps {
+  fixedRole?: RoleKey
+}
+
+export default function RoleLogin({ fixedRole }: RoleLoginProps) {
   const { t } = useTranslation()
   const {
     roleKey,
@@ -16,7 +21,7 @@ export default function RoleLogin() {
     error,
     updateField,
     submit,
-  } = useRoleLogin()
+  } = useRoleLogin(fixedRole)
 
   if (!roleKey || !cfg) return <Navigate to="/login" replace />
 

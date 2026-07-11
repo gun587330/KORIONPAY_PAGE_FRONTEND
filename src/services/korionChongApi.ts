@@ -267,7 +267,7 @@ export interface WalletAddressConfirmApiResponse {
 export interface LoginApiRequest {
   loginId: string
   password: string
-  role: 'LEADER' | 'PARTNER' | 'MERCHANT'
+  role: 'HQ' | 'LEADER' | 'PARTNER' | 'MERCHANT'
   twoFactorCode?: string
   requestId?: string
 }
@@ -275,11 +275,11 @@ export interface LoginApiRequest {
 export interface LoginApiResponse {
   authenticated: boolean
   userId: number
-  role: 'LEADER' | 'PARTNER' | 'MERCHANT'
+  role: 'HQ' | 'LEADER' | 'PARTNER' | 'MERCHANT'
   partnerId?: number | null
   merchantId?: number | null
   countryScopes: string[]
-  redirectPath: '/leader/dashboard' | '/partner/dashboard' | '/merchant/dashboard'
+  redirectPath: '/hq/dashboard' | '/leader/dashboard' | '/partner/dashboard' | '/merchant/dashboard'
   requiresTwoFactor: boolean
   sessionExpiresAt?: string | null
   resultCode: 'LOGIN_SUCCESS'
