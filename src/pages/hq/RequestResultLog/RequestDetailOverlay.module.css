@@ -1,0 +1,311 @@
+/*
+ * RequestDetailOverlay — 요청 결과 로그 '상세정보' 오버레이 (Figma 81:17062 "파트너 정보")
+ * 별도 라우팅 없이 현재 페이지 위에 고정 레이어로 노출.
+ * Figma 원본 패널(1072×1552)은 한 화면보다 길어 세로 스크롤을 허용한다.
+ */
+
+/* 사이드바 영역을 제외한 콘텐츠 섹션 위에만 띄움 (ApplicationDetailOverlay와 동일) */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+}
+
+/* Figma: bg rgba(20,16,39,.86) / 보라 테두리 / radius 24 / 시안+보라 글로우 */
+.panel {
+  background: rgba(20, 16, 39, 0.86);
+  border: 1px solid rgba(124, 92, 255, 0.32);
+  border-radius: 24px;
+  box-shadow: 0px 0px 24px 0px rgba(0, 204, 255, 0.14), 0px 18px 44px -18px rgba(117, 51, 255, 0.28);
+  width: 1072px;
+  max-width: 100%;
+  max-height: 92vh; /* 원본이 화면보다 길어 패널 내부 스크롤 */
+  overflow-y: auto;
+  padding: 14px 26px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: 38px;
+  margin: 0;
+}
+
+/* ===== 파트너 코드 미리보기 패널 ===== */
+.codePanel {
+  background: rgba(15, 11, 29, 0.88);
+  border: 1px solid rgba(107, 61, 229, 0.72);
+  border-radius: 18px;
+  box-shadow: 0px 18px 42px 0px rgba(92, 26, 255, 0.28);
+  backdrop-filter: blur(8px);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.codeLeft,
+.codeRight {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.codeRight {
+  align-items: flex-end;
+}
+
+.codePanelLabel {
+  font-size: 15px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: 20px;
+}
+
+.codeBadges {
+  display: flex;
+  gap: 10px;
+}
+
+/* 상위 리더 코드 배지 — Figma 바이올렛 틴트(143,71,255) */
+.leaderBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 94px;
+  height: 30px;
+  border-radius: var(--radius-pill);
+  background: rgba(143, 71, 255, 0.17);
+  border: 1px solid rgba(143, 71, 255, 0.76);
+  font-size: var(--font-size-10);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+/* 국가 배지 — Figma 보라 틴트(124,92,255) */
+.countryBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 94px;
+  height: 30px;
+  border-radius: var(--radius-pill);
+  background: rgba(124, 92, 255, 0.24);
+  border: 1px solid rgba(124, 92, 255, 0.32);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  color: #ffffff;
+}
+
+.partnerCode {
+  font-size: 30px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-cyan);
+  line-height: 41px;
+}
+
+/* ===== KPI 카드 그리드 (위 4개 / 아래 5개) ===== */
+.kpiGrid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.kpiGrid5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 18px;
+}
+
+.kpiCard {
+  background: rgba(17, 12, 31, 0.84);
+  border: 1px solid rgba(97, 56, 219, 0.62);
+  border-radius: 14px;
+  box-shadow: 0px 12px 26px 0px rgba(82, 26, 255, 0.2);
+  padding: 14px;
+  height: 78px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.kpiLabel {
+  font-size: var(--font-size-11);
+  color: #ada3d1;
+  line-height: 15px;
+  white-space: nowrap;
+}
+
+.kpiValue {
+  font-size: 23px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: 31px;
+  white-space: nowrap;
+}
+
+/* ===== 상세 블록 (A. 계정 정보 / B. 기본·소속 정보) ===== */
+.block {
+  background: rgba(28, 22, 55, 0.72);
+  border: 1px solid rgba(124, 92, 255, 0.32);
+  border-radius: 18px;
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.blockTitle {
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+  line-height: 24px;
+  margin: 0;
+}
+
+/* 필드 4열 그리드 (Figma 열 위치 55/303/551/799 = 등간격 4열) */
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px 24px;
+}
+
+/* B 블록 2행 — 사유(1칸) + 지갑 주소(2칸) 배치 */
+.fieldGridWide {
+  display: grid;
+  grid-template-columns: 2fr 2fr;
+  gap: 22px 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.fieldLabel {
+  font-size: var(--font-size-11);
+  font-weight: var(--font-weight-semibold);
+  color: #8c86b5;
+  line-height: 15px;
+}
+
+.fieldValue {
+  font-size: 14px;
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+  line-height: 19px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-wrap: anywhere; /* 지갑 주소처럼 긴 값도 칸을 넘지 않게 줄바꿈 */
+}
+
+/* 신청일/승인일 — Figma 청록 강조 */
+.fieldValueTeal {
+  color: #24e6b8;
+}
+
+/* 값 옆 미니 배지 (초기화/변경) — 표시 전용 */
+.fieldBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 51px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(124, 92, 255, 0.24);
+  border: 1px solid rgba(124, 92, 255, 0.32);
+  font-size: 8px;
+  font-weight: var(--font-weight-semibold);
+  color: #ffffff;
+  line-height: 13px;
+  white-space: nowrap;
+}
+
+/* ===== 탭 줄 ===== */
+.tabRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.tabs {
+  display: flex;
+  gap: 11px;
+}
+
+.tab {
+  width: 108px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(26, 18, 42, 0.82);
+  border: 1px solid rgba(97, 56, 219, 0.55);
+  color: var(--color-text);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-bold);
+  cursor: default; /* Figma에 가맹점별 내용만 있어 표시 전용 */
+}
+
+/* 활성 탭 — 시안 테두리 */
+.tabActive {
+  border-color: var(--color-accent-cyan);
+}
+
+/* ===== 하단 확인 버튼 ===== */
+.footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.btnConfirm {
+  width: 107px;
+  height: 46px;
+  border-radius: 13px;
+  border: 1px solid rgba(34, 217, 255, 0.32);
+  background: linear-gradient(90deg, #7033ff 0%, #1a9eff 52%, #1fffb8 100%);
+  box-shadow: 0px 0px 24px 0px rgba(0, 204, 255, 0.14), 0px 18px 44px -18px rgba(117, 51, 255, 0.28);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+/* 반응형: 좁은 화면(<1100px)에서 KPI/필드 그리드 4·5열 → 2열, 코드 패널 세로 정렬 */
+@media (max-width: 1100px) {
+  .kpiGrid4,
+  .kpiGrid5,
+  .fieldGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .fieldGridWide {
+    grid-template-columns: 1fr;
+  }
+
+  .codePanel {
+    flex-direction: column;
+  }
+
+  .codeRight {
+    align-items: flex-start;
+  }
+}

@@ -33,11 +33,14 @@ export default function Merchants() {
   return (
     <RequestListPage
       title={t('hqMerchantList.title')}
-      sectionTitle={t('hqMerchantList.section')}
+      statsBare
       stats={stats}
       columns={columns}
       rows={rows}
+      tableTitle={t('hqMerchantList.section')}
       toolbar={[t('common.search'), t('common.filter'), t('common.excel')]}
+      toolbarInline
+      tableMutedText
     />
   )
 }

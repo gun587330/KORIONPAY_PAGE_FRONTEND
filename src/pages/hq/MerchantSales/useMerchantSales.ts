@@ -4,7 +4,7 @@ import type { Column } from '../../../components/organisms/DataTable'
 import type { InfoItem } from '../../../components/molecules/InfoGrid'
 import data from './merchantSalesData.json'
 
-interface StatRaw {
+interface KpiRaw {
   id: string
   labelKey: string
   value: string
@@ -27,18 +27,51 @@ export interface MerchantSalesLogRow {
 }
 
 /*
- * useMerchantSales (hq) — 본사어드민 "가맹점별 거래내역" 데이터 훅
+ * useMerchantSales (hq) — 본사어드민 "가맹점 거래내역" 데이터 훅
  * ------------------------------------------------------------------
- * LeaderSales/PartnerSales와 같은 구조. 탭 내용은 "구현 예정"으로 둠(동일 결정).
+ * LeaderSales와 동일한 상세 뷰 구조(Figma 156:312 추적 확정):
+ *   가맹점 정보(제목) → 코드 미리보기 → KPI 4개 → A.계정정보 → B.기본/소속정보
+ *   → C.매장 기본정보 → 탭 4개(기본 선택: 거래내역) → [거래내역 탭 전용] KPI 4개 +
+ *   전체 거래 로그 표 → 하단 확인 버튼.
+ * B섹션 "파트너명" 라벨은 Figma 표기 그대로 둔다(가맹점 소속 파트너 정보라 의미상 유지).
  */
 export function useMerchantSales() {
   const { t } = useTranslation()
 
-  const miniStats: StatCardData[] = (data.miniStats as StatRaw[]).map((s) => ({
-    id: s.id,
-    label: t(s.labelKey),
-    value: s.value,
-  }))
+  const toStats = (items: KpiRaw[]): StatCardData[] =>
+    items.map((s) => ({ id: s.id, label: t(s.labelKey), value: s.value }))
+
+  const kpiTop = toStats(data.kpiTop as KpiRaw[])
+  const kpiBottom = toStats(data.kpiBottom as KpiRaw[])
+
+  const accountInfo: InfoItem[] = [
+    { label: t('hqMerchantSales.account.loginId'), value: data.account.loginId },
+    { label: t('hqMerchantSales.account.password'), value: data.account.password, actionLabel: t('common.reset') },
+    { label: t('hqMerchantSales.account.email'), value: data.account.email, actionLabel: t('common.change') },
+    { label: t('hqMerchantSales.account.telegram'), value: data.account.telegram },
+    { label: t('hqMerchantSales.account.phone'), value: data.account.phone },
+    { label: t('hqMerchantSales.account.twitter'), value: data.account.twitter },
+    { label: t('hqMerchantSales.account.appliedAt'), value: data.account.appliedAt, valueColor: 'var(--color-accent-green)' },
+    { label: t('hqMerchantSales.account.approvedAt'), value: data.account.approvedAt, valueColor: 'var(--color-accent-green)' },
+  ]
+
+  // 2번째 줄은 본사 직접 계약 사유(1열) 다음 칸을 비우고 KORION WALLET 주소가 3열에 옴(Figma 실측 — 4열 그리드 중 2열은 빈칸)
+  const basicInfo: InfoItem[] = [
+    { label: t('hqMerchantSales.basic.name'), value: data.basic.name },
+    { label: t('hqMerchantSales.basic.country'), value: data.basic.country },
+    { label: t('hqMerchantSales.basic.region'), value: data.basic.region },
+    { label: t('hqMerchantSales.basic.language'), value: data.basic.language },
+    { label: t('hqMerchantSales.basic.directContractReason'), value: data.basic.directContractReason },
+    { label: '', value: '' },
+    { label: t('hqMerchantSales.basic.walletAddress'), value: data.basic.walletAddress },
+  ]
+
+  const storeInfo: InfoItem[] = [
+    { label: t('hqMerchantSales.store.name'), value: data.store.name },
+    { label: t('hqMerchantSales.store.owner'), value: data.store.owner },
+    { label: t('hqMerchantSales.store.businessType'), value: data.store.businessType },
+    { label: t('hqMerchantSales.store.address'), value: data.store.address },
+  ]
 
   const logColumns: Column[] = [
     { key: 'txNo', label: t('hqMerchantSales.col.txNo'), width: '0.6fr' },
@@ -52,25 +85,18 @@ export function useMerchantSales() {
     { key: 'net', label: t('hqMerchantSales.col.net'), width: '0.9fr' },
     { key: 'status', label: t('hqMerchantSales.col.status'), width: '0.8fr' },
     { key: 'syncStatus', label: t('hqMerchantSales.col.syncStatus'), width: '0.9fr' },
-    { key: 'action', label: t('hqMerchantSales.col.action'), width: '1.6fr' },
-  ]
-
-  const profile = data.profile
-  const accountInfo: InfoItem[] = [
-    { label: t('hqMerchantSales.account.loginId'), value: profile.account.loginId },
-    { label: t('hqMerchantSales.account.password'), value: profile.account.password },
-    { label: t('hqMerchantSales.account.email'), value: profile.account.email },
-    { label: t('hqMerchantSales.account.telegram'), value: profile.account.telegram },
-    { label: t('hqMerchantSales.account.phone'), value: profile.account.phone },
-    { label: t('hqMerchantSales.account.twitter'), value: profile.account.twitter },
-    { label: t('hqMerchantSales.account.appliedAt'), value: profile.account.appliedAt },
+    // 액션 컬럼: 배지 3개(상세/환불요청/지급보류)가 항상 한 줄로 들어갈 최소폭(150px)을 보장
+    { key: 'action', label: t('hqMerchantSales.col.action'), width: 'minmax(150px, 1.6fr)' },
   ]
 
   return {
-    miniStats,
+    profile: data.profile,
+    kpiTop,
+    accountInfo,
+    basicInfo,
+    storeInfo,
+    kpiBottom,
     logColumns,
     logRows: data.logRows as MerchantSalesLogRow[],
-    profile: { code: profile.code, country: profile.country, parent: profile.parent },
-    accountInfo,
   }
 }

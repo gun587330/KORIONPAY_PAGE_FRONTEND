@@ -506,3 +506,80 @@ Figma `node-id 1:25387`(전체 결제 로그 · 상세 Drawer)를 구현. 해당
 - 기존 화면/라우트 변경 없음.
 
 ---
+
+## 2026-07-12 — 파트너 요청 관리 · 파트너 승인 요청 (리더요청)
+
+**한 일** — Figma node 81-27496 구현.
+
+- `src/pages/hq/RequestsPartnerByLeader/`(신규): 기존 `RequestsLeader`(리더 승인 요청)와 동일 레이아웃/패턴 — KPI 3(신규 신청/검토중/대기자) + 표 10컬럼 + 액션 배지 5개(승인/거절/검토중/대기/자료요청, 행의 현재 상태만 시안으로 켜짐). Figma상 데이터·구조가 리더 승인 요청과 동일하고 타이틀/일부 컬럼명만 다름.
+- 컬럼명은 이 노드의 Figma 텍스트 그대로: **신청번호**(리더 승인 요청은 "번호") / **상위 코드**(〃 "상위 리더 코드") / **이번달 결제 금액**(〃 "이번달 거래 금액").
+- `src/App.tsx`: `HQ_PAGES`에 `requests/partner-by-leader` 매핑 추가(경로는 hqNav.ts에 이미 정의돼 있었음).
+- `src/i18n/ko.json` / `en.json`: `hqRequestPartnerByLeader.*` 키 23개 추가.
+
+**검증**
+
+- `npm run build`(tsc+vite) 통과.
+- Playwright(헤드리스, 스크래치 임시 설치)로 `localStorage.korion.role='HQ'` 설정 후 `/hq/requests/partner-by-leader` 풀페이지 스크린샷 → Figma와 타이틀/KPI/컬럼/6행 데이터/활성 배지 위치(3행 검토중·4행 대기·5행 자료요청) 1:1 대조 일치, 콘솔 에러 없음. EN 전환 시 UI 텍스트만 번역되고 데이터 값(코드·날짜·국가·금액) 불변 확인.
+- 기존 화면/라우트 변경 없음.
+
+## 2026-07-12 — 파트너 요청 관리 · 파트너 승인 요청 (다이렉트)
+
+**한 일** — Figma node 81-27824 구현.
+
+- `src/pages/hq/RequestsPartnerDirect/`(신규): 직전에 만든 `RequestsPartnerByLeader`(리더요청)와 Figma상 KPI/컬럼/데이터/활성 배지 위치까지 완전히 동일한 화면 — 타이틀·섹션명만 "(다이렉트)". 같은 패턴(PageHeader + StatSection + DataTable + ActionBadges)으로 별도 페이지로 작성.
+- `src/App.tsx`: `HQ_PAGES`에 `requests/partner-direct` 매핑 추가.
+- `src/i18n/ko.json` / `en.json`: `hqRequestPartnerDirect.*` 키 22개 추가.
+
+**검증**
+
+- `npm run build`(tsc+vite) 통과.
+- Playwright로 `localStorage.korion.role='HQ'` 설정 후 `/hq/requests/partner-direct` 스크린샷 → Figma와 타이틀/KPI/컬럼/6행/활성 배지(3행 검토중·4행 대기·5행 자료요청) 일치, 콘솔 에러 없음. EN 전환 시 UI 텍스트만 번역 확인.
+- 기존 화면/라우트 변경 없음.
+
+## 2026-07-12 — 파트너 요청 관리 · 가맹점 승인 요청 (다이렉트) + 사이드바 항목 추가
+
+**한 일** — Figma node 81-28152(화면) + 81-28010(사이드바) 구현.
+
+- `src/pages/hq/RequestsMerchantDirect/`(신규): 파트너 승인 요청(다이렉트)과 동일 패턴. 데이터 차이만 반영 — 신청자 코드 `NG-MER-0001`, 5행 상위 코드 `NG-SP-0001`(파트너 직속 가맹점).
+- 컬럼명 "파트너명"/"하위 가맹점 수"는 가맹점 화면 문맥과 안 맞아 보이지만(복붙 잔재 가능성) **Figma 텍스트 그대로 반영** — 사용자 피드백 원칙(임의로 Figma에서 벗어나지 않기).
+- `src/roles/hqNav.ts`: Figma 사이드바(81-28010)에서 "파트너 요청 관리" 그룹의 5번째 항목 **"요청 결과 로그 전체내역"** 확인 → nav 항목 추가(`requests/result-log`). 기존 IA(2026-06-27 확인, 4항목)에는 없던 항목. 화면 본문 Figma는 사용자가 추후 전달 예정이라 현재는 Placeholder("구현 예정")로 라우팅.
+- `src/App.tsx`: `HQ_PAGES`에 `requests/merchant-direct` 매핑 추가.
+- `src/i18n/ko.json` / `en.json`: `hqRequestMerchantDirect.*` 22개 + `nav.item.hqRequestResultLog` 추가.
+
+**검증**
+
+- `npm run build`(tsc+vite) 통과.
+- Playwright로 `/hq/requests/merchant-direct` 스크린샷 → Figma와 일치(활성 배지 3행 검토중·4행 대기·5행 자료요청), 콘솔 에러 없음. 신규 사이드바 항목 클릭 → `/hq/requests/result-log` Placeholder 정상 표시.
+- 기존 화면/라우트 변경 없음.
+
+## 2026-07-12 — 파트너 요청 관리 · 요청 결과 로그 전체내역
+
+**한 일** — Figma node 81-28481 구현. 앞서 nav만 추가돼 Placeholder였던 `requests/result-log`에 실제 화면 연결.
+
+- `src/pages/hq/RequestResultLog/`(신규): 승인 요청 4개 화면의 처리 결과 통합 로그. KPI 3(전체 로그 결과 수 300/전체 승인 건수 250/전체 거절 건수 50) + 표 10컬럼(신청번호/신청일/**결제일**/**요청 유형**/상위 코드/신청자 코드/국가/파트너명/**관리자 행동**/액션).
+- **관리자 행동** 컬럼: 데이터 enum(승인/승인 취소/거절/거절 취소)이라 번역 없이 글자색만(승인 계열 `#09c809`, 거절 계열 `#ff4e4e`, Figma 정확값) — 정산 내역 화면의 상태 컬럼과 동일 컨벤션. **요청 유형**(리더 승인/파트너 (리더요청)/파트너 (다이렉트)/가맹점 (다이렉트))도 데이터 값으로 번역 안 함.
+- 액션 배지는 행 상태에 따라 다름(Figma 행별 마크업 기준): 승인 건 → [승인 취소, 상세정보] / 거절 건 → [거절취소, 상세정보] / 이미 취소된 건 → [상세정보]만. 전부 회색 solid 표시 전용. "거절취소"(공백 없음)는 Figma 표기 그대로.
+- `src/App.tsx`: `HQ_PAGES`에 `requests/result-log` 매핑 추가.
+- `src/i18n/ko.json` / `en.json`: `hqRequestResultLog.*` 키 20개 추가.
+
+**검증**
+
+- `npm run build`(tsc+vite) 통과.
+- Playwright로 `/hq/requests/result-log` 스크린샷 → Figma와 KPI/컬럼/6행/관리자 행동 색/행별 배지 구성 일치, 콘솔 에러 없음. EN 전환 시 UI만 번역, 데이터 값(요청 유형·관리자 행동·코드·날짜) 불변 확인.
+- 알려진 제약: EN 모드에서 배지 라벨(Undo Approve 등)이 Figma 고정폭(37px)을 넘어 일부 겹침 — 기존 승인 요청 4개 화면과 동일한 현상(KR은 정상).
+
+## 2026-07-12 — 요청 결과 로그 · '상세정보' 파트너 정보 오버레이
+
+**한 일** — Figma node 81-17062("파트너 정보" 상세 패널) 구현. 요청 결과 로그 표의 '상세정보' 배지 클릭 시 **사이드바를 제외한 콘텐츠 영역 중앙**에 오버레이로 노출(사용자 요청). 사용자가 준 노드(81-17063)는 빈 배경 사각형이라 부모 프레임(81-17062)을 metadata로 역추적해 전체 폼을 확보.
+
+- `src/pages/hq/RequestResultLog/RequestDetailOverlay.tsx`(신규) + `useRequestDetail.ts` + `requestDetailData.json`: 구성 = 타이틀(파트너 정보) → 파트너 코드 미리보기 패널(상위 리더 `NG-READ-0001`·국가 배지 + `NG-SP-0004` 시안 코드) → KPI 4 → A. 계정 정보(비밀번호 [초기화]·이메일 [변경] 미니 배지, 신청일/승인일 청록 `#24e6b8`) → B. 기본/소속 정보 → 탭 4개(가맹점별만 활성, Figma에 다른 탭 내용이 없어 표시 전용) + `1 D` 칩 → KPI 5 → 가맹점별 정보 표(12컬럼·5행, `DataTable` largeText/fluid 재사용) → 확인(그라디언트) 버튼.
+- backdrop 방식은 `ApplicationDetailOverlay`와 동일(`left: var(--sidebar-width)` 고정 레이어). backdrop 클릭 또는 '확인'으로 닫힘. 원본 패널(1072×1552)이 화면보다 길어 패널 내부 세로 스크롤(max-height 92vh).
+- **공용 컴포넌트 확장(하위 호환)**: `Badge`에 optional `onClick`(+커서 pointer), `ActionBadges`에 optional `onLabelClick` 추가 — 기존 호출부는 그대로 표시 전용. 요청 결과 로그 액션 컬럼에서 '상세정보' 라벨만 오버레이를 열고 승인/거절 취소 배지는 표시 전용 유지.
+- `NG-READ-0001`(LEAD의 오타로 보임)은 Figma 텍스트 그대로 반영. 데이터 값(Nigeria/Lagos/English/아는 파트너들이 없음/편의점 등)은 번역 안 함.
+- `src/i18n/ko.json` / `en.json`: `hqRequestResultLog.detail.*` 키 52개 추가.
+
+**검증**
+
+- `npm run build`(tsc+vite) 통과.
+- Playwright: '상세정보' 클릭 → 오버레이가 사이드바 제외 영역 중앙에 노출(스크린샷 상/하단 Figma 대조 일치), 내부 스크롤 동작, '확인' 클릭 시 닫힘 확인, 콘솔 에러 없음.
+- 기존 화면 영향 없음(Badge/ActionBadges 변경은 optional prop 추가뿐).

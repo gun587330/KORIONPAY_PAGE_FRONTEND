@@ -35,6 +35,10 @@ import HqDashboard from './pages/hq/Dashboard'
 import HqCountryDashboard from './pages/hq/CountryDashboard'
 import HqApplications from './pages/hq/Applications'
 import HqRequestsLeader from './pages/hq/RequestsLeader'
+import HqRequestsPartnerByLeader from './pages/hq/RequestsPartnerByLeader'
+import HqRequestsPartnerDirect from './pages/hq/RequestsPartnerDirect'
+import HqRequestsMerchantDirect from './pages/hq/RequestsMerchantDirect'
+import HqRequestResultLog from './pages/hq/RequestResultLog'
 import HqLeaders from './pages/hq/Leaders'
 import HqPartners from './pages/hq/Partners'
 import HqMerchants from './pages/hq/Merchants'
@@ -60,6 +64,10 @@ const HQ_PAGES: Record<string, JSX.Element> = {
   'dashboard/by-country': <HqCountryDashboard />,
   applications: <HqApplications />,
   'requests/leader': <HqRequestsLeader />,
+  'requests/partner-by-leader': <HqRequestsPartnerByLeader />,
+  'requests/partner-direct': <HqRequestsPartnerDirect />,
+  'requests/merchant-direct': <HqRequestsMerchantDirect />,
+  'requests/result-log': <HqRequestResultLog />,
   leaders: <HqLeaders />,
   'leaders/sales': <HqLeaderSales />,
   partners: <HqPartners />,
