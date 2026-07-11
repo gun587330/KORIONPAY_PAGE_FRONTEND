@@ -567,3 +567,19 @@ Figma `node-id 1:25387`(전체 결제 로그 · 상세 Drawer)를 구현. 해당
 - `npm run build`(tsc+vite) 통과.
 - Playwright로 `/hq/requests/result-log` 스크린샷 → Figma와 KPI/컬럼/6행/관리자 행동 색/행별 배지 구성 일치, 콘솔 에러 없음. EN 전환 시 UI만 번역, 데이터 값(요청 유형·관리자 행동·코드·날짜) 불변 확인.
 - 알려진 제약: EN 모드에서 배지 라벨(Undo Approve 등)이 Figma 고정폭(37px)을 넘어 일부 겹침 — 기존 승인 요청 4개 화면과 동일한 현상(KR은 정상).
+
+## 2026-07-12 — 요청 결과 로그 · '상세정보' 파트너 정보 오버레이
+
+**한 일** — Figma node 81-17062("파트너 정보" 상세 패널) 구현. 요청 결과 로그 표의 '상세정보' 배지 클릭 시 **사이드바를 제외한 콘텐츠 영역 중앙**에 오버레이로 노출(사용자 요청). 사용자가 준 노드(81-17063)는 빈 배경 사각형이라 부모 프레임(81-17062)을 metadata로 역추적해 전체 폼을 확보.
+
+- `src/pages/hq/RequestResultLog/RequestDetailOverlay.tsx`(신규) + `useRequestDetail.ts` + `requestDetailData.json`: 구성 = 타이틀(파트너 정보) → 파트너 코드 미리보기 패널(상위 리더 `NG-READ-0001`·국가 배지 + `NG-SP-0004` 시안 코드) → KPI 4 → A. 계정 정보(비밀번호 [초기화]·이메일 [변경] 미니 배지, 신청일/승인일 청록 `#24e6b8`) → B. 기본/소속 정보 → 탭 4개(가맹점별만 활성, Figma에 다른 탭 내용이 없어 표시 전용) + `1 D` 칩 → KPI 5 → 가맹점별 정보 표(12컬럼·5행, `DataTable` largeText/fluid 재사용) → 확인(그라디언트) 버튼.
+- backdrop 방식은 `ApplicationDetailOverlay`와 동일(`left: var(--sidebar-width)` 고정 레이어). backdrop 클릭 또는 '확인'으로 닫힘. 원본 패널(1072×1552)이 화면보다 길어 패널 내부 세로 스크롤(max-height 92vh).
+- **공용 컴포넌트 확장(하위 호환)**: `Badge`에 optional `onClick`(+커서 pointer), `ActionBadges`에 optional `onLabelClick` 추가 — 기존 호출부는 그대로 표시 전용. 요청 결과 로그 액션 컬럼에서 '상세정보' 라벨만 오버레이를 열고 승인/거절 취소 배지는 표시 전용 유지.
+- `NG-READ-0001`(LEAD의 오타로 보임)은 Figma 텍스트 그대로 반영. 데이터 값(Nigeria/Lagos/English/아는 파트너들이 없음/편의점 등)은 번역 안 함.
+- `src/i18n/ko.json` / `en.json`: `hqRequestResultLog.detail.*` 키 52개 추가.
+
+**검증**
+
+- `npm run build`(tsc+vite) 통과.
+- Playwright: '상세정보' 클릭 → 오버레이가 사이드바 제외 영역 중앙에 노출(스크린샷 상/하단 Figma 대조 일치), 내부 스크롤 동작, '확인' 클릭 시 닫힘 확인, 콘솔 에러 없음.
+- 기존 화면 영향 없음(Badge/ActionBadges 변경은 optional prop 추가뿐).

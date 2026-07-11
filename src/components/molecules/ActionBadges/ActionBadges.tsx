@@ -26,6 +26,12 @@ interface ActionBadgesProps {
   solidByLabel?: Record<string, boolean>
   /** true면 배지들을 같은 폭(37px)·가운데 정렬로 통일한다(Figma 상태 토글 배지 기준) */
   equalWidth?: boolean
+  /**
+   * 배지 클릭 핸들러(클릭된 라벨을 넘김). 지정하면 배지가 버튼처럼 동작한다 —
+   * 요청 결과 로그의 '상세정보'처럼 특정 배지만 상세 오버레이를 여는 화면용.
+   * 미지정 시 기존처럼 표시 전용(기존 호출부 영향 없음).
+   */
+  onLabelClick?: (label: string) => void
 }
 
 /*
@@ -33,7 +39,7 @@ interface ActionBadgesProps {
  * ------------------------------------------------------------------
  * 테이블 액션 컬럼에 들어가는 작은 배지 묶음. 동작 없는 UI(표시 전용).
  */
-export default function ActionBadges({ labels, accentByLabel, size = 'sm', solid, solidByLabel, equalWidth }: ActionBadgesProps) {
+export default function ActionBadges({ labels, accentByLabel, size = 'sm', solid, solidByLabel, equalWidth, onLabelClick }: ActionBadgesProps) {
   const className = equalWidth ? `${styles.actions} ${styles.equalWidth}` : styles.actions
   return (
     <div className={className}>
@@ -43,6 +49,7 @@ export default function ActionBadges({ labels, accentByLabel, size = 'sm', solid
           accent={accentByLabel ? accentByLabel[label] : 'cyan'}
           size={size}
           solid={solidByLabel ? solidByLabel[label] : solid}
+          onClick={onLabelClick ? () => onLabelClick(label) : undefined}
         >
           {label}
         </Badge>

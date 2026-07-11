@@ -70,3 +70,8 @@
   background: var(--accent, var(--color-text-subtle));
   border-color: var(--accent, var(--color-text-subtle));
 }
+
+/* onClick이 지정된 배지 — 버튼 역할임을 커서로만 표시(외형은 동일) */
+.clickable {
+  cursor: pointer;
+}
