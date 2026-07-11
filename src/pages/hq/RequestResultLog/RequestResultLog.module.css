@@ -1,0 +1,15 @@
+/* RequestResultLog — 본사어드민 "파트너 요청 관리 - 요청 결과 로그 전체내역" 페이지 레이아웃 */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px; /* Figma 콘텐츠 세로 간격 18 (RequestListPage 템플릿과 동일 값) */
+  flex: 1;
+}
+
+/* ===== 관리자 행동 컬럼 표시 색 (데이터 값이라 글자색만 입힘, Figma 정확값) ===== */
+.aaGreen {
+  color: #09c809; /* 승인/승인 취소 */
+}
+.aaRed {
+  color: #ff4e4e; /* 거절/거절 취소 */
+}
