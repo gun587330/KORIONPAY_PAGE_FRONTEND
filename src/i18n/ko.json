@@ -961,7 +961,7 @@
   "auth.signup.placeholder.address": "주소 입력",
   "auth.signup.placeholder.industry": "카페 / 리테일",
   "auth.signup.placeholder.evidence": "URL 또는 자료 링크",
-  "auth.signup.hint.evidence": "매장 이미지 / 로고 URL 또는 자료 링크 (권장 256 x 256, 3MB 이하)",
+  "auth.signup.hint.evidence": "매장 이미지 / 로고 URL 또는 자료 링크 (권장 256 x 256, 5MB 이하)",
   "auth.signup.evidence.previewLabel": "매장 이미지 / 로고 미리보기",
   "auth.signup.evidence.previewEmpty": "미리보기",
   "auth.signup.password.mismatch": "비밀번호가 일치하지 않습니다. 확인해주세요.",

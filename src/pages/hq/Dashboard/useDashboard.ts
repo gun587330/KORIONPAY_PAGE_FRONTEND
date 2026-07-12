@@ -244,6 +244,85 @@ function scaleMiniStats(stats: MiniStatRaw[], multiplier: number): MiniStatRaw[]
   )
 }
 
+function withRows<T extends { rows?: unknown[] }>(payloadSection: T, fallbackSection: T): T {
+  return {
+    ...fallbackSection,
+    ...payloadSection,
+    rows: payloadSection.rows && payloadSection.rows.length > 0 ? payloadSection.rows : fallbackSection.rows,
+  }
+}
+
+function withItems<T extends { items?: unknown[] }>(payloadSection: T, fallbackSection: T): T {
+  return {
+    ...fallbackSection,
+    ...payloadSection,
+    items: payloadSection.items && payloadSection.items.length > 0 ? payloadSection.items : fallbackSection.items,
+  }
+}
+
+function withNonEmptyArray<T>(payload: T[] | undefined, fallback: T[]): T[] {
+  return payload && payload.length > 0 ? payload : fallback
+}
+
+function withDashboardDefaults(payload: typeof data): typeof data {
+  return {
+    ...data,
+    ...payload,
+    kpis: withNonEmptyArray(payload.kpis, data.kpis),
+    rankingPanels: data.rankingPanels.map((fallbackPanel) => {
+      const payloadPanel = payload.rankingPanels.find((panel) => panel.id === fallbackPanel.id)
+      return payloadPanel && payloadPanel.rows && payloadPanel.rows.length > 0 ? payloadPanel : fallbackPanel
+    }),
+    realtimePayments: withRows(payload.realtimePayments, data.realtimePayments),
+    offlinePay: {
+      ...data.offlinePay,
+      ...payload.offlinePay,
+      miniStats: withNonEmptyArray(payload.offlinePay?.miniStats, data.offlinePay.miniStats),
+      flowSteps: withNonEmptyArray(payload.offlinePay?.flowSteps, data.offlinePay.flowSteps),
+    },
+    settlement: {
+      ...data.settlement,
+      ...payload.settlement,
+      stats: withNonEmptyArray(payload.settlement?.stats, data.settlement.stats),
+      rows: withNonEmptyArray(payload.settlement?.rows, data.settlement.rows),
+    },
+    risk: {
+      ...data.risk,
+      ...payload.risk,
+      stats: withNonEmptyArray(payload.risk?.stats, data.risk.stats),
+      rows: withNonEmptyArray(payload.risk?.rows, data.risk.rows),
+    },
+    countryOps: {
+      ...data.countryOps,
+      ...payload.countryOps,
+      rows: withNonEmptyArray(payload.countryOps?.rows, data.countryOps.rows),
+      heatmap: withNonEmptyArray(payload.countryOps?.heatmap, data.countryOps.heatmap),
+    },
+    approvalQueue: {
+      ...data.approvalQueue,
+      ...payload.approvalQueue,
+      stats: withNonEmptyArray(payload.approvalQueue?.stats, data.approvalQueue.stats),
+      rows: withNonEmptyArray(payload.approvalQueue?.rows, data.approvalQueue.rows),
+    },
+    networkGrowth: {
+      ...data.networkGrowth,
+      ...payload.networkGrowth,
+      stats: withNonEmptyArray(payload.networkGrowth?.stats, data.networkGrowth.stats),
+      trendBars: withNonEmptyArray(payload.networkGrowth?.trendBars, data.networkGrowth.trendBars),
+      topPartners: withNonEmptyArray(payload.networkGrowth?.topPartners, data.networkGrowth.topPartners),
+    },
+    paymentMethod: {
+      ...data.paymentMethod,
+      ...payload.paymentMethod,
+      rows: withNonEmptyArray(payload.paymentMethod?.rows, data.paymentMethod.rows),
+      donut: withNonEmptyArray(payload.paymentMethod?.donut, data.paymentMethod.donut),
+    },
+    activityLogs: withRows(payload.activityLogs, data.activityLogs),
+    aiInsight: withItems(payload.aiInsight, data.aiInsight),
+    quickActions: withNonEmptyArray(payload.quickActions, data.quickActions),
+  }
+}
+
 /*
  * useDashboard — 본사어드민 "전체 운영 대시보드" 데이터 훅
  * ------------------------------------------------------------------
@@ -262,7 +341,7 @@ export function useDashboard(filters: UseDashboardFilters = {}) {
       range,
     })
       .then((payload) => {
-        if (alive) setSource(payload)
+        if (alive) setSource(withDashboardDefaults(payload))
       })
       .catch(() => {
         if (alive) setSource(data)

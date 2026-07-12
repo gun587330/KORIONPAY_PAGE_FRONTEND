@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import PageHeader from '../../../components/organisms/PageHeader'
 import Panel from '../../../components/molecules/Panel'
 import StatCard from '../../../components/molecules/StatCard'
@@ -17,6 +18,17 @@ type DashboardTab = 'overview' | 'offline' | 'settlement' | 'risk' | 'growth' | 
 
 const DASHBOARD_TABS: DashboardTab[] = ['overview', 'offline', 'settlement', 'risk', 'growth', 'payment', 'logs']
 
+const QUICK_ACTION_PATHS: Record<string, string> = {
+  reviewApplications: '/hq/applications',
+  approveSettlement: '/hq/settlement/request',
+  retrySyncFailures: '/hq/payments/sync-issues',
+  addBlacklist: '/hq/risk/blacklist',
+  sendNotice: '/hq/announcements/send',
+  maintenanceMode: '/hq/system/maintenance-mode',
+  viewAdminLogs: '/hq/logs/admin',
+  exportReport: '/hq/stats/country',
+}
+
 /*
  * Dashboard (page) — 본사어드민 · 대시보드 · 전체 운영 대시보드
  * ------------------------------------------------------------------
@@ -32,6 +44,7 @@ const DASHBOARD_TABS: DashboardTab[] = ['overview', 'offline', 'settlement', 'ri
  */
 export default function Dashboard() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [countryScope, setCountryScope] = useState('all')
   const [range, setRange] = useState<HqDashboardRange>('1D')
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview')
@@ -39,6 +52,7 @@ export default function Dashboard() {
     filters,
     kpis,
     rankingPanels,
+    realtimePayments,
     offlinePay,
     settlement,
     risk,
@@ -75,6 +89,10 @@ export default function Dashboard() {
         },
       }),
     )
+    const path = QUICK_ACTION_PATHS[action.id]
+    if (path) {
+      navigate(path)
+    }
   }
 
   const settlementRows: TableRow[] = settlement.rows.map((r) => ({
@@ -88,6 +106,26 @@ export default function Dashboard() {
       payable: r.payable,
       status: badgeOrText(r.status, r.statusAccent),
       action: badgeOrText(r.action, r.actionAccent),
+    },
+  }))
+
+  const realtimePaymentRows: TableRow[] = realtimePayments.rows.map((r) => ({
+    id: r.id,
+    cells: {
+      id: r.id,
+      country: r.country,
+      merchant: r.merchant,
+      method: r.method,
+      connection: r.connection,
+      amount: r.amount,
+      status: badgeOrText(r.status, r.statusAccent),
+      sync: badgeOrText(r.sync, r.syncAccent),
+      verify: r.verify,
+      detail: (
+        <Badge accent="cyan" size="cell">
+          {t('hqDashboard.realtimePayments.col.detail')}
+        </Badge>
+      ),
     },
   }))
 
@@ -243,6 +281,10 @@ export default function Dashboard() {
               </Panel>
             ))}
           </div>
+
+          <Panel title={t('hqDashboard.realtimePayments.title')} subtitle={t('hqDashboard.realtimePayments.desc')}>
+            <DataTable columns={realtimePayments.columns} rows={realtimePaymentRows} largeText navyZebra bare />
+          </Panel>
         </>
       )}
 

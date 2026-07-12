@@ -961,7 +961,7 @@
   "auth.signup.placeholder.address": "Enter address",
   "auth.signup.placeholder.industry": "Cafe / Retail",
   "auth.signup.placeholder.evidence": "URL or document link",
-  "auth.signup.hint.evidence": "Store image / logo URL or document link (recommended 256 x 256, up to 3MB)",
+  "auth.signup.hint.evidence": "Store image / logo URL or document link (recommended 256 x 256, up to 5MB)",
   "auth.signup.evidence.previewLabel": "Store image / logo preview",
   "auth.signup.evidence.previewEmpty": "Preview",
   "auth.signup.password.mismatch": "Passwords do not match. Please check again.",

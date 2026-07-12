@@ -21,10 +21,50 @@
     { "id": "riskAlerts", "labelKey": "hqDashboard.kpi.riskAlerts.label", "value": "17건", "noteKey": "hqDashboard.kpi.riskAlerts.note", "deltaTone": "red" }
   ],
   "rankingPanels": [
-    { "id": "byCountry", "titleKey": "hqDashboard.ranking.byCountry" },
-    { "id": "byLeader", "titleKey": "hqDashboard.ranking.byLeader" },
-    { "id": "byPartner", "titleKey": "hqDashboard.ranking.byPartner" },
-    { "id": "byMerchant", "titleKey": "hqDashboard.ranking.byMerchant" }
+    {
+      "id": "byCountry",
+      "titleKey": "hqDashboard.ranking.byCountry",
+      "rows": [
+        { "rank": 1, "name": "Nigeria", "meta": "NG / Lagos, Abuja", "amount": "85,120 KORI" },
+        { "rank": 2, "name": "Korea", "meta": "KR / Seoul, Busan", "amount": "52,260 KORI" },
+        { "rank": 3, "name": "Philippines", "meta": "PH / Manila", "amount": "31,880 KORI" },
+        { "rank": 4, "name": "Vietnam", "meta": "VN / HCMC", "amount": "24,440 KORI" },
+        { "rank": 5, "name": "Ghana", "meta": "GH / Accra", "amount": "18,730 KORI" }
+      ]
+    },
+    {
+      "id": "byLeader",
+      "titleKey": "hqDashboard.ranking.byLeader",
+      "rows": [
+        { "rank": 1, "name": "KR-LEAD-003", "meta": "Korea / Seoul", "amount": "52,260 KORI" },
+        { "rank": 2, "name": "NG-LEAD-0001", "meta": "Nigeria / Lagos", "amount": "45,840 KORI" },
+        { "rank": 3, "name": "NG-LEAD-0002", "meta": "Nigeria / Abuja", "amount": "39,280 KORI" },
+        { "rank": 4, "name": "PH-LEAD-0001", "meta": "Philippines / Manila", "amount": "31,880 KORI" },
+        { "rank": 5, "name": "VN-LEAD-0001", "meta": "Vietnam / HCMC", "amount": "24,440 KORI" }
+      ]
+    },
+    {
+      "id": "byPartner",
+      "titleKey": "hqDashboard.ranking.byPartner",
+      "rows": [
+        { "rank": 1, "name": "NG-SP-0008", "meta": "Settlement partner route", "amount": "96,800 KORI" },
+        { "rank": 2, "name": "KR-SP-0004", "meta": "korionpartner01", "amount": "82,074.75 KORI" },
+        { "rank": 3, "name": "KR-SP-0015", "meta": "leaderpartneractivewithmerchants", "amount": "52,260 KORI" },
+        { "rank": 4, "name": "NG-SP-0014", "meta": "Abuja partner route", "amount": "18,440 KORI" },
+        { "rank": 5, "name": "NG-SP-0015", "meta": "Kano partner route", "amount": "13,930 KORI" }
+      ]
+    },
+    {
+      "id": "byMerchant",
+      "titleKey": "hqDashboard.ranking.byMerchant",
+      "rows": [
+        { "rank": 1, "name": "NG-MER-0024", "meta": "Settlement Test Store 07", "amount": "96,800 KORI" },
+        { "rank": 2, "name": "KR-MER-0002", "meta": "KORION Front Demo Store", "amount": "18,089.75 KORI" },
+        { "rank": 3, "name": "KR-MER-0111", "meta": "Seoul Partner Route Store", "amount": "13,500 KORI" },
+        { "rank": 4, "name": "KR-MER-0112", "meta": "Incheon Partner Route Mart", "amount": "10,360 KORI" },
+        { "rank": 5, "name": "KR-MER-0014", "meta": "Codex Hierarchy Pending", "amount": "9,075 KORI" }
+      ]
+    }
   ],
   "realtimePayments": {
     "rows": [
