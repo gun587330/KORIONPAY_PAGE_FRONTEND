@@ -96,16 +96,20 @@
   color: var(--color-accent-cyan);
 }
 
-/* KPI 4개짜리 줄(코드 패널 아래) / 5개짜리 줄(거래내역 탭 안, 표 위) — Figma 폭 그대로 */
+/*
+ * KPI 4개짜리 줄(코드 패널 아래) / 5개짜리 줄(각 탭 안, 표 위).
+ * Figma 실측 폭(238/188)은 '최소'로만 보장 — 화면이 Figma 프레임보다 넓으면
+ * 다른 화면 KPI 그리드처럼 남는 폭을 등분해 채운다(고정폭이면 우측이 비어 보임).
+ */
 .kpiRow4 {
   display: grid;
-  grid-template-columns: repeat(4, 238px);
+  grid-template-columns: repeat(4, minmax(238px, 1fr));
   gap: 14px 20px;
   overflow-x: auto;
 }
 .kpiRow5 {
   display: grid;
-  grid-template-columns: repeat(5, 188px);
+  grid-template-columns: repeat(5, minmax(188px, 1fr));
   gap: 14px 20px;
   overflow-x: auto;
 }
